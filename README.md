@@ -1,12 +1,31 @@
 # aXIOM
 
-aXIOM is a tool for academic teachers to assess whether student work 
-meets the specific requirements of their university department.
+aXIOM is an AI-assisted analysis platform for academic research and 
+teaching. It is built around four modules that share a common engine.
 
-It reads submitted work, compares it against a structured set of 
-requirements defined by the teacher, and produces a clear assessment 
-report. Requirements are configured once and reused across multiple 
-submissions.
+---
+
+## Modules
+
+**Module 1 — The Engine**
+The shared analytical core. Handles content extraction, structured 
+analysis, claim taxonomy, and inference logic. Used by all other modules.
+
+**Module 2 — Philosophical Text Analysis**
+Analyses philosophical texts for argument structure, presuppositions, 
+conceptual distinctions, and internal coherence. Designed for researchers 
+in philosophy and applied social science.
+
+**Module 3 — Cultural Artefact Analysis**
+Analyses cultural artefacts — film, media, political speech, visual 
+material — using semiotic, ideological, and discourse analysis frameworks. 
+Supports Zotero-based research workflows.
+
+**Module 4 — Academic Assessment**
+Helps academic teachers assess whether student work meets the specific 
+requirements of their department. Requirements are configured once and 
+reused across multiple submissions. Produces a structured assessment 
+report for the teacher.
 
 ---
 
@@ -14,6 +33,9 @@ submissions.
 
 Early development. Architecture defined. Pilot programme in preparation 
 with selected academic institutions in Poland.
+
+Modules 2 and 3 are in active personal use as a single-file HTML tool. 
+Module 4 is the primary build target for phase 1.
 
 ---
 
