@@ -312,8 +312,8 @@ PDF export, DOCX export, direct sharing with examination boards.
 ## 13. Pilot Programme
 
 ### 13.1 Target Institutions
-- ASP Wrocław (Akademia Sztuk Pięknych) — Academy of Fine Arts
-- Angelus Silesius, Wałbrzych — University of Applied Sciences
+- Institution A — Academy of Fine Arts (Poland)
+- Institution B — University of Applied Sciences (Poland)
 
 ### 13.2 Pilot Approach
 **Phase 1 pilot:** One identified teacher. Observed live session. Tool used independently without facilitation guidance. Facilitator observes and takes notes using the Pilot Discovery Document.
@@ -392,7 +392,7 @@ A record of when key decisions were made and why.
 | N-language architecture | 2026-03-27 | Adding a language later should require only a translation file, not code changes |
 | UTF-8 standing requirement | 2026-03-27 | Polish and German diacritics touch every layer of the stack — discipline from day one prevents silent corruption |
 | AI abstraction in module 4 only | 2026-03-27 | Research Analyser is personal tool, Anthropic-native. aXIOM is institutional — universities have their own AI procurement |
-| Phase 1 auth: API key only | 2026-03-27 | Target institutions (ASP Wrocław, Angelus Silesius) are small, teacher-deployed — no enterprise auth needed in phase 1 |
+| Phase 1 auth: API key only | 2026-03-27 | Target institutions are small, teacher-deployed — no enterprise auth needed in phase 1
 | Supported formats: DOCX, PDF, TXT, RTF, ODT | 2026-03-27 | Covers typed work across Windows, Mac, and Linux academic environments. Scanned/handwritten excluded |
 | Visual content: Option B with Option C fallback | 2026-03-27 | ASP Wrocław is an art academy — visual content in student work is the norm. Option C fallback ensures graceful degradation when model lacks image capability |
 | Retention: study cycle + 1 year | 2026-03-27 | Aligns with European academic records practice. Teacher confirms deletion — no silent removal |
