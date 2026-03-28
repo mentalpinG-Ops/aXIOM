@@ -45,7 +45,7 @@ Module 4 is the primary build target for phase 1.
 |---------------|-------------|
 | ARCHITECTURE.md | Full architecture and decision log |
 | docs/ | Supporting documents |
-| docs/PILOT_DISCOVERY_v1.0.docx | User testing protocol for pilot sessions |
+| docs/pilot_discovery_document.docx | User testing protocol for pilot sessions |
 
 ---
 
