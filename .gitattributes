@@ -1,0 +1,22 @@
+# Set default behaviour to automatically normalise line endings
+* text=auto
+
+# Force UTF-8 without BOM for all text files
+*.md text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.json text eol=lf encoding=UTF-8
+*.sql text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.txt text eol=lf
+*.env text eol=lf
+
+# Binary files — do not modify
+*.docx binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
