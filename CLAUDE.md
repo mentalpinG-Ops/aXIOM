@@ -143,6 +143,3 @@ academy) and Institution B (applied sciences university).
 
 **Step 3 — Commit the file**
 
-Scroll down to "Commit changes". Set the commit message to:
-```
-Add CLAUDE.md — Claude Code context file
