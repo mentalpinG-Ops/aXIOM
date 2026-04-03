@@ -1,121 +1,3 @@
-# aXIOM — ARCHITECTURE.md
-### Living Architecture Document — Version 0.1
-#### Last updated: 2026-03-27
-
----
-
-> This document captures all architecture decisions made to date. Decided items are closed and committed. Open items are explicitly marked as pending. Deferred items are recorded for future phases. This document must be updated at the end of every planning session.
-
----
-
-## 1. Platform Overview
-
-The platform consists of four modules organised into two applications sharing one common engine.
-
-### 1.1 The Four Modules
-
-| Module | Name | Status |
-|--------|------|--------|
-| 1 | The Engine | In scope — phase 1 |
-| 2 | Philosophical Text Analysis | Deferred — personal HTML tool sufficient for now |
-| 3 | Cultural Artefact Analysis | Deferred — personal HTML tool sufficient for now |
-| 4 | aXIOM | In scope — phase 1 |
-
-### 1.2 The Two Applications
-
-**Application A — Research Analyser**
-Modules 2 and 3. Researcher-facing. Philosophical text analysis and cultural artefact analysis. Zotero integration. Deferred to a later phase. The existing single-file HTML tool (v1.0) remains in use for personal research during this period.
-
-**Application B — aXIOM**
-Module 4. Teacher-facing. Rubric-based student work evaluation against institutional requirements. No Zotero dependency. Primary build target for phase 1.
-
-### 1.3 The Engine
-Shared infrastructure underneath both applications. Input pipeline, content extraction, analytical schema, claim taxonomy, inference logic, SHA-256 ID system, structured output generation. Packaged as a shared Python library. No AI provider assumption. No user accounts. No Zotero dependency.
-
----
-
-## 2. aXIOM — Scope and Workflows
-
-### 2.1 Primary User
-The teacher. Sole user and recipient of all output in phase 1.
-
-### 2.2 Three Workflows
-
-**Workflow 1 — Formative checkpoint**
-Teacher assesses student work during the course and receives structured feedback plus improvement recommendations.
-
-**Workflow 2 — Thesis evaluation**
-Higher stakes assessment feeding into a grading decision.
-
-**Workflow 3 — Compliance audit**
-Retrospective evaluation of finished, graded work against departmental or institutional requirements.
-
-### 2.3 Compliance Standard — Two Layers
-
-| Layer | Source | Configured by |
-|-------|--------|---------------|
-| Studienordnung | Institution/department programme regulations | Teacher (phase 1) → Admin/supervisor (phase 2) |
-| Teacher criteria | Individual academic judgment within Studienordnung | Teacher |
-
-National law is a background assumption. The institution is trusted to have produced a Studienordnung compliant with national law. The tool does not monitor legal compliance.
-
-### 2.4 Phase Structure
-
-**Phase 1 — Teacher-managed, deployable**
-Single teacher per installation. Teacher inputs and owns all configuration. Report is for teacher's eyes only. Printing supported. No sharing or export beyond print.
-
-**Phase 2 — Institution-managed (deferred)**
-Admin/supervisor owns Studienordnung configuration. Multiple teachers share institutional standard. Teacher-mediated student feedback added. Direct student output explicitly excluded until phase 2 is designed carefully.
-
----
-
-## 3. Requirement Configuration
-
-### 3.1 Model
-Hybrid. Two layers:
-
-**Layer 1 — Structured wizard (mandatory)**
-A step-by-step guided form covering fields that every assessment requires. The engine relies on these directly for assessment logic.
-
-**Layer 2 — Free text extension**
-Anything Layer 1 does not capture. Written by the teacher in natural language. Treated as supplementary context by the engine — informs assessment but is not parsed into discrete checks.
-
-### 3.2 Wizard Structure (Layer 1)
-Steps flow in this order:
-
-1. Assignment context (type, level, who it is for)
-2. Studienordnung parameters (institutional fixed layer)
-3. Teacher criteria (interpretive layer within Studienordnung)
-4. Free text extension (Layer 2 — anything not covered above)
-5. Review and confirm (teacher sees complete requirement set, can return to any step before saving)
-
-Specific fields within each step: **OPEN — see to-do list.**
-
-### 3.3 Three Operations on Requirement Sets
-
-| Operation | Description | Versioning behaviour |
-|-----------|-------------|----------------------|
-| Create | Full wizard, empty fields | Saves as version 1 |
-| Correct | Jump to relevant step, change what is wrong | Saves as version 2 of same set. Previous assessments flagged for review |
-| Branch | Duplicate existing set, full wizard prepopulated, modify as needed | Saves as new independent requirement set. Previous assessments untouched |
-
-Version history is maintained. Every assessment record is linked to the specific version of the requirement set it was run against.
-
----
-
-## 4. Structured Output — Parsing and Failure Handling
-
-### 4.1 The Pipeline
-
-```
-Raw model output
-    → Validation layer
-    → Retry logic (max 3 attempts)
-    → Confidence scoring
-    → Report assembly
-    → Teacher review
-```
-
 ### 4.2 Three Failure Modes and Their Solutions
 
 | Failure mode | Description | Solution |
@@ -200,7 +82,7 @@ Known-compatible model configurations skip the full probe and receive immediate 
 
 ### 7.4 Visual Content Handling
 **Option B (default):** Extract text and embedded images from student submissions. Pass both to AI model for complete assessment.
-**Option C (automatic fallback):** If model fails image capability check in probe, switch to text-only extraction. Flag clearly in every report that visual content was present but not assessed. Teacher sees warning at setup.
+**Option C (automatic fallback):** If model fails image capability check in probe, switch to text-only extraction. Flag clearly in every report that visual content was present but not assessed. Teacher sees warning at setup. Particularly relevant for Institution A (art academy) where visual content in student work is the norm.
 
 ### 7.5 Prompt Template Design
 All prompt templates written for model-agnostic use. No Claude-specific prompting techniques in the aXIOM prompts. Templates must produce consistent structured output across supported providers.
@@ -323,14 +205,14 @@ PDF export, DOCX export, direct sharing with examination boards.
 ### 13.3 Pilot Discovery Document
 Separate document. Filed in repository as `PILOT_DISCOVERY_v1.0.docx`. Covers pre-session baseline, setup observation (with focus on API key friction), first use observation, debrief questions, and facilitator summary. Designed to work for both observed and self-reported sessions.
 
-### 13.4 Known Friction Point
+### 13.4 Known Friction Points
 API key setup is a confirmed friction point from prior observation. The setup wizard must treat API key configuration as a first-class onboarding problem — dedicated wizard step, inline guidance, visible test confirmation, plain-language error messages, cost estimate display.
+
+1:1 onboarding required. Group format insufficient for tool introduction. Individual sessions needed. The tool's utility is embedded in individual professional practice — access to the Lebenswelt of the individual assessor requires a 1:1 setting.
 
 ---
 
 ## 14. Open Questions (To-Do List)
-
-These items are not yet decided. Each needs a planning session or pilot feedback before it can be closed.
 
 | Item | Description | Depends on |
 |------|-------------|------------|
@@ -342,22 +224,22 @@ These items are not yet decided. Each needs a planning session or pilot feedback
 | Onboarding flow design | Full setup experience beyond the capability probe | Pilot feedback |
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
 | Translation status tracking | Per-string translation status for Polish and German | Translation work begins |
+| Student-facing variant | Self-check tool for students before submission | Roadmap — deferred, not v1.0 scope |
 
 ---
 
 ## 15. Deferred Items (Phase 2)
 
-These are explicitly out of scope for phase 1. Recorded here so they are not forgotten.
-
 - Admin/supervisor institutional configuration layer
 - Multi-tenant data isolation and row-level security
 - Student-facing feedback (teacher-mediated)
+- Student self-check variant (roadmap)
 - SaaS hosted version
 - Azure OpenAI and self-hosted model authentication
 - PDF and DOCX report export
 - Direct sharing with examination boards
 - Zotero integration (modules 2 and 3 only)
-- Modules 2 and 3 (Research Analyser) full build
+- Research Analyser full platform build (Modules 2 and 3 — currently active as Artefact Analyser v1.0)
 
 ---
 
@@ -378,8 +260,6 @@ Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approv
 
 ## Appendix B — Decision Log
 
-A record of when key decisions were made and why.
-
 | Decision | Date | Rationale |
 |----------|------|-----------|
 | Two applications, one engine | 2026-03-27 | Research Analyser and aXIOM have different user types, different integration needs, and different deployment requirements |
@@ -392,8 +272,12 @@ A record of when key decisions were made and why.
 | N-language architecture | 2026-03-27 | Adding a language later should require only a translation file, not code changes |
 | UTF-8 standing requirement | 2026-03-27 | Polish and German diacritics touch every layer of the stack — discipline from day one prevents silent corruption |
 | AI abstraction in module 4 only | 2026-03-27 | Research Analyser is personal tool, Anthropic-native. aXIOM is institutional — universities have their own AI procurement |
-| Phase 1 auth: API key only | 2026-03-27 | Target institutions are small, teacher-deployed — no enterprise auth needed in phase 1
+| Phase 1 auth: API key only | 2026-03-27 | Target institutions are small, teacher-deployed — no enterprise auth needed in phase 1 |
 | Supported formats: DOCX, PDF, TXT, RTF, ODT | 2026-03-27 | Covers typed work across Windows, Mac, and Linux academic environments. Scanned/handwritten excluded |
-| Visual content: Option B with Option C fallback | 2026-03-27 | ASP Wrocław is an art academy — visual content in student work is the norm. Option C fallback ensures graceful degradation when model lacks image capability |
+| Visual content: Option B with Option C fallback | 2026-03-27 | Institution A is an art academy — visual content in student work is the norm. Option C fallback ensures graceful degradation when model lacks image capability |
 | Retention: study cycle + 1 year | 2026-03-27 | Aligns with European academic records practice. Teacher confirms deletion — no silent removal |
 | Report: on-screen with print stylesheet | 2026-03-27 | Print covers physical filing needs. PDF/DOCX export deferred to phase 2 |
+| Research Analyser reframed as active | 2026-04-03 | Discovery session (Institution A) surfaced strong interest in artefact/text analysis over Module 4. Artefact Analyser v1.0 confirmed as active informal delivery vehicle for Modules 2 and 3. "Deferred" status removed. Full platform build follows Module 4. |
+| Core positioning principle adopted | 2026-04-03 | aXIOM manages analytical overhead in the analysis phase of the academic work cycle — it does not replace human synthesis. Added to ARCHITECTURE.md, CLAUDE.md, and COMMS.md as a non-negotiable framing principle. |
+| 1:1 onboarding required | 2026-04-03 | Group format insufficient for tool introduction. Individual sessions needed. Group dynamics suppress individual sense-making; access to the Lebenswelt of the individual assessor requires a 1:1 setting. |
+| Student-facing variant deferred | 2026-04-03 | Identified as potential extension — added to roadmap. Not v1.0 scope. |
