@@ -119,8 +119,6 @@ Raw model output
 | Incomplete output | Model stops mid-assessment, fields missing | Retry with continuation prompt. After 3 retries: graceful failure message to teacher |
 | Malformed output | Structure wrong, cannot be parsed | Validation layer catches it, retry with explicit format instruction. Raw output preserved so teacher can see what model produced |
 | Shallow output | Structurally complete but analytically empty | Cannot be caught automatically. Transparency in report: confidence indicators per section, raw evidence cited from student text visible to teacher |
-### 4.3 Retry Limit
-Maximum 3 retries across all failure types. After 3 retries the assessment fails gracefully with a plain-language error message. No cryptic technical errors exposed to the teacher.
 ---
 ### 4.3 Retry Limit
 Maximum 3 retries across all failure types. After 3 retries the assessment fails gracefully with a plain-language error message. No cryptic technical errors exposed to the teacher.
