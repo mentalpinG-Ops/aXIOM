@@ -135,8 +135,8 @@ All entries flagged for verification status. Unverified entries require DOI/libr
 **Validation required before:**
 - Formal academic publication
 - Grant applications
-- Institutional legitimization (e.g., contact with Błocian at UWR)
-
+- Institutional legitimization
+- 
 **Validation method:** Stress-test with domain expert in cultural studies methods or design science research (academic contact at UWR Institute of Philosophy identified as potential validator). Target: epistemological coherence, publication venue fit, institutional reception.
 
 ---
