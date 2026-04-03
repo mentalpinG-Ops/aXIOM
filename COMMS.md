@@ -16,6 +16,18 @@ A stakeholder-facing explainer is needed as a distinct document.
 
 ---
 
+## Core Positioning Principle
+
+aXIOM manages analytical overhead in the analysis phase of the academic
+work cycle — it does not replace human synthesis. The teacher reads,
+challenges, and decides. The tool carries the paperwork load.
+
+This principle must be stated explicitly in every stakeholder-facing
+communication. It is the primary defence against all three known
+misreadings below.
+
+---
+
 ## Known Misreadings to Address
 
 When presenting aXIOM to academic stakeholders, three default mental models interfere
@@ -96,5 +108,5 @@ This is a long-term consideration, not a current commitment.
 
 ---
 
-*Last updated: 2026-03-30*
+*Last updated: 2026-04-03*
 *Fed by: FEEDBACK.md items FB-001, FB-002, FB-003*
