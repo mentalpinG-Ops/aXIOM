@@ -105,5 +105,23 @@ Copy the template below, assign the next available ID, and set status to `triage
 - **Routed to:** GitHub Issue
 
 ---
+### FB-006 — Group format insufficient for tool introduction
+- **Date:** 2026-04-01
+- **Source:** Pilot (Discovery Session 001, Wałbrzych)
+- **Status:** filed
+- **Nature:** both
+- **Summary:** Group discussion format surfaced collective orientations but
+  suppressed individual sense-making. The tool's utility is embedded in
+  individual professional practice. Access to the Lebenswelt of the
+  individual assessor requires a 1:1 setting (Schütz: first-order
+  constructs only accessible at the level of individual experience).
+- **Action (project):** All future discovery sessions to be conducted 1:1.
+  Update DISCOVERY_PROTOCOL.md accordingly.
+- **Action (communication):** Onboarding framing must address individual
+  utility, not group or institutional benefit.
+- **Routed to:** ARCHITECTURE.md (Section 13.4) + DISCOVERY_PROTOCOL.md
 
-*Last updated: 2026-03-30*
+---
+
+*Last updated: 2026-04-03*
+*updated: 2026-03-30*
