@@ -10,6 +10,9 @@ Read this before touching any file.
 aXIOM is an AI-assisted academic assessment platform. It helps teachers
 evaluate whether student work meets the specific requirements of their
 university department.
+aXIOM manages analytical overhead in the analysis phase of the academic
+work cycle — it does not replace human synthesis. The teacher reads,
+challenges, and decides. The tool carries the paperwork load.
 
 The platform has a parent-child architecture: a shared engine (Module 1)
 powers two applications — a Research Analyser (Modules 2 and 3, deferred)
