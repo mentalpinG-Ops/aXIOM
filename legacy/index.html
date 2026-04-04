@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artefact Analyser v1.0 — Prompt Builder</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ── AI Provider Configuration Modal ── -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal">
+    <h2>AI Provider Configuration</h2>
+    <p>Select your AI provider and enter credentials. Settings are stored in browser localStorage and persist across sessions.</p>
+
+    <div class="modal-field">
+      <label class="modal-label" for="providerSelect">Provider</label>
+      <select id="providerSelect">
+        <option value="anthropic">Anthropic Claude</option>
+        <option value="openai">OpenAI GPT</option>
+        <option value="azure">Azure OpenAI</option>
+        <option value="custom">Custom Endpoint</option>
+      </select>
+    </div>
+
+    <!-- Provider-specific fields injected dynamically by ui-controller.js -->
+    <div id="providerFields"></div>
+
+    <!-- Provider-level note (e.g. link to console) injected dynamically -->
+    <div class="modal-provider-note" id="providerNote"></div>
+
+    <div class="modal-storage-note">Settings are persisted in browser localStorage under the key <code>aXIOM_artefact_analyser_v1_config</code>.</div>
+
+    <div class="modal-btns">
+      <button class="btn-modal-primary" id="saveKeyBtn">Save &amp; Continue</button>
+      <button class="btn-secondary" id="skipKeyBtn" style="border:1px solid var(--border-active)">Skip — paste only</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Header ── -->
+<header>
+  <h1>Artefact Analyser</h1>
+  <span class="sub">// prompt builder</span>
+  <span class="ver" id="verDisplay"></span>
+  <button class="btn-manual" id="manualBtn" title="Download user manual">↓ Manual</button>
+  <button class="provider-status unset" id="providerStatus" title="Click to configure AI provider">⚿ No provider</button>
+</header>
+
+<div class="workspace">
+
+  <!-- ── COL 1: INPUT TABS ── -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-label">Input</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="paste">Paste</button>
+      <button class="tab" data-tab="url">URL</button>
+      <button class="tab" data-tab="file">File</button>
+    </div>
+
+    <!-- Source type shared -->
+    <div class="ctrl-row">
+      <span class="ctrl-label">Type</span>
+      <select id="sourceType">
+        <optgroup label="— Press &amp; Periodicals">
+          <option value="JOURNALARTICLE">Journal Article</option>
+          <option value="MAGAZINEARTICLE">Magazine Article</option>
+          <option value="NEWSPAPERARTICLE">Newspaper Article</option>
+          <option value="BLOGPOST">Blog Post</option>
+        </optgroup>
+        <optgroup label="— Books &amp; Chapters">
+          <option value="BOOK">Book</option>
+          <option value="BOOKSECTION">Book Section</option>
+          <option value="ENCYCLOPEDIAARTICLE">Encyclopedia Article</option>
+          <option value="DICTIONARYENTRY">Dictionary Entry</option>
+        </optgroup>
+        <optgroup label="— Reports &amp; Grey Literature">
+          <option value="REPORT">Report</option>
+          <option value="MANUSCRIPT">Manuscript / Archival Document</option>
+          <option value="THESIS">Thesis</option>
+          <option value="STANDARD">Standard</option>
+          <option value="PATENT">Patent</option>
+        </optgroup>
+        <optgroup label="— Audio &amp; Video">
+          <option value="AUDIORECORDING">Audio Recording</option>
+          <option value="VIDEORECORDING">Video Recording</option>
+          <option value="FILM">Film</option>
+          <option value="TVBROADCAST">TV Broadcast</option>
+          <option value="RADIOBROADCAST">Radio Broadcast</option>
+          <option value="PODCAST">Podcast</option>
+        </optgroup>
+        <optgroup label="— Visual &amp; Data">
+          <option value="ARTWORK">Artwork / Image</option>
+          <option value="MAP">Map</option>
+          <option value="DATASET">Dataset</option>
+          <option value="SOFTWARE">Software</option>
+        </optgroup>
+        <optgroup label="— Online &amp; Social">
+          <option value="WEBPAGE">Webpage</option>
+          <option value="FORUMPOST">Forum / Social Media Post</option>
+        </optgroup>
+        <optgroup label="— Spoken &amp; Personal">
+          <option value="INTERVIEW">Interview / Speech Transcript</option>
+          <option value="PRESENTATION">Presentation</option>
+          <option value="LETTER">Letter / Correspondence</option>
+          <option value="EMAIL">Email</option>
+        </optgroup>
+        <optgroup label="— Legal">
+          <option value="CASE">Legal Case</option>
+          <option value="BILL">Bill / Proposed Legislation</option>
+          <option value="STATUTE">Statute / Enacted Legislation</option>
+          <option value="HEARING">Hearing</option>
+        </optgroup>
+        <optgroup label="— Academic Events">
+          <option value="CONFERENCEPAPER">Conference Paper</option>
+        </optgroup>
+        <optgroup label="— Other">
+          <option value="DOCUMENT">Document (generic)</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- ID bar -->
+    <div class="id-bar">
+      <span class="id-label">ID</span>
+      <span class="id-value empty" id="idDisplay">— no content yet —</span>
+    </div>
+
+    <!-- PASTE -->
+    <div class="tab-pane active" id="pane-paste">
+      <textarea id="pasteInput"
+        placeholder="Paste artefact content here — article text, transcript, OCR output, or description of visual/audio content.
+
+ID is computed automatically from content + date + source type."></textarea>
+      <div class="hash-method" id="hashMethod"></div>
+    </div>
+
+    <!-- URL -->
+    <div class="tab-pane" id="pane-url">
+      <div class="url-row">
+        <input type="url" id="urlInput" placeholder="https://…" />
+        <button class="btn-fetch" id="fetchBtn">Fetch</button>
+      </div>
+      <div class="extracting" id="urlExtracting">
+        <div class="spinner"></div>
+        <span class="extracting-msg" id="urlMsg">Fetching…</span>
+      </div>
+      <textarea id="urlPreview" class="output-area"
+        placeholder="Extracted content appears here after fetching. Editable before prompt assembly."></textarea>
+    </div>
+
+    <!-- FILE -->
+    <div class="tab-pane" id="pane-file">
+      <div class="extracting" id="fileExtracting">
+        <div class="spinner"></div>
+        <span class="extracting-msg" id="fileMsg">Extracting…</span>
+      </div>
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-icon">⬆</div>
+        <div class="drop-text">
+          Drop file here or <strong>click to browse</strong><br>
+          PDF · DOCX · TXT · JPG · PNG
+        </div>
+        <div class="file-badge" id="fileBadge"></div>
+        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.jpg,.jpeg,.png" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COL 2: SOURCE INFO + CONTENT ── -->
+  <div class="panel split-panel">
+    <div class="panel-header">
+      <span class="panel-label">Source Info &amp; Content</span>
+      <span class="panel-meta" id="charCount">0 chars</span>
+    </div>
+
+    <div class="source-info">
+      <div class="si-label">Source metadata</div>
+      <div id="siRows">
+        <div class="si-row"><span class="si-key">title</span><span class="si-val" style="color:var(--text-dimmer)">—</span></div>
+        <div class="si-row"><span class="si-key">origin</span><span class="si-val" style="color:var(--text-dimmer)">—</span></div>
+        <div class="si-row"><span class="si-key">date</span><span class="si-val" style="color:var(--text-dimmer)">—</span></div>
+        <div class="si-row"><span class="si-key">source</span><span class="si-val" style="color:var(--text-dimmer)">—</span></div>
+      </div>
+    </div>
+
+    <div class="extracted-label">Extracted content — review &amp; edit before building prompt</div>
+    <textarea id="contentArea"
+      placeholder="Extracted or pasted content appears here.&#10;&#10;Paste tab: mirrors input directly.&#10;URL / File tabs: AI-extracted, fully editable."></textarea>
+  </div>
+
+  <!-- ── COL 3: PROMPT ── -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-label">Assembled Prompt</span>
+      <span class="panel-meta" id="promptLen">—</span>
+    </div>
+    <textarea id="promptOut" class="output-area" readonly
+      placeholder="Full prompt with ID pre-injected appears here after clicking Build Prompt."></textarea>
+  </div>
+
+</div>
+
+<footer>
+  <button class="btn-primary" id="buildBtn" disabled>Build Prompt</button>
+  <div class="divider"></div>
+  <button class="btn-secondary" id="copyBtn" disabled>Copy to Clipboard</button>
+  <button class="btn-secondary" id="clearBtn">Clear</button>
+  <span class="status" id="statusMsg"></span>
+</footer>
+
+<!-- ── Scripts — load order matters ── -->
+<!-- 1. Config namespace (must be first) -->
+<script src="js/config.js"></script>
+<!-- 2. Provider plugins (register into AXIOM_CONFIG.providers) -->
+<script src="js/providers/anthropic.js"></script>
+<script src="js/providers/openai.js"></script>
+<script src="js/providers/azure.js"></script>
+<script src="js/providers/custom.js"></script>
+<!-- 3. API abstraction layer -->
+<script src="js/api-abstraction.js"></script>
+<!-- 4. Embedded manual data -->
+<script src="js/manual.js"></script>
+<!-- 5. UI controller (DOM events — depends on callAI, AXIOM_CONFIG) -->
+<script src="js/ui-controller.js"></script>
+<!-- 6. Main init (PROMPT_TEMPLATE, STM, utilities, startup — must be last) -->
+<script src="js/main.js"></script>
+
+</body>
+</html>
