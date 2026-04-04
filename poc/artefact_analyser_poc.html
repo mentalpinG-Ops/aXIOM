@@ -1,0 +1,2408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artefact Analyser v1.0 — Prompt Builder</title>
+<style>
+/* Artefact Analyser v1.0 — Stylesheet
+   UTF-8 encoded. Supports Polish and German diacritics.
+   Extracted from monolithic HTML during AI-provider-agnostic refactor.
+   See REFACTORING_NOTES.md for details.
+*/
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+:root{
+  --bg:#0f0f0f;--surface:#1a1a1a;--border:#2a2a2a;--border-active:#444;
+  --accent:#c8f060;--accent-dim:#8aab30;--text:#e8e8e8;--text-dim:#888;
+  --text-dimmer:#555;--error:#ff6b6b;--warn:#f5a623;--green:#6bcf7f;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);
+     font-size:14px;min-height:100vh;display:grid;grid-template-rows:auto 1fr auto;}
+
+/* ── Provider config modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;z-index:100;}
+.modal-overlay.hidden{display:none;}
+.modal{background:#1a1a1a;border:1px solid var(--border-active);
+  border-radius:6px;padding:32px;width:480px;max-width:90vw;}
+.modal h2{font-family:var(--mono);font-size:13px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+.modal p{font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;}
+.modal p a{color:var(--accent-dim);text-decoration:none;}
+.modal p a:hover{text-decoration:underline;}
+.modal-field{margin-bottom:12px;}
+.modal-label{display:block;font-family:var(--mono);font-size:10px;
+  color:var(--text-dimmer);text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:5px;}
+.modal select,.modal input[type=text],.modal input[type=password],.modal input[type=url]{
+  width:100%;background:#0f0f0f;border:1px solid var(--border-active);
+  color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 14px;
+  border-radius:3px;outline:none;}
+.modal select:focus,.modal input:focus{border-color:var(--accent);}
+.modal-note{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);
+  margin-top:4px;margin-bottom:4px;line-height:1.5;}
+.modal-provider-note{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);
+  margin-top:8px;margin-bottom:16px;line-height:1.6;}
+.modal-provider-note a{color:var(--accent-dim);text-decoration:none;}
+.modal-provider-note a:hover{text-decoration:underline;}
+.modal-storage-note{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);
+  margin-bottom:20px;line-height:1.5;}
+.modal-btns{display:flex;gap:10px;}
+.btn-modal-primary{background:var(--accent);color:#0f0f0f;font-family:var(--mono);
+  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  padding:9px 20px;border:none;border-radius:3px;cursor:pointer;}
+.btn-modal-primary:hover{background:#d4f870;}
+.provider-status{font-family:var(--mono);font-size:10px;margin-left:auto;
+  padding:4px 10px;border-radius:12px;cursor:pointer;border:none;}
+.provider-status.set{background:rgba(107,207,127,.15);color:var(--green);}
+.provider-status.unset{background:rgba(255,107,107,.12);color:var(--error);}
+.btn-manual{font-family:var(--mono);font-size:10px;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;
+  background:transparent;border:1px solid var(--border-active);
+  color:var(--text-dim);border-radius:3px;cursor:pointer;transition:all .15s;}
+.btn-manual:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── Header ── */
+header{border-bottom:1px solid var(--border);padding:14px 24px;
+  display:flex;align-items:center;gap:14px;}
+header h1{font-family:var(--mono);font-size:13px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--accent);}
+header .sub{font-size:11px;color:var(--text-dimmer);font-family:var(--mono);}
+header .ver{font-size:10px;color:var(--accent-dim);font-family:var(--mono);}
+
+/* ── Workspace ── */
+.workspace{display:grid;grid-template-columns:300px 1fr 1fr;
+  height:calc(100vh - 53px - 48px);overflow:hidden;}
+.panel{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden;}
+.panel:last-child{border-right:none;}
+.panel-header{padding:11px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.panel-label{font-family:var(--mono);font-size:10px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);}
+.panel-meta{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);}
+
+/* ── Tabs ── */
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
+.tab{flex:1;padding:9px 4px;font-family:var(--mono);font-size:10px;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--text-dimmer);
+  background:transparent;border:none;border-bottom:2px solid transparent;
+  cursor:pointer;transition:all .15s;}
+.tab:hover{color:var(--text-dim);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-pane{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.tab-pane.active{display:flex;}
+
+/* ── Controls ── */
+.ctrl-row{padding:9px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+.ctrl-label{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);
+  text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;}
+select{background:var(--surface);border:1px solid var(--border-active);
+  color:var(--text);font-family:var(--mono);font-size:11px;
+  padding:5px 8px;border-radius:3px;outline:none;cursor:pointer;max-width:100%;}
+select:focus{border-color:var(--accent);}
+
+/* ── ID bar ── */
+.id-bar{padding:9px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;background:#141414;}
+.id-label{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);
+  letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
+.id-value{font-family:var(--mono);font-size:11px;color:var(--accent);
+  font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.id-value.empty{color:var(--text-dimmer);font-weight:400;}
+
+/* ── Textareas ── */
+textarea{flex:1;background:transparent;border:none;color:var(--text);
+  font-family:var(--mono);font-size:11.5px;line-height:1.7;
+  padding:14px 16px;resize:none;outline:none;width:100%;}
+textarea::placeholder{color:var(--text-dimmer);}
+textarea.output-area{font-size:11px;color:#ccc;}
+.hash-method{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);
+  padding:5px 14px 7px;flex-shrink:0;}
+
+/* ── URL pane ── */
+.url-row{padding:10px 14px;border-bottom:1px solid var(--border);
+  display:flex;gap:8px;flex-shrink:0;}
+.url-row input[type=url]{flex:1;background:var(--surface);
+  border:1px solid var(--border-active);color:var(--text);
+  font-family:var(--mono);font-size:11px;padding:7px 10px;
+  border-radius:3px;outline:none;}
+.url-row input:focus{border-color:var(--accent);}
+.btn-fetch{font-family:var(--mono);font-size:10px;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;padding:7px 14px;
+  background:var(--surface);border:1px solid var(--border-active);
+  color:var(--text-dim);border-radius:3px;cursor:pointer;white-space:nowrap;
+  transition:all .15s;}
+.btn-fetch:hover{border-color:var(--accent);color:var(--accent);}
+.btn-fetch:disabled{opacity:.4;cursor:default;}
+
+/* ── File pane ── */
+.drop-zone{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:10px;margin:14px;
+  border:1px dashed var(--border-active);border-radius:6px;
+  cursor:pointer;transition:all .2s;padding:20px;text-align:center;}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);
+  background:rgba(200,240,96,.04);}
+.drop-icon{font-size:26px;opacity:.35;}
+.drop-text{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);
+  line-height:1.7;}
+.drop-text strong{color:var(--accent-dim);}
+.file-badge{font-family:var(--mono);font-size:10px;color:var(--accent);margin-top:4px;}
+input[type=file]{display:none;}
+
+/* ── Spinner / extracting ── */
+.extracting{display:none;flex-direction:column;align-items:center;
+  justify-content:center;gap:12px;flex:1;padding:24px;}
+.extracting.visible{display:flex;}
+.spinner{width:24px;height:24px;border:2px solid var(--border-active);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.extracting-msg{font-family:var(--mono);font-size:11px;color:var(--text-dim);
+  text-align:center;line-height:1.6;}
+
+/* ── Middle column split ── */
+.split-panel{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+.source-info{flex:0 0 auto;border-bottom:1px solid var(--border);
+  padding:12px 16px;max-height:180px;overflow-y:auto;}
+.si-label{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;}
+.si-row{display:flex;gap:8px;margin-bottom:3px;font-size:11px;}
+.si-key{font-family:var(--mono);color:var(--text-dimmer);min-width:72px;flex-shrink:0;}
+.si-val{color:var(--text);font-family:var(--mono);word-break:break-all;font-size:10px;}
+.extracted-label{padding:9px 16px 5px;font-family:var(--mono);font-size:10px;
+  color:var(--text-dimmer);text-transform:uppercase;letter-spacing:.08em;
+  flex-shrink:0;border-bottom:1px solid var(--border);}
+
+/* ── Footer ── */
+footer{border-top:1px solid var(--border);padding:0 24px;height:48px;
+  display:flex;align-items:center;gap:10px;}
+button.btn-primary{background:var(--accent);color:#0f0f0f;font-family:var(--mono);
+  font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  padding:8px 18px;border-radius:3px;border:none;cursor:pointer;transition:all .15s;}
+button.btn-primary:hover{background:#d4f870;}
+button.btn-primary:disabled{background:var(--border);color:var(--text-dimmer);cursor:default;}
+button.btn-secondary{background:transparent;color:var(--text-dim);
+  font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;padding:7px 16px;border-radius:3px;
+  border:1px solid var(--border-active);cursor:pointer;transition:all .15s;}
+button.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+button.btn-secondary:disabled{opacity:.4;cursor:default;}
+.status{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);margin-left:auto;}
+.status.success{color:var(--accent);}
+.status.error{color:var(--error);}
+.status.warn{color:var(--warn);}
+.divider{width:1px;height:16px;background:var(--border-active);}
+
+</style>
+</head>
+<body>
+
+<!-- ── AI Provider Configuration Modal ── -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal">
+    <h2>AI Provider Configuration</h2>
+    <p>Select your AI provider and enter credentials. Settings are stored in browser localStorage and persist across sessions.</p>
+
+    <div class="modal-field">
+      <label class="modal-label" for="providerSelect">Provider</label>
+      <select id="providerSelect">
+        <option value="anthropic">Anthropic Claude</option>
+        <option value="openai">OpenAI GPT</option>
+        <option value="azure">Azure OpenAI</option>
+        <option value="custom">Custom Endpoint</option>
+      </select>
+    </div>
+
+    <!-- Provider-specific fields injected dynamically -->
+    <div id="providerFields"></div>
+
+    <!-- Provider-level note (e.g. link to console) injected dynamically -->
+    <div class="modal-provider-note" id="providerNote"></div>
+
+    <div class="modal-storage-note">Settings are persisted in browser localStorage under the key <code>aXIOM_artefact_analyser_v1_config</code>.</div>
+
+    <div class="modal-btns">
+      <button class="btn-modal-primary" id="saveKeyBtn">Save &amp; Continue</button>
+      <button class="btn-secondary" id="skipKeyBtn" style="border:1px solid var(--border-active)">Skip — paste only</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Header ── -->
+<header>
+  <h1>Artefact Analyser</h1>
+  <span class="sub">// prompt builder</span>
+  <span class="ver" id="verDisplay"></span>
+  <button class="provider-status unset" id="providerStatus" title="Click to configure AI provider">⦿ No provider</button>
+</header>
+
+<div class="workspace">
+
+  <!-- ── COL 1: INPUT TABS ── -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-label">Input</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="paste">Paste</button>
+      <button class="tab" data-tab="url">URL</button>
+      <button class="tab" data-tab="file">File</button>
+    </div>
+
+    <!-- Source type shared -->
+    <div class="ctrl-row">
+      <span class="ctrl-label">Type</span>
+      <select id="sourceType">
+        <optgroup label="— Press &amp; Periodicals">
+          <option value="JOURNALARTICLE">Journal Article</option>
+          <option value="MAGAZINEARTICLE">Magazine Article</option>
+          <option value="NEWSPAPERARTICLE">Newspaper Article</option>
+          <option value="BLOGPOST">Blog Post</option>
+        </optgroup>
+        <optgroup label="— Books &amp; Chapters">
+          <option value="BOOK">Book</option>
+          <option value="BOOKSECTION">Book Section</option>
+          <option value="ENCYCLOPEDIAARTICLE">Encyclopedia Article</option>
+          <option value="DICTIONARYENTRY">Dictionary Entry</option>
+        </optgroup>
+        <optgroup label="— Reports &amp; Grey Literature">
+          <option value="REPORT">Report</option>
+          <option value="MANUSCRIPT">Manuscript / Archival Document</option>
+          <option value="THESIS">Thesis</option>
+          <option value="STANDARD">Standard</option>
+          <option value="PATENT">Patent</option>
+        </optgroup>
+        <optgroup label="— Audio &amp; Video">
+          <option value="AUDIORECORDING">Audio Recording</option>
+          <option value="VIDEORECORDING">Video Recording</option>
+          <option value="FILM">Film</option>
+          <option value="TVBROADCAST">TV Broadcast</option>
+          <option value="RADIOBROADCAST">Radio Broadcast</option>
+          <option value="PODCAST">Podcast</option>
+        </optgroup>
+        <optgroup label="— Visual &amp; Data">
+          <option value="ARTWORK">Artwork / Image</option>
+          <option value="MAP">Map</option>
+          <option value="DATASET">Dataset</option>
+          <option value="SOFTWARE">Software</option>
+        </optgroup>
+        <optgroup label="— Online &amp; Social">
+          <option value="WEBPAGE">Webpage</option>
+          <option value="FORUMPOST">Forum / Social Media Post</option>
+        </optgroup>
+        <optgroup label="— Spoken &amp; Personal">
+          <option value="INTERVIEW">Interview / Speech Transcript</option>
+          <option value="PRESENTATION">Presentation</option>
+          <option value="LETTER">Letter / Correspondence</option>
+          <option value="EMAIL">Email</option>
+        </optgroup>
+        <optgroup label="— Legal">
+          <option value="CASE">Legal Case</option>
+          <option value="BILL">Bill / Proposed Legislation</option>
+          <option value="STATUTE">Statute / Enacted Legislation</option>
+          <option value="HEARING">Hearing</option>
+        </optgroup>
+        <optgroup label="— Academic Events">
+          <option value="CONFERENCEPAPER">Conference Paper</option>
+        </optgroup>
+        <optgroup label="— Other">
+          <option value="DOCUMENT">Document (generic)</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- ID bar -->
+    <div class="id-bar">
+      <span class="id-label">ID</span>
+      <span class="id-value empty" id="idDisplay">— no content yet —</span>
+    </div>
+
+    <!-- PASTE -->
+    <div class="tab-pane active" id="pane-paste">
+      <textarea id="pasteInput"
+        placeholder="Paste artefact content here — article text, transcript, OCR output, or description of visual/audio content.
+
+ID is computed automatically from content + date + source type."></textarea>
+      <div class="hash-method" id="hashMethod"></div>
+    </div>
+
+    <!-- URL -->
+    <div class="tab-pane" id="pane-url">
+      <div class="url-row">
+        <input type="url" id="urlInput" placeholder="https://…" />
+        <button class="btn-fetch" id="fetchBtn">Fetch</button>
+      </div>
+      <div class="extracting" id="urlExtracting">
+        <div class="spinner"></div>
+        <span class="extracting-msg" id="urlMsg">Fetching…</span>
+      </div>
+      <textarea id="urlPreview" class="output-area"
+        placeholder="Extracted content appears here after fetching. Editable before prompt assembly."></textarea>
+    </div>
+
+    <!-- FILE -->
+    <div class="tab-pane" id="pane-file">
+      <div class="extracting" id="fileExtracting">
+        <div class="spinner"></div>
+        <span class="extracting-msg" id="fileMsg">Extracting…</span>
+      </div>
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-icon">⬆</div>
+        <div class="drop-text">
+          Drop file here or <strong>click to browse</strong><br>
+          PDF · DOCX · TXT · JPG · PNG
+        </div>
+        <div class="file-badge" id="fileBadge"></div>
+        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.jpg,.jpeg,.png" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COL 2: SOURCE INFO + CONTENT ── -->
+  <div class="panel split-panel">
+    <div class="panel-header">
+      <span class="panel-label">Source Info &amp; Content</span>
+      <span class="panel-meta" id="charCount">0 chars</span>
+    </div>
+
+    <div class="source-info">
+      <div class="si-label">Source metadata</div>
+      <div id="siRows">
+        <div class="si-row"><span class="si-key">title</span><span class="si-val" style="color:var(--text-dimmer)">—</span></div>
+        <div class="si-row"><span class="si-key">origin</span><span class="si-val" style="color:var(--text-dimmer)">—</span></div>
+        <div class="si-row"><span class="si-key">date</span><span class="si-val" style="color:var(--text-dimmer)">—</span></div>
+        <div class="si-row"><span class="si-key">source</span><span class="si-val" style="color:var(--text-dimmer)">—</span></div>
+      </div>
+    </div>
+
+    <div class="extracted-label">Extracted content — review &amp; edit before building prompt</div>
+    <textarea id="contentArea"
+      placeholder="Extracted or pasted content appears here.&#10;&#10;Paste tab: mirrors input directly.&#10;URL / File tabs: AI-extracted, fully editable."></textarea>
+  </div>
+
+  <!-- ── COL 3: PROMPT ── -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-label">Assembled Prompt</span>
+      <span class="panel-meta" id="promptLen">—</span>
+    </div>
+    <textarea id="promptOut" class="output-area" readonly
+      placeholder="Full prompt with ID pre-injected appears here after clicking Build Prompt."></textarea>
+  </div>
+
+</div>
+
+<footer>
+  <button class="btn-primary" id="buildBtn" disabled>Build Prompt</button>
+  <div class="divider"></div>
+  <button class="btn-secondary" id="copyBtn" disabled>Copy to Clipboard</button>
+  <button class="btn-secondary" id="clearBtn">Clear</button>
+  <span class="status" id="statusMsg"></span>
+</footer>
+
+<script>
+/* ================================================================
+   Artefact Analyser v1.0 — Single-File POC
+   poc/artefact_analyser_poc.html
+   All CSS and JavaScript inlined. Opens directly from filesystem
+   (file:// protocol) — no web server required.
+   UTF-8. Supports Polish and German diacritics.
+   ================================================================ */
+
+// ================================================================
+// 1. CONFIG (← config.js)
+// ================================================================
+/* config.js — Provider configuration schema and localStorage management
+   Artefact Analyser v1.0 — AI-agnostic refactor
+   UTF-8. See REFACTORING_NOTES.md for architecture notes.
+*/
+
+// Global namespace
+const AXIOM_CONFIG = (function () {
+  'use strict';
+
+  const STORAGE_KEY = 'aXIOM_artefact_analyser_v1_config';
+
+  // Provider registry — populated by provider scripts loaded after this file
+  const providers = {};
+
+  /** Load persisted config from localStorage. Returns a plain object. */
+  function loadConfig() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {
+      // Corrupt storage — return default
+    }
+    return { provider: 'anthropic', providerConfig: {} };
+  }
+
+  /** Persist config to localStorage. */
+  function saveConfig(cfg) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+    } catch (e) {
+      // Storage write failure — silently ignore (private browsing etc.)
+    }
+  }
+
+  /**
+   * Check whether a provider is fully configured (has required fields).
+   * Returns true if a provider is selected and its validate() passes.
+   */
+  function isConfigured() {
+    const cfg = loadConfig();
+    const provider = providers[cfg.provider];
+    if (!provider) return false;
+    const providerCfg = (cfg.providerConfig || {})[cfg.provider] || {};
+    return provider.validate(providerCfg).valid;
+  }
+
+  return { providers, STORAGE_KEY, loadConfig, saveConfig, isConfigured };
+}());
+
+
+// ================================================================
+// 2. PROVIDER PLUGINS
+// ================================================================
+
+// ── Anthropic Claude (← providers/anthropic.js)
+/* providers/anthropic.js — Anthropic Claude provider plugin
+   Artefact Analyser v1.0 — AI-agnostic refactor
+   UTF-8. See REFACTORING_NOTES.md for how to add a new provider.
+*/
+
+(function () {
+  'use strict';
+
+  AXIOM_CONFIG.providers.anthropic = {
+    id: 'anthropic',
+    label: 'Anthropic Claude',
+    apiUrl: 'https://api.anthropic.com/v1/messages',
+
+    models: [
+      { value: 'claude-sonnet-4-20250514', label: 'Claude Sonnet 4' },
+      { value: 'claude-3-5-haiku-20241022', label: 'Claude Haiku 3.5' },
+      { value: 'claude-opus-4-5', label: 'Claude Opus 4.5' },
+    ],
+
+    fields: [
+      {
+        id: 'apiKey',
+        label: 'API Key',
+        type: 'password',
+        placeholder: 'sk-ant-…',
+        note: '<a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>',
+      },
+      { id: 'model', label: 'Model', type: 'select' },
+    ],
+
+    validate(cfg) {
+      if (!cfg || !cfg.apiKey || !cfg.apiKey.startsWith('sk-ant-')) {
+        return { valid: false, error: 'Anthropic API key must start with sk-ant-' };
+      }
+      return { valid: true };
+    },
+
+    buildHeaders(cfg) {
+      return {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'x-api-key': cfg.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      };
+    },
+
+    /**
+     * userBlocks uses the Anthropic native format:
+     *   { type:'text', text:'...' }
+     *   { type:'image', source:{ type:'base64', media_type: mt, data: b64 }}
+     *   { type:'document', source:{ type:'base64', media_type:'application/pdf', data: b64 }}
+     */
+    buildBody(systemPrompt, userBlocks, cfg) {
+      return {
+        model: cfg.model || 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userBlocks }],
+      };
+    },
+
+    parseResponse(data) {
+      return data.content.map(function (b) { return b.text || ''; }).join('');
+    },
+
+    selectModel(cfg) {
+      return cfg.model || 'claude-sonnet-4-20250514';
+    },
+  };
+}());
+
+
+// ── OpenAI GPT (← providers/openai.js)
+/* providers/openai.js — OpenAI GPT provider plugin
+   Artefact Analyser v1.0 — AI-agnostic refactor
+   UTF-8. See REFACTORING_NOTES.md for how to add a new provider.
+*/
+
+(function () {
+  'use strict';
+
+  AXIOM_CONFIG.providers.openai = {
+    id: 'openai',
+    label: 'OpenAI GPT',
+    apiUrl: 'https://api.openai.com/v1/chat/completions',
+
+    models: [
+      { value: 'gpt-4o', label: 'GPT-4o' },
+      { value: 'gpt-4o-mini', label: 'GPT-4o mini' },
+    ],
+
+    fields: [
+      {
+        id: 'apiKey',
+        label: 'API Key',
+        type: 'password',
+        placeholder: 'sk-…',
+        note: '<a href="https://platform.openai.com" target="_blank" rel="noopener">platform.openai.com</a>',
+      },
+      { id: 'model', label: 'Model', type: 'select' },
+    ],
+
+    validate(cfg) {
+      if (!cfg || !cfg.apiKey || !cfg.apiKey.startsWith('sk-')) {
+        return { valid: false, error: 'OpenAI API key must start with sk-' };
+      }
+      return { valid: true };
+    },
+
+    buildHeaders(cfg) {
+      return {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ' + cfg.apiKey,
+      };
+    },
+
+    /**
+     * Converts Anthropic-format userBlocks to OpenAI message content.
+     * - text blocks: passed through unchanged
+     * - image blocks: converted to image_url format
+     * - document blocks: not supported natively — text fallback with notice
+     */
+    buildBody(systemPrompt, userBlocks, cfg) {
+      var content = userBlocks.map(function (block) {
+        if (block.type === 'text') {
+          return { type: 'text', text: block.text };
+        }
+        if (block.type === 'image' && block.source) {
+          return {
+            type: 'image_url',
+            image_url: {
+              url: 'data:' + block.source.media_type + ';base64,' + block.source.data,
+            },
+          };
+        }
+        if (block.type === 'document' && block.source) {
+          // OpenAI does not have a native document block type.
+          // Return a text notice so the caller receives a meaningful response.
+          return {
+            type: 'text',
+            text: '[Note: direct document upload is not supported for OpenAI via browser API. Use the Paste tab to paste extracted text, or switch to Anthropic Claude for direct file extraction.]',
+          };
+        }
+        return null;
+      }).filter(Boolean);
+
+      return {
+        model: cfg.model || 'gpt-4o',
+        max_tokens: 4000,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: content },
+        ],
+      };
+    },
+
+    parseResponse(data) {
+      return (data.choices && data.choices[0] && data.choices[0].message &&
+        data.choices[0].message.content) || '';
+    },
+
+    selectModel(cfg) {
+      return cfg.model || 'gpt-4o';
+    },
+  };
+}());
+
+
+// ── Azure OpenAI (← providers/azure.js)
+/* providers/azure.js — Azure OpenAI provider plugin
+   Artefact Analyser v1.0 — AI-agnostic refactor
+   Phase 2 provider — configuration only in phase 1.
+   UTF-8. See REFACTORING_NOTES.md for how to add a new provider.
+*/
+
+(function () {
+  'use strict';
+
+  AXIOM_CONFIG.providers.azure = {
+    id: 'azure',
+    label: 'Azure OpenAI',
+    // Endpoint is constructed from user-supplied fields
+    apiUrl: null,
+
+    models: [],  // Azure deployment names are user-defined — no fixed list
+
+    fields: [
+      {
+        id: 'endpoint',
+        label: 'Endpoint URL',
+        type: 'url',
+        placeholder: 'https://your-resource.openai.azure.com/',
+      },
+      {
+        id: 'apiKey',
+        label: 'API Key',
+        type: 'password',
+        placeholder: 'Azure API key',
+      },
+      {
+        id: 'deploymentName',
+        label: 'Deployment Name',
+        type: 'text',
+        placeholder: 'deployment-name',
+        note: 'The name you gave the model deployment in Azure AI Studio.',
+      },
+    ],
+
+    validate(cfg) {
+      if (!cfg || !cfg.endpoint || !cfg.endpoint.startsWith('https://')) {
+        return { valid: false, error: 'Azure endpoint must be an https:// URL' };
+      }
+      if (!cfg.apiKey) {
+        return { valid: false, error: 'Azure API key is required' };
+      }
+      if (!cfg.deploymentName) {
+        return { valid: false, error: 'Azure deployment name is required' };
+      }
+      return { valid: true };
+    },
+
+    getEndpoint(cfg) {
+      // Azure REST API path: {endpoint}/openai/deployments/{deployment}/chat/completions?api-version=...
+      var base = (cfg.endpoint || '').replace(/\/$/, '');
+      return base + '/openai/deployments/' + encodeURIComponent(cfg.deploymentName) +
+        '/chat/completions?api-version=2024-02-01';
+    },
+
+    buildHeaders(cfg) {
+      return {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'api-key': cfg.apiKey,
+      };
+    },
+
+    buildBody(systemPrompt, userBlocks, cfg) {
+      var content = userBlocks.map(function (block) {
+        if (block.type === 'text') return { type: 'text', text: block.text };
+        if (block.type === 'image' && block.source) {
+          return {
+            type: 'image_url',
+            image_url: {
+              url: 'data:' + block.source.media_type + ';base64,' + block.source.data,
+            },
+          };
+        }
+        return null;
+      }).filter(Boolean);
+
+      return {
+        max_tokens: 4000,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: content },
+        ],
+      };
+    },
+
+    parseResponse(data) {
+      return (data.choices && data.choices[0] && data.choices[0].message &&
+        data.choices[0].message.content) || '';
+    },
+
+    selectModel(cfg) {
+      return cfg.deploymentName || '';
+    },
+  };
+}());
+
+
+// ── Custom Endpoint (← providers/custom.js)
+/* providers/custom.js — Custom endpoint provider plugin
+   Artefact Analyser v1.0 — AI-agnostic refactor
+   Phase 2 provider — for self-hosted or non-standard endpoints.
+   Assumes an OpenAI-compatible chat completions API.
+   UTF-8. See REFACTORING_NOTES.md for how to add a new provider.
+*/
+
+(function () {
+  'use strict';
+
+  AXIOM_CONFIG.providers.custom = {
+    id: 'custom',
+    label: 'Custom Endpoint',
+    apiUrl: null,
+
+    models: [],
+
+    fields: [
+      {
+        id: 'endpoint',
+        label: 'Endpoint URL',
+        type: 'url',
+        placeholder: 'https://your-endpoint/v1/chat/completions',
+        note: 'Must be an OpenAI-compatible /chat/completions endpoint.',
+      },
+      {
+        id: 'model',
+        label: 'Model Name',
+        type: 'text',
+        placeholder: 'model-name (optional)',
+      },
+      {
+        id: 'authHeader',
+        label: 'Auth Header (optional)',
+        type: 'text',
+        placeholder: 'Bearer your-token',
+        note: 'Full Authorization header value. Leave blank for unauthenticated endpoints.',
+      },
+    ],
+
+    validate(cfg) {
+      if (!cfg || !cfg.endpoint || !cfg.endpoint.startsWith('http')) {
+        return { valid: false, error: 'Custom endpoint must be an http:// or https:// URL' };
+      }
+      return { valid: true };
+    },
+
+    getEndpoint(cfg) {
+      return cfg.endpoint || '';
+    },
+
+    buildHeaders(cfg) {
+      var headers = { 'Content-Type': 'application/json; charset=UTF-8' };
+      if (cfg.authHeader) {
+        headers['Authorization'] = cfg.authHeader;
+      }
+      return headers;
+    },
+
+    buildBody(systemPrompt, userBlocks, cfg) {
+      var content = userBlocks.map(function (block) {
+        if (block.type === 'text') return { type: 'text', text: block.text };
+        if (block.type === 'image' && block.source) {
+          return {
+            type: 'image_url',
+            image_url: {
+              url: 'data:' + block.source.media_type + ';base64,' + block.source.data,
+            },
+          };
+        }
+        return null;
+      }).filter(Boolean);
+
+      var body = {
+        max_tokens: 4000,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: content },
+        ],
+      };
+      if (cfg.model) body.model = cfg.model;
+      return body;
+    },
+
+    parseResponse(data) {
+      return (data.choices && data.choices[0] && data.choices[0].message &&
+        data.choices[0].message.content) || '';
+    },
+
+    selectModel(cfg) {
+      return cfg.model || 'custom';
+    },
+  };
+}());
+
+
+// ================================================================
+// 3. API ABSTRACTION (← api-abstraction.js)
+// ================================================================
+/* api-abstraction.js — Unified AI API interface
+   Artefact Analyser v1.0 — AI-agnostic refactor
+   Dispatches callAI() to whichever provider is currently configured.
+   UTF-8. See REFACTORING_NOTES.md for architecture notes.
+*/
+
+/**
+ * Call the configured AI provider with a system prompt and user content blocks.
+ *
+ * userBlocks uses the Anthropic-compatible block format as the internal canonical:
+ *   { type: 'text', text: '...' }
+ *   { type: 'image', source: { type: 'base64', media_type: 'image/png', data: '...' } }
+ *   { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: '...' } }
+ *
+ * Each provider plugin is responsible for converting this format to its own wire format.
+ *
+ * @param {string} systemPrompt
+ * @param {Array}  userBlocks
+ * @returns {Promise<string>} extracted text from model response
+ * @throws {Error} on provider misconfiguration or API failure
+ */
+async function callAI(systemPrompt, userBlocks) {
+  var cfg = AXIOM_CONFIG.loadConfig();
+  var providerId = cfg.provider || 'anthropic';
+  var provider = AXIOM_CONFIG.providers[providerId];
+
+  if (!provider) {
+    throw new Error('Unknown provider: ' + providerId + ' — click ⚿ to configure.');
+  }
+
+  var providerCfg = (cfg.providerConfig || {})[providerId] || {};
+  var validation = provider.validate(providerCfg);
+  if (!validation.valid) {
+    throw new Error((validation.error || 'Provider not configured') + ' — click ⚿ to configure.');
+  }
+
+  var url = (typeof provider.getEndpoint === 'function')
+    ? provider.getEndpoint(providerCfg)
+    : provider.apiUrl;
+
+  var resp = await fetch(url, {
+    method: 'POST',
+    headers: provider.buildHeaders(providerCfg),
+    body: JSON.stringify(provider.buildBody(systemPrompt, userBlocks, providerCfg)),
+  });
+
+  if (!resp.ok) {
+    var err = await resp.json().catch(function () { return {}; });
+    throw new Error((err.error && err.error.message) || 'API error ' + resp.status);
+  }
+
+  var data = await resp.json();
+  return provider.parseResponse(data);
+}
+
+
+// ================================================================
+// 4. UI CONTROLLER (← ui-controller.js)
+//    manualBtn listener removed — manual.js excluded from POC
+// ================================================================
+/* ui-controller.js — DOM manipulation and event handling
+   Artefact Analyser v1.0 — AI-agnostic refactor
+   UTF-8. See REFACTORING_NOTES.md for architecture notes.
+*/
+
+(function () {
+  'use strict';
+
+  // ── Constants ─────────────────────────────────────────────────────────────────
+  var PROXY_FETCH_TIMEOUT_MS = 12000; // ms — CORS proxy fetch timeout
+
+  // ── DOM refs ────────────────────────────────────────────────────────────────
+  var $ = function (id) { return document.getElementById(id); };
+
+  var modalOverlay    = $('modalOverlay');
+  var providerSelect  = $('providerSelect');
+  var providerFields  = $('providerFields');
+  var providerNote    = $('providerNote');
+  var saveKeyBtn      = $('saveKeyBtn');
+  var skipKeyBtn      = $('skipKeyBtn');
+  var providerStatus  = $('providerStatus');
+  var sourceType      = $('sourceType');
+  var idDisplay       = $('idDisplay');
+  var hashMethod      = $('hashMethod');
+  var charCount       = $('charCount');
+  var buildBtn        = $('buildBtn');
+  var copyBtn         = $('copyBtn');
+  var clearBtn        = $('clearBtn');
+  var statusMsg       = $('statusMsg');
+  var pasteInput      = $('pasteInput');
+  var contentArea     = $('contentArea');
+  var promptOut       = $('promptOut');
+  var promptLen       = $('promptLen');
+  var urlInput        = $('urlInput');
+  var fetchBtn        = $('fetchBtn');
+  var urlPreview      = $('urlPreview');
+  var urlExtracting   = $('urlExtracting');
+  var urlMsg          = $('urlMsg');
+  var fileInput       = $('fileInput');
+  var dropZone        = $('dropZone');
+  var fileBadge       = $('fileBadge');
+  var fileExtracting  = $('fileExtracting');
+  var fileMsg         = $('fileMsg');
+  var siRows          = $('siRows');
+
+  // ── State ───────────────────────────────────────────────────────────────────
+  var currentID   = '';
+  var builtPrompt = '';
+  var activeTab   = 'paste';
+
+  // ── Utilities ───────────────────────────────────────────────────────────────
+  function escHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  }
+
+  function setStatus(msg, type) {
+    statusMsg.textContent = msg;
+    statusMsg.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  // ── Provider modal ──────────────────────────────────────────────────────────
+
+  /**
+   * Render provider-specific input fields into #providerFields.
+   * Called whenever the provider selector changes.
+   */
+  function renderProviderFields(providerId) {
+    var provider = AXIOM_CONFIG.providers[providerId];
+    if (!provider) { providerFields.innerHTML = ''; providerNote.innerHTML = ''; return; }
+
+    var cfg = AXIOM_CONFIG.loadConfig();
+    var saved = (cfg.providerConfig || {})[providerId] || {};
+
+    var html = '';
+    provider.fields.forEach(function (field) {
+      if (field.type === 'select') {
+        // Model selector
+        var options = (provider.models || []).map(function (m) {
+          var sel = (saved[field.id] === m.value) ? ' selected' : '';
+          return '<option value="' + escHtml(m.value) + '"' + sel + '>' + escHtml(m.label) + '</option>';
+        }).join('');
+        html += '<div class="modal-field">'
+          + '<label class="modal-label" for="pf_' + field.id + '">' + escHtml(field.label) + '</label>'
+          + '<select id="pf_' + field.id + '" data-field="' + field.id + '">' + options + '</select>'
+          + '</div>';
+      } else {
+        var val = escHtml(saved[field.id] || '');
+        var placeholder = escHtml(field.placeholder || '');
+        html += '<div class="modal-field">'
+          + '<label class="modal-label" for="pf_' + field.id + '">' + escHtml(field.label) + '</label>'
+          + '<input type="' + field.type + '" id="pf_' + field.id + '" data-field="' + field.id + '"'
+          + ' value="' + val + '" placeholder="' + placeholder + '" autocomplete="off" />';
+        if (field.note) {
+          html += '<div class="modal-note">' + field.note + '</div>';
+        }
+        html += '</div>';
+      }
+    });
+
+    providerFields.innerHTML = html;
+
+    // Provider-level note (e.g. link to console)
+    var noteMap = {
+      anthropic: 'Get your API key at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>. Your key is never sent anywhere except Anthropic\'s API.',
+      openai: 'Get your API key at <a href="https://platform.openai.com" target="_blank" rel="noopener">platform.openai.com</a>. Your key is never sent anywhere except OpenAI\'s API.',
+      azure: 'Provide your Azure OpenAI endpoint URL, API key, and deployment name from Azure AI Studio.',
+      custom: 'Endpoint must implement the OpenAI-compatible <code>/chat/completions</code> API.',
+    };
+    providerNote.innerHTML = noteMap[providerId] || '';
+  }
+
+  /** Collect current field values from the modal form. */
+  function collectModalValues() {
+    var values = {};
+    providerFields.querySelectorAll('[data-field]').forEach(function (el) {
+      values[el.dataset.field] = el.value.trim();
+    });
+    return values;
+  }
+
+  /** Open the provider config modal, pre-populated with saved values. */
+  function openModal() {
+    var cfg = AXIOM_CONFIG.loadConfig();
+    providerSelect.value = cfg.provider || 'anthropic';
+    renderProviderFields(cfg.provider || 'anthropic');
+    modalOverlay.classList.remove('hidden');
+  }
+
+  /** Update the provider status button in the header. */
+  function updateProviderStatusBtn() {
+    if (AXIOM_CONFIG.isConfigured()) {
+      var cfg = AXIOM_CONFIG.loadConfig();
+      var provider = AXIOM_CONFIG.providers[cfg.provider];
+      providerStatus.textContent = '⚿ ' + (provider ? provider.label : 'Provider') + ' configured';
+      providerStatus.className = 'provider-status set';
+    } else {
+      providerStatus.textContent = '⚿ No provider';
+      providerStatus.className = 'provider-status unset';
+    }
+  }
+
+  // Provider selector change → re-render fields
+  providerSelect.addEventListener('change', function () {
+    renderProviderFields(providerSelect.value);
+  });
+
+  // Save button
+  saveKeyBtn.addEventListener('click', function () {
+    var selectedProvider = providerSelect.value;
+    var provider = AXIOM_CONFIG.providers[selectedProvider];
+    if (!provider) { setStatus('Unknown provider selected.', 'error'); return; }
+
+    var fieldValues = collectModalValues();
+    var result = provider.validate(fieldValues);
+    if (!result.valid) {
+      setStatus(result.error, 'error');
+      return;
+    }
+
+    var cfg = AXIOM_CONFIG.loadConfig();
+    cfg.provider = selectedProvider;
+    if (!cfg.providerConfig) cfg.providerConfig = {};
+    cfg.providerConfig[selectedProvider] = fieldValues;
+    AXIOM_CONFIG.saveConfig(cfg);
+
+    modalOverlay.classList.add('hidden');
+    updateProviderStatusBtn();
+    setStatus('Provider configured and saved.', 'success');
+  });
+
+  // Skip button
+  skipKeyBtn.addEventListener('click', function () {
+    modalOverlay.classList.add('hidden');
+    setStatus('Paste mode only — no AI provider configured.', 'warn');
+  });
+
+  // Header status button → reopen modal
+  providerStatus.addEventListener('click', openModal);
+
+  // ── Tabs ─────────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.tab').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      activeTab = btn.dataset.tab;
+      document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+      document.querySelectorAll('.tab-pane').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      $('pane-' + activeTab).classList.add('active');
+    });
+  });
+
+  // ── Source info ──────────────────────────────────────────────────────────────
+  function setSI(meta) {
+    meta = meta || {};
+    siRows.innerHTML = [
+      ['title',  meta.title  || '—'],
+      ['origin', meta.origin || '—'],
+      ['date',   meta.date   || '—'],
+      ['source', meta.source || '—'],
+    ].map(function (pair) {
+      return '<div class="si-row"><span class="si-key">' + pair[0] + '</span>'
+        + '<span class="si-val">' + escHtml(pair[1]) + '</span></div>';
+    }).join('');
+  }
+
+  // ── ID ────────────────────────────────────────────────────────────────────────
+  async function updateID(text) {
+    if (!text.trim()) {
+      idDisplay.textContent = '— no content yet —';
+      idDisplay.classList.add('empty');
+      buildBtn.disabled = true;
+      hashMethod.textContent = '';
+      charCount.textContent = '0 chars';
+      currentID = '';
+      return;
+    }
+    var type = sourceType.value;
+    var date = todayISO();
+    var hash = await sha256(type + date + text);
+    var h8   = hash.slice(0, 8).toUpperCase();
+    currentID = type + '_' + date + '_' + h8;
+    idDisplay.textContent = currentID;
+    idDisplay.classList.remove('empty');
+    hashMethod.textContent = 'SHA-256( type+' + date + '+content ) → ' + h8;
+    charCount.textContent  = text.length.toLocaleString() + ' chars';
+    buildBtn.disabled = false;
+    builtPrompt = '';
+    copyBtn.disabled = true;
+    promptOut.value = '';
+    promptLen.textContent = '—';
+  }
+
+  // ── Paste tab ─────────────────────────────────────────────────────────────────
+  pasteInput.addEventListener('input', async function () {
+    var t = pasteInput.value;
+    contentArea.value = t;
+    await updateID(t);
+    setSI({ title: '(pasted)', source: 'paste' });
+  });
+
+  // ── Content area edit re-hashes ───────────────────────────────────────────────
+  contentArea.addEventListener('input', async function () {
+    if (activeTab !== 'paste') await updateID(contentArea.value);
+  });
+
+  sourceType.addEventListener('change', async function () {
+    if (contentArea.value.trim()) await updateID(contentArea.value);
+  });
+
+  // ── URL fetch ─────────────────────────────────────────────────────────────────
+  fetchBtn.addEventListener('click', async function () {
+    var url = urlInput.value.trim();
+    if (!url) { setStatus('Enter a URL first.', 'error'); return; }
+    if (!AXIOM_CONFIG.isConfigured()) {
+      setStatus('AI provider required for URL fetch — click ⚿ to configure.', 'error');
+      return;
+    }
+
+    fetchBtn.disabled = true;
+    urlPreview.style.display = 'none';
+    urlExtracting.classList.add('visible');
+    setStatus('', '');
+
+    try {
+      urlMsg.textContent = 'Fetching page via proxy…';
+      var rawText = '';
+      try {
+        var proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+        var res = await fetch(proxyUrl, { signal: AbortSignal.timeout(PROXY_FETCH_TIMEOUT_MS) });
+        var html = await res.text();
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        ['script', 'style', 'nav', 'header', 'footer', 'aside', 'noscript'].forEach(function (tag) {
+          tmp.querySelectorAll(tag).forEach(function (el) { el.remove(); });
+        });
+        rawText = (tmp.innerText || tmp.textContent || '').replace(/\s{3,}/g, '\n\n').trim();
+      } catch (fetchErr) {
+        rawText = '';
+      }
+
+      urlMsg.textContent = 'Extracting relevant content with AI…';
+
+      var extracted, meta = {};
+      if (rawText.length > 200) {
+        extracted = await callAI(
+          'You are an artefact extraction assistant. Given raw webpage text, extract analytically relevant content.\n'
+          + 'Respond ONLY in this exact format with no markdown fences:\n'
+          + 'JSON:\n{"title":"...","origin":"...","date":"...","language":"..."}\nCONTENT:\n'
+          + '[main article/document text, arguments, claims — omit nav, ads, footers, cookie notices]',
+          [{ type: 'text', text: 'URL: ' + url + '\n\nPAGE TEXT (truncated to 8000 chars):\n' + rawText.slice(0, 8000) }]
+        );
+      } else {
+        extracted = await callAI(
+          'You are an artefact extraction assistant. The user wants to analyse content at the given URL.\n'
+          + 'Use your knowledge or web search capabilities to retrieve and summarise the content at that URL.\n'
+          + 'Respond ONLY in this exact format with no markdown fences:\n'
+          + 'JSON:\n{"title":"...","origin":"...","date":"...","language":"..."}\nCONTENT:\n'
+          + '[main article/document text, arguments, key claims — as complete as possible]\n'
+          + 'NOTE:\n[brief note on how content was retrieved and any limitations]',
+          [{ type: 'text', text: 'Please retrieve and extract the analytically relevant content from: ' + url }]
+        );
+      }
+
+      var jMatch = extracted.match(/JSON:\s*\n([\s\S]*?)\nCONTENT:/);
+      var cMatch = extracted.match(/CONTENT:\s*\n([\s\S]*?)(?:\nNOTE:|$)/);
+      var nMatch = extracted.match(/NOTE:\s*\n([\s\S]*)/);
+      try { if (jMatch) meta = JSON.parse(jMatch[1].trim()); } catch (e) {}
+      var content = cMatch ? cMatch[1].trim() : extracted;
+      var note    = nMatch ? '\n\n[Extraction note: ' + nMatch[1].trim() + ']' : '';
+
+      urlPreview.value  = content + note;
+      contentArea.value = content + note;
+      setSI({ title: meta.title || '', origin: meta.origin || '', date: meta.date || '', source: url });
+      await updateID(content + note);
+      setStatus('Extracted.', 'success');
+
+    } catch (err) {
+      setStatus(err.message, 'error');
+    } finally {
+      urlExtracting.classList.remove('visible');
+      urlPreview.style.display = '';
+      fetchBtn.disabled = false;
+    }
+  });
+
+  // ── File upload ───────────────────────────────────────────────────────────────
+  dropZone.addEventListener('click', function () { fileInput.click(); });
+  dropZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+  });
+  dropZone.addEventListener('dragleave', function () {
+    dropZone.classList.remove('drag-over');
+  });
+  dropZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', function () {
+    if (fileInput.files[0]) processFile(fileInput.files[0]);
+  });
+
+  async function processFile(file) {
+    var ext = file.name.split('.').pop().toLowerCase();
+    var allowed = ['pdf', 'docx', 'txt', 'jpg', 'jpeg', 'png'];
+    if (!allowed.includes(ext)) { setStatus('Unsupported file type.', 'error'); return; }
+    if (ext !== 'txt' && !AXIOM_CONFIG.isConfigured()) {
+      setStatus('AI provider required for file extraction — click ⚿ to configure.', 'error');
+      return;
+    }
+
+    fileBadge.textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+    dropZone.style.display = 'none';
+    fileExtracting.classList.add('visible');
+    setStatus('', '');
+
+    try {
+      var content = '';
+      var meta = { title: file.name, origin: '', date: '', source: file.name };
+
+      if (ext === 'txt') {
+        fileMsg.textContent = 'Reading text file…';
+        content = await file.text();
+
+      } else if (['jpg', 'jpeg', 'png'].includes(ext)) {
+        fileMsg.textContent = 'Extracting image content with AI (OCR)…';
+        var imgB64 = await toB64(file);
+        var imgMt  = ext === 'png' ? 'image/png' : 'image/jpeg';
+        content = await callAI(
+          'Extract all text visible in this image via OCR. Then briefly describe any non-text visual elements that would be analytically relevant (layout, charts, design, symbols).\nFormat:\nTEXT CONTENT:\n[all visible text, preserving structure]\nVISUAL DESCRIPTION:\n[description of non-text elements]',
+          [
+            { type: 'image', source: { type: 'base64', media_type: imgMt, data: imgB64 } },
+            { type: 'text', text: 'Extract and describe this image for research analysis.' },
+          ]
+        );
+
+      } else if (ext === 'pdf') {
+        fileMsg.textContent = 'Extracting PDF content with AI…';
+        var pdfB64 = await toB64(file);
+        var rawPdf = await callAI(
+          'Extract the analytically relevant content from this PDF document.\n'
+          + 'Respond ONLY in this exact format with no markdown fences:\n'
+          + 'JSON:\n{"title":"...","origin":"...","date":"...","language":"..."}\nCONTENT:\n'
+          + '[main text, arguments, key claims — preserve structure where analytically significant]',
+          [
+            { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfB64 } },
+            { type: 'text', text: 'Extract content for research analysis.' },
+          ]
+        );
+        var jMp = rawPdf.match(/JSON:\s*\n([\s\S]*?)\nCONTENT:/);
+        var cMp = rawPdf.match(/CONTENT:\s*\n([\s\S]*)/);
+        try { if (jMp) { var mp = JSON.parse(jMp[1].trim()); meta = Object.assign(meta, mp); } } catch (e) {}
+        content = cMp ? cMp[1].trim() : rawPdf;
+
+      } else if (ext === 'docx') {
+        fileMsg.textContent = 'Extracting DOCX content with AI…';
+        var docxB64 = await toB64(file);
+        var docxMt  = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        var rawDocx = await callAI(
+          'Extract the analytically relevant content from this Word document.\n'
+          + 'Respond ONLY in this exact format with no markdown fences:\n'
+          + 'JSON:\n{"title":"...","origin":"...","date":"...","language":"..."}\nCONTENT:\n'
+          + '[main text, arguments, key claims]',
+          [
+            { type: 'document', source: { type: 'base64', media_type: docxMt, data: docxB64 } },
+            { type: 'text', text: 'Extract content for research analysis.' },
+          ]
+        );
+        var jMd = rawDocx.match(/JSON:\s*\n([\s\S]*?)\nCONTENT:/);
+        var cMd = rawDocx.match(/CONTENT:\s*\n([\s\S]*)/);
+        try { if (jMd) { var md = JSON.parse(jMd[1].trim()); meta = Object.assign(meta, md); } } catch (e) {}
+        content = cMd ? cMd[1].trim() : rawDocx;
+      }
+
+      contentArea.value = content;
+      setSI(meta);
+      await updateID(content);
+      setStatus('Extracted.', 'success');
+
+    } catch (err) {
+      setStatus(err.message, 'error');
+    } finally {
+      fileExtracting.classList.remove('visible');
+      dropZone.style.display = 'flex';
+    }
+  }
+
+  // ── Build prompt ──────────────────────────────────────────────────────────────
+  buildBtn.addEventListener('click', function () {
+    var text = contentArea.value.trim();
+    if (!text || !currentID) return;
+    var val = sourceType.value;
+    builtPrompt = PROMPT_TEMPLATE
+      .replace(/\{\{ARTEFACT_ID\}\}/g,       currentID)
+      .replace(/\{\{GENERATED_AT\}\}/g,      nowUTC())
+      .replace(/\{\{ZOTERO_ITEM_TYPE\}\}/g,  stZ(val))
+      .replace(/\{\{TYPE_TAG\}\}/g,          stT(val))
+      .replace(/\{\{ARTEFACT_CONTENT\}\}/g,  text);
+    promptOut.value = builtPrompt;
+    promptLen.textContent = builtPrompt.length.toLocaleString() + ' chars';
+    copyBtn.disabled = false;
+    setStatus('Prompt assembled.', 'success');
+  });
+
+  // ── Copy ──────────────────────────────────────────────────────────────────────
+  copyBtn.addEventListener('click', async function () {
+    if (!builtPrompt) return;
+    try {
+      await navigator.clipboard.writeText(builtPrompt);
+      setStatus('Copied to clipboard.', 'success');
+    } catch (e) {
+      setStatus('Copy failed — select all in right panel and copy manually.', 'error');
+    }
+  });
+
+  // ── Clear ─────────────────────────────────────────────────────────────────────
+  clearBtn.addEventListener('click', function () {
+    pasteInput.value = '';
+    urlInput.value = '';
+    urlPreview.value = '';
+    contentArea.value = '';
+    promptOut.value = '';
+    fileBadge.textContent = '';
+    idDisplay.textContent = '— no content yet —';
+    idDisplay.classList.add('empty');
+    hashMethod.textContent = '';
+    charCount.textContent = '0 chars';
+    promptLen.textContent = '—';
+    currentID = ''; builtPrompt = '';
+    buildBtn.disabled = true; copyBtn.disabled = true;
+    setSI({});
+    setStatus('', '');
+  });
+
+  // ── toB64 helper ──────────────────────────────────────────────────────────────
+  function toB64(file) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () { resolve(r.result.split(',')[1]); };
+      r.onerror = function () { reject(new Error('File read failed')); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────────
+  // Expose openModal so main.js can call it on page load
+  window.AXIOM_UI = {
+    openModal: openModal,
+    updateProviderStatusBtn: updateProviderStatusBtn,
+    setSI: setSI,
+    setStatus: setStatus,
+  };
+}());
+
+
+// ================================================================
+// 5. CORE DATA & UTILITIES (← main.js)
+//    PROMPT_TEMPLATE, STM, sha256, todayISO, nowUTC
+//    downloadManual excluded — manual.js excluded from POC
+// ================================================================
+
+// ── Versions ───────────────────────────────────────────────────────────────────────────────
+const APP_VERSION    = '1.0';
+const SCHEMA_VERSION = '1.0';
+const PROMPT_VERSION = '1.0';
+
+// ── Prompt template (identical to v1.0 — do not modify) ───────────────────────
+const PROMPT_TEMPLATE = `TASK
+Convert the provided artefact (image, scan, text, audio transcript, dataset,
+or multimedia) into a structured analytical dataset entry.
+
+This schema supports three epistemological modes — fact-critical, interpretive,
+and philosophical — declared in §0 and governing field behaviour throughout.
+It is designed for research in misinformation studies, cultural analysis,
+discourse analysis, historical research, semiotics, and philosophy. The mode
+declaration determines which evaluative fields activate; the analytical
+framework determines the interpretive stance. Both must be declared before
+analysis begins.
+
+The schema is input-agnostic. Apply all sections regardless of artefact type;
+leave fields N/A only where genuinely inapplicable, with a brief reason.
+
+All tags generated during analysis are collected in § 7 (Zotero Mapping).
+Each section instructs which tags to generate. Use the prefix:value format
+throughout. Do not invent new prefixes; extend values within existing prefixes
+as needed.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ARTEFACT_ID: {{ARTEFACT_ID}}
+  generated:       {{GENERATED_AT}} UTC
+  method:          SHA-256 of (source_type + date + artefact content), first 8 hex chars
+  zotero_item_type: {{ZOTERO_ITEM_TYPE}}
+  type_tag:        {{TYPE_TAG}}
+  schema_version:  1.0
+  prompt_version:  1.0
+
+The model must use ARTEFACT_ID verbatim as source_id and TYPE_TAG verbatim
+in the Zotero tag list. Do not generate, modify, or interpret these values.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 0. METHODOLOGICAL DECLARATION
+
+Before extraction begins, declare:
+
+- analytical_framework:
+    State the interpretive stance being applied.
+    Do NOT default to "neutral" — all frameworks are positioned.
+    → TAG: framework:[value]
+      e.g. framework:discourse-analysis | framework:source-criticism |
+           framework:rhetorical-analysis | framework:fact-checking |
+           framework:content-analysis | framework:critical-discourse-analysis |
+           framework:semiotics | framework:narrative-analysis |
+           framework:archival-criticism
+
+- analytical_mode:
+    Declare the primary epistemological register of this analysis.
+    This selection activates and suppresses specific fields downstream —
+    follow the instructions in each affected section.
+
+    [fact-critical | interpretive | philosophical | mixed]
+
+    fact-critical  — primary question: is this accurate?
+                     Activates: misinformation_risk and corroboration_status
+                     full protocol.
+                     Applies to: news articles, institutional reports,
+                     political speech, social media posts, data claims.
+
+    interpretive   — primary question: what does this mean and do?
+                     Suppresses: misinformation_risk → replace with
+                     epistemic_effect field in §5.
+                     Reframes: corroboration_status → interpretive_grounding
+                     in §5.
+                     Applies to: cultural artefacts, historical documents,
+                     media texts, propaganda, visual material, oral testimony.
+
+    philosophical  — primary question: is this coherent and what does
+                     it presuppose?
+                     Suppresses: misinformation_risk and source_reliability
+                     as informant-trust assessment.
+                     Activates: conceptual claim types in §3,
+                     intertextuality in §2, assumption stress-test as
+                     primary analytical operation.
+                     Applies to: theoretical texts, philosophical arguments,
+                     normative documents, conceptual frameworks.
+
+    mixed          — two or more modes apply to distinct parts of the
+                     artefact. Specify which sections operate in which
+                     mode and why.
+
+    → TAG: mode:fact-critical | mode:interpretive | mode:philosophical |
+           mode:mixed
+
+- analyst_type: [human | AI | human+AI]
+    → TAG: analyst:[value]
+
+- analyst_id: [name, model version, or institutional affiliation]
+
+- analysis_date: [ISO format]
+
+- known_analyst_limitations:
+    Declare limitations of the analyst as an epistemic agent, independent
+    of this specific artefact. These are standing constraints that would
+    apply to any analysis this analyst performs — competencies, positionality,
+    domain knowledge gaps, access restrictions, linguistic range.
+    Do NOT describe consequences for this specific analysis here — those
+    belong in §5 limitations_of_this_analysis.
+    For each limitation:
+      - limitation_id: [L1, L2, …]
+      - type: [language | domain-knowledge | access | temporal-distance |
+               cultural-context | positionality | other — specify]
+      - description: [one sentence — the standing constraint]
+    → TAG (one per limitation): analyst-limit:[type value]
+      e.g. analyst-limit:language | analyst-limit:domain-knowledge |
+           analyst-limit:access | analyst-limit:temporal-distance |
+           analyst-limit:cultural-context | analyst-limit:positionality
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 1. METADATA
+
+source_id: {{ARTEFACT_ID}}  ← use verbatim, do not regenerate
+
+- source_type:
+    → TAG: type:[value]  ← USE THE PRECOMPUTED TAG ABOVE — do not modify
+      Zotero 8.2 item types mapped:
+      type:journal-article | type:magazine-article | type:newspaper-article |
+      type:blog-post | type:book | type:book-section | type:encyclopedia-article |
+      type:dictionary-entry | type:report | type:manuscript | type:thesis |
+      type:standard | type:patent | type:audio-recording | type:video-recording |
+      type:film | type:tv-broadcast | type:radio-broadcast | type:podcast |
+      type:artwork | type:map | type:dataset | type:software | type:webpage |
+      type:forum-post | type:interview | type:presentation | type:letter |
+      type:email | type:legal-case | type:bill | type:statute | type:hearing |
+      type:conference-paper | type:document
+
+- title (analyst-generated if artefact lacks one)
+- date_of_artefact [ISO; use ~ prefix if estimated]
+- date_certainty: [exact | estimated | unknown]
+- origin (institution, publication, platform, or geographic provenance)
+- language [ISO 639-1]
+    → TAG: lang:[ISO-639-1 code]
+
+- related_entities:
+    - persons (public role only)
+    - organizations
+    - events
+    - locations
+
+- circulation_context:
+    Describe original dissemination — where, through what channels, and
+    for whom this artefact was produced and first distributed.
+    This field covers production-side circulation only. Post-production
+    reception belongs in reception_context below.
+    → TAG: circulation:[value]
+      e.g. circulation:mass-media | circulation:institutional-internal |
+           circulation:social-network | circulation:academic |
+           circulation:legal-proceeding | circulation:restricted |
+           circulation:leaked | circulation:viral
+
+- reception_context:
+    How has this artefact been received, used, or instrumentalized
+    after its original production and circulation?
+    Do NOT repeat circulation_context here — this field covers
+    post-production history only.
+    If reception history is unknown or beyond analyst knowledge,
+    state explicitly and cross-reference the relevant L-id from §0.
+    Do not leave blank — absence of reception data is itself
+    analytically relevant.
+
+    Assess along three dimensions:
+
+    reception_history:
+      How was the artefact received at time of production, and how
+      has that reception changed over time?
+        immediate:   [describe initial reception, or "unknown"]
+        subsequent:  [describe significant shifts over time, or "none
+                     documented" | "unknown"]
+
+    instrumentalization:
+      Has the artefact been taken up, repurposed, or deployed by
+      actors or movements other than its original producers?
+      [yes — specify by whom and for what purpose | no | unknown]
+
+    canonical_status:
+      Has the artefact acquired canonical, marginal, suppressed, or
+      contested status within a relevant field or tradition?
+      [canonical | marginal | suppressed | contested | not-established]
+      basis: [one sentence — in which field and on what grounds]
+
+    → TAG: reception:documented    (if reception history is known)
+          reception:undocumented   (if no reception history available)
+          reception:contested      (if reception is itself disputed)
+          reception:not-assessable (if analyst lacks knowledge to assess
+                                    — cross-ref §0 L-id)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 2. ARTEFACT CHARACTERIZATION
+
+- genre:
+    → TAG: genre:[value]
+      e.g. genre:news-report | genre:propaganda | genre:administrative-record |
+           genre:scientific-abstract | genre:satire | genre:personal-testimony |
+           genre:data-visualization | genre:policy-document | genre:op-ed |
+           genre:press-release | genre:official-statement
+
+- modality_structure:
+    Is this artefact unimodal or multimodal?
+    [unimodal | multimodal]
+
+    If unimodal: state the single modality and proceed to the next field.
+
+    If multimodal: list each modality present and assign a modality_id
+    [M1, M2, …]. These IDs are used in §3 to attribute claims to their
+    modality source.
+
+    modality_types:
+      written-text | spoken-word | static-image | moving-image |
+      data-visualisation | musical-audio | ambient-audio | layout-design |
+      other [specify]
+
+    modal_relation:
+      How do the modalities relate to each other at the level of the
+      whole artefact? This is an observational assessment — do not
+      interpret, only characterise.
+      [reinforcing | contradicting | qualifying | displacing | ironic]
+      basis: [one sentence — which modalities, what the relation is,
+      and what it does to the artefact's overall meaning]
+
+    If the artefact is unimodal, state:
+    "Unimodal — modality_source field in §3 not required."
+
+    → TAG: modality:unimodal
+          modality:multimodal  (if more than one modality present)
+          modality:modal-relation:[value]  (if multimodal)
+
+- primary_illocutionary_function:
+    → TAG: function:[value]
+      function:assert | function:persuade | function:instruct |
+      function:classify | function:commemorate | function:conceal |
+      function:mobilize
+
+- implied_audience:
+    Who was this artefact produced for? Address three dimensions,
+    with mode-appropriate emphasis:
+
+    constructed_reader:
+      Who does the artefact assume, address, or construct as its
+      reader? (Not who actually received it — that belongs in
+      reception_context. This is the audience the artefact's form
+      and content presuppose.)
+
+    presupposed_competencies:
+      What knowledge, values, or interpretive frameworks does the
+      artefact assume its audience brings?
+      mode:philosophical — what conceptual or disciplinary competencies
+      does the argument demand?
+      mode:fact-critical — what prior beliefs or information does the
+      artefact assume the reader holds?
+      mode:interpretive  — what cultural codes or experiential
+      frameworks does the artefact activate?
+
+    exclusions:
+      Who is implicitly excluded, othered, or addressed only
+      instrumentally by this artefact? State with reasoning.
+
+- production_context:
+    What conditions shaped the creation of this artefact?
+    This field covers conditions of production only — not distribution
+    or dissemination (those belong in circulation_context).
+    Address three dimensions:
+
+    institutional_conditions:
+      What organization, institution, or social position produced this
+      artefact? What constraints, mandates, or interests shaped what
+      could be said and how?
+
+    material_constraints:
+      What formal, technological, or resource constraints shaped the
+      artefact's form? (e.g. genre conventions, platform affordances,
+      censorship, length limits, available evidence)
+
+    ideological_pressures:
+      What discursive formation, political context, or epistemic
+      environment constrained or enabled the artefact's claims and
+      framings at the moment of production?
+
+- notable_absences:
+    Observe and describe what is conspicuously not said, shown, or included.
+    This is an observational step only — do not evaluate or tag here.
+    For each absence identified, provide:
+      - absence_id: [NA1, NA2, …]
+      - description: what is missing and why it is conspicuous
+      - load_bearing: [yes | no] — does the artefact's meaning or argument
+        depend on this omission?
+    If load_bearing is yes, flag for extraction as claim:rhet-omission in § 3.
+    If none identified, state explicitly: "No significant absences detected."
+    → TAG: absence:detected  (if any identified, regardless of load_bearing)
+          absence:none-identified  (if none found)
+
+- intertextuality:
+    How does this artefact position itself in relation to other texts,
+    traditions, or discursive formations? This is an observational field —
+    record relations that are present in or strongly implied by the artefact.
+    Where a relation requires inference (e.g. silent presupposition, occlusion),
+    log the observation here and develop the inference in § 4 using the
+    IT-id as evidence_basis.
+
+    For each intertextual relation identified:
+      - relation_id: [IT1, IT2, …]
+      - referenced_text: [title, author, tradition, or corpus —
+          as specific as the artefact permits]
+      - relation_type:
+          cites              — explicit attribution to a source
+          paraphrases        — uncredited restatement of another text
+          responds-to        — direct engagement with a prior text
+          contests           — argues against an identified position
+          silently-presupposes — assumes a framework or claim without
+                                 acknowledgment → flag for §4 inference
+          occludes           — actively avoids or suppresses a reference
+                               that would be expected → flag for §4 inference
+          instantiates       — applies a theoretical framework from
+                               another text without necessarily citing it
+          parodies           — imitates for critical or comic effect
+      - significance: [one sentence — what this relation reveals about
+          the artefact's meaning, argument, or positioning]
+
+    If none identified, state: "No intertextual relations detected."
+    If analyst lacks domain knowledge to assess, state reason and
+    cross-reference the relevant L-id from §0.
+
+    → TAG: intertextuality:present       (if any relations identified)
+          intertextuality:none-detected
+          intertextuality:not-assessable  (if analyst lacks domain
+                                           knowledge — cross-ref §0 L-id)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 3. CLAIM EXTRACTION
+
+Each claim: atomic, non-overlapping, standardized English, attributed to
+artefact — not asserted as true by analyst.
+
+For each claim:
+
+- claim_id: [C1, C2, …]
+- claim_text
+- claim_type:
+    → TAG: claim:[value]
+
+    DESCRIPTIVE
+      claim:desc-factual | claim:desc-biographical | claim:desc-institutional |
+      claim:desc-statistical | claim:desc-causal
+
+    NORMATIVE
+      claim:norm-evaluative | claim:norm-prescriptive | claim:norm-classificatory
+
+    RHETORICAL
+      claim:rhet-framing  — selective emphasis shaping interpretation
+      claim:rhet-analogy  — claim via comparison
+      claim:rhet-appeal   — appeal to authority, emotion, or identity
+      claim:rhet-omission — meaningful absence that is argumentatively
+                            load-bearing (i.e. the artefact's meaning or
+                            argument depends on it).
+                            ONLY extract here if flagged as load_bearing:yes
+                            in § 2. Cross-reference the NA-id from § 2.
+                            Do not re-describe — state the analytical
+                            significance the §2 observation did not.
+
+    CATEGORICAL / ADMINISTRATIVE
+      claim:cat-legal | claim:cat-bureaucratic | claim:cat-taxonomic |
+      claim:cat-loaded-term  ← flag in Extra if used
+
+    CONCEPTUAL
+      claim:concept-definition    — stipulates or contests the meaning
+                                    of a term or concept
+      claim:concept-distinction   — draws a categorical boundary between
+                                    two or more concepts
+      claim:concept-proposition   — asserts a theoretical relationship
+                                    between concepts, not reducible to
+                                    empirical fact or value judgment
+      claim:concept-framework     — proposes or instantiates an overarching
+                                    conceptual scheme or analytical lens
+
+      NOTE: Conceptual claims are assessed for coherence and internal
+      consistency, not empirical verifiability. Set verifiability to
+      structurally-assessable for all claims in this category.
+      Do NOT mark conceptual claims as not-verifiable — that implies
+      untestability, which misrepresents their epistemic status.
+      Activated in all modes; primary operative category in
+      mode:philosophical.
+
+    AMBIGUOUS
+      claim:ambiguous
+
+- surface_form:
+    → TAG: surface:[value]
+      surface:explicit-statement | surface:implication | surface:visual |
+      surface:numerical | surface:omission | surface:juxtaposition |
+      surface:cross-modal-reinforcement — claim arises from two or more
+                                          modalities that amplify each other
+      surface:cross-modal-contradiction — claim arises from two or more
+                                          modalities that undercut each other
+      surface:cross-modal-displacement  — one modality overrides or
+                                          subordinates another
+      surface:cross-modal-irony         — modalities produce meaning by
+                                          mutual undercutting
+
+- modality_source:
+    For unimodal artefacts: omit this field (flagged in §2).
+    For multimodal artefacts: required for every claim.
+    [M-id from §2 | cross-modal]
+    cross-modal: this claim arises from the relation between modalities,
+    not from any single one.
+    Specify: which M-ids are in relation and what the relation produces.
+    Note: cross-modal claims must use a cross-modal surface_form value.
+
+- confidence_in_extraction:
+    → TAG: extraction-confidence:[high | medium | low]
+    + one-sentence basis (required)
+
+- verifiability:
+    → TAG: verifiability:[value]
+      verifiability:empirically-checkable | verifiability:historically-checkable |
+      verifiability:structurally-assessable | verifiability:not-verifiable |
+      verifiability:contested-domain
+
+NOTE: Collect the DISTINCT SET of claim, surface, extraction-confidence,
+verifiability, and modality_source tags across all claims. Do not repeat
+per claim. Carry forward to § 7. For multimodal artefacts, note which
+modalities generated claims and whether any cross-modal claims were found.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 4. DERIVED CLAIMS (INFERENCES)
+
+Label [A1, A2, …]. Must be logically entailed or interpretively warranted
+by extracted claims, distinguished from artefact content, falsifiable
+or assessable in principle.
+
+- inference_id
+
+- inference_text
+
+- inference_type:
+    → TAG: inference:[value]
+      inference:causal       — X produced or enabled Y
+      inference:intentional  — agent likely intended X (requires evidence basis)
+      inference:structural   — systemic or institutional pattern implied
+      inference:contextual   — meaning shifts given surrounding context
+      inference:evaluative   — epistemic status assessment
+      inference:network      — artefact connects to broader claim ecosystem
+      inference:historical   — implies or contradicts established record
+
+      inference:abductive    — inference to the best explanation.
+                               The analyst observes a pattern, tension,
+                               or structural feature X in the artefact and
+                               proposes H as the hypothesis that best
+                               accounts for it. This is NOT deduction from
+                               premises — it is construction of the most
+                               plausible explanatory account of underdetermined
+                               evidence.
+                               Primary operative type in mode:interpretive
+                               and mode:philosophical.
+
+                               For each abductive inference, provide ALL
+                               four required subfields:
+                                 observation: [what feature of the artefact
+                                   is being explained — C-id if applicable]
+                                 hypothesis: [the proposed explanation H]
+                                 competing_hypotheses: [at least one
+                                   alternative account H′ and one sentence
+                                   on why H is preferable to H′ — required,
+                                   not optional]
+                                 explanatory_warrant: [what makes H
+                                   preferable — coherence, scope, parsimony,
+                                   fit with evidence, theoretical grounding]
+
+- evidence_basis: [C-ids supporting this inference]
+
+- confidence_in_inference:
+    → TAG: inference-confidence:[high | medium | low | speculative]
+    + one-sentence basis (required)
+
+- alternative_interpretations:
+    Address the artefact AS A WHOLE. What would a reader operating from
+    a different framework, position, or context make of it? This is a
+    hermeneutic question about interpretive plurality — not an assessment
+    of individual premises (that belongs in §4A-2).
+    For each alternative reading:
+      - reading_id: [R1, R2, …]
+      - reading_text: [one sentence — the alternative interpretation]
+      - framework_basis: [what position or framework motivates this reading]
+      - cross_ref: [if this reading is motivated by a failed premise
+        identified in §4A-2, note the ARG-id here — do not repeat
+        the premise assessment]
+    → TAG: alt-reading:identified  (if any viable alternative found)
+          alt-reading:none-viable  (if no viable alternative found)
+
+NOTE: Collect distinct inference and inference-confidence tags for § 7.
+
+── 4A. ARGUMENT VALIDITY STRESS-TEST ─────────────────────────
+
+Apply only where the artefact makes or implies an argument
+(i.e. moves from premises to a conclusion, explicitly or implicitly).
+If the artefact is purely descriptive with no argumentative structure,
+state: "No argumentative structure detected — 4A not applicable."
+
+### 4A-1. ARGUMENT RECONSTRUCTION
+
+Identify the core argument(s) in standard form:
+  P1: [first premise]
+  P2: [second premise, if present]
+  …
+  C:  [conclusion drawn]
+
+Extract from the artefact's own content; do not supply missing steps.
+If premises are implicit, flag them as [IMPLICIT].
+Multiple arguments should be numbered ARG-1, ARG-2, etc.
+
+### 4A-2. PREMISE–CONCLUSION VALIDITY
+
+For each argument assess:
+
+- logical_form:
+    Does the conclusion follow from the premises IF the premises
+    were true? Assess the inferential structure independently of
+    factual accuracy.
+    [valid | invalid | indeterminate]
+    basis: [one sentence — name the logical form if identifiable,
+    e.g. modus ponens, modus tollens, disjunctive syllogism]
+
+- soundness_assessment:
+    Are the premises themselves well-supported by evidence?
+    Assess at the level of individual premises only — do not propose
+    alternative overall readings of the artefact here (that belongs
+    in §4 alternative_interpretations).
+    [sound | unsound | partially-sound | not-assessable]
+    basis: [cross-reference relevant C-ids from § 3]
+    cross_ref: [if a failed premise motivates a whole-artefact alternative
+    reading, flag it here for development in §4 alternative_interpretations
+    — do not develop the reading itself in this field]
+
+    → TAG: argument:valid | argument:invalid | argument:indeterminate
+    → TAG: argument:sound | argument:unsound | argument:partially-sound |
+           argument:not-assessable
+
+### 4A-3. FORMAL FALLACY DETECTION
+
+Check the inferential structure for formal invalidity.
+Assign fallacy_id [F1, F2, …] for each identified.
+
+- fallacy_id
+- fallacy_type:
+    affirming-the-consequent | denying-the-antecedent |
+    undistributed-middle | illicit-major | illicit-minor |
+    circular-reasoning | false-conversion | equivocation-structural |
+    other [specify]
+- location: [which argument — ARG-id — and which inferential step]
+- explanation: [one sentence — why this structure is invalid]
+
+    → TAG: fallacy:formal:[fallacy-type]  (one per fallacy found)
+    → TAG: fallacy:formal:none-detected   (if none found)
+
+### 4A-4. INFORMAL FALLACY DETECTION
+
+Identify discrete, locatable epistemically manipulative moves —
+specific moments in the artefact that can be pointed to. Assign [I1, I2, …].
+
+Do NOT describe systemic patterns or whole-artefact tendencies here —
+those belong in §5 bias_indicators. If a fallacy is part of a broader
+systemic bias pattern, note it with: "part of systemic pattern — see §5"
+but do not develop the pattern description here.
+
+- fallacy_id
+- fallacy_type:
+    ad-hominem | straw-man | false-dilemma | slippery-slope |
+    appeal-to-authority | appeal-to-emotion | appeal-to-nature |
+    appeal-to-tradition | hasty-generalization | post-hoc |
+    red-herring | tu-quoque | no-true-scotsman | moving-goalposts |
+    bandwagon | false-equivalence | naturalistic-fallacy |
+    loaded-question | other [specify]
+- location: [claim C-id or argument ARG-id where it occurs — required;
+  if not locatable to a specific claim or argument, it belongs in §5]
+- explanation: [one sentence — what makes this move epistemically
+  problematic in context]
+- systemic_pattern: [yes — note §5 bias type | no]
+- severity: [minor | moderate | major]
+    minor   — present but does not drive the argument
+    moderate — shapes presentation without being load-bearing
+    major   — the argument depends on this move to function
+
+    → TAG: fallacy:informal:[fallacy-type]  (one per fallacy found)
+    → TAG: fallacy:informal:none-detected   (if none found)
+    → TAG: fallacy:severity:minor | fallacy:severity:moderate |
+           fallacy:severity:major  (use highest severity found)
+
+### 4A-5. ASSUMPTION STRESS-TEST
+
+Identify the key assumptions the argument depends on — premises
+that are asserted or implied but not defended. For each:
+
+- assumption_id: [AS1, AS2, …]
+- assumption_text: [state the assumption explicitly]
+- load_bearing: [yes | no]
+    Does the argument fail or substantially weaken if this
+    assumption is false?
+- stress_result:
+    If this assumption is denied or significantly weakened,
+    what happens to the conclusion?
+    [conclusion-collapses | conclusion-weakens | conclusion-unaffected]
+- counter_evidence:
+    Is there known evidence or argument against this assumption?
+    [yes — specify briefly | no | unknown]
+
+    → TAG: stress-test:assumption-identified
+    → TAG: stress-test:conclusion-robust     (if all load-bearing
+                                              assumptions hold)
+    → TAG: stress-test:conclusion-fragile    (if ≥1 load-bearing
+                                              assumption is contested
+                                              or unsupported)
+    → TAG: stress-test:not-applicable        (if 4A not applicable)
+
+NOTE: Add all 4A tags (argument:, fallacy:formal:, fallacy:informal:,
+fallacy:severity:, stress-test:) to the deduplicated tag list in § 7.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 5. EPISTEMIC STATUS ASSESSMENT
+
+- artefact_integrity:
+    Universal — applies in all modes.
+    Is this artefact authentic, correctly attributed, unaltered, and
+    from the claimed provenance? This question is independent of whether
+    the artefact makes accurate truth claims.
+    [verified | probable | uncertain | disputed | fabricated]
+    basis: [one sentence — what grounds the assessment]
+    → TAG: integrity:[value]
+
+- informant_reliability:
+    MODE-CONDITIONAL.
+
+    ── MODE: fact-critical ──────────────────────────────────────
+    Does this source accurately report external states of affairs?
+    Assess the source as an epistemic informant about the world.
+    [high | medium | low | indeterminate]
+    basis: [one sentence — what grounds the assessment]
+    → TAG: reliability:[value]
+
+    ── MODE: interpretive / philosophical ───────────────────────
+    Informant reliability is not the operative frame for this
+    artefact type. Omit this field. Note here:
+    "Informant reliability not applicable — see epistemic_effect
+    in §5 for the relevant evaluative frame."
+    → TAG: reliability:not-applicable
+
+    ── MODE: mixed ──────────────────────────────────────────────
+    Apply fact-critical assessment to the relevant sections only.
+    Specify which sections and why.
+
+- internal_consistency:
+    Is the artefact consistent within itself? The operative meaning of
+    consistency varies by mode — apply the appropriate sense:
+
+    mode:fact-critical   — do the factual claims contradict each other?
+                           Are statistics, dates, and assertions mutually
+                           compatible throughout?
+
+    mode:interpretive    — do the modalities, framings, and rhetorical
+                           moves reinforce each other, or do they pull
+                           in different directions? (Cross-reference
+                           modality_structure in §2 if multimodal.)
+
+    mode:philosophical   — is the conceptual framework coherent
+                           throughout? Do later claims presuppose
+                           definitions or distinctions that contradict
+                           earlier ones?
+
+    mode:mixed           — assess consistency within each mode's
+                           section separately, then note any
+                           cross-section tensions.
+
+    → TAG: consistency:[high | medium | low]
+    basis: [one sentence — note the specific tension or confirmation
+    that grounds the assessment; do not leave basis blank]
+
+- corroboration_status / interpretive_grounding:
+    This field is MODE-CONDITIONAL. Apply the version that matches the
+    analytical_mode declared in §0.
+
+    ── MODE: fact-critical ──────────────────────────────────────
+    - corroboration_status:
+        Do NOT reassess verifiability here — that was done at claim level
+        in § 3. This field asks only: was corroboration actually attempted,
+        and what did it find?
+
+        Distinguish carefully:
+          corroboration:corroborated          — checked, independently confirmed
+          corroboration:partially-corroborated — checked, some claims confirmed,
+                                                some not
+          corroboration:uncorroborated        — checked, no confirming sources found
+          corroboration:contradicted          — checked, contradicting sources found
+          corroboration:not-attempted         — verifiable but not checked in this
+                                               analysis; state why
+          corroboration:not-assessable        — analyst lacks tools, access, or
+                                               domain competence; specify constraint
+
+        → TAG: corroboration:[value]
+        known_corroborating_sources: [list or N/A]
+        known_contradicting_sources: [list or N/A]
+        not_attempted_reason: [required if corroboration:not-attempted]
+        not_assessable_reason: [required if corroboration:not-assessable]
+
+    ── MODE: interpretive / philosophical ───────────────────────
+    - interpretive_grounding:
+        Is this analysis adequately grounded? Do NOT assess for factual
+        corroboration — assess for interpretive and theoretical warrant.
+        Evaluate along two dimensions:
+
+        textual_grounding:
+          How well does the interpretation account for the artefact's
+          own internal evidence?
+          [strongly-grounded | adequately-grounded | partially-grounded |
+           weakly-grounded | ungrounded]
+          basis: [one sentence — what evidence supports or undermines
+          the grounding]
+
+        scholarly_positioning:
+          How does this reading stand in relation to established
+          interpretations or theoretical frameworks in the relevant field?
+          [consonant | extends | revises | contests | isolated]
+          basis: [one sentence — name the frameworks or positions in
+          relation to which this reading is positioned]
+
+        → TAG: grounding:textual:[value]
+        → TAG: grounding:scholarly:[value]
+
+    ── MODE: mixed ──────────────────────────────────────────────
+        Apply both versions to their respective artefact sections.
+        Specify which section each assessment covers.
+
+- bias_indicators:
+    Assess tendencies across the whole artefact — dispositional patterns
+    in how information is selected, framed, or weighted. This is a
+    systemic assessment, not a catalogue of individual moves.
+    Do NOT log discrete locatable fallacies here — those belong in §4A-4.
+    If a bias pattern is instantiated by specific fallacies already logged
+    in §4A-4, cross-reference their fallacy_ids rather than re-describing
+    the individual moves.
+
+    For each bias pattern identified:
+      - bias_type: [value from list below]
+      - description: [one sentence — how this pattern manifests across
+        the artefact as a whole]
+      - instantiated_by: [fallacy_ids from §4A-4 if applicable, or N/A]
+
+    → TAG (one per bias type found): bias:[value]
+      bias:selection          — systematic exclusion of relevant information
+      bias:framing            — consistent positioning that favours one reading
+      bias:omission           — structural suppression of counter-evidence
+      bias:false-equivalence  — systemic treatment of unequal things as equal
+      bias:loaded-language    — pervasive use of evaluatively charged terms
+      bias:institutional-interest — artefact systematically serves producer's
+                                    institutional goals
+      bias:none-detected
+
+- misinformation_risk / epistemic_effect:
+    This field is MODE-CONDITIONAL. Apply the version that matches the
+    analytical_mode declared in §0.
+
+    ── MODE: fact-critical ──────────────────────────────────────
+    - misinformation_risk:
+        Is this artefact likely to produce false beliefs in its audience?
+        [none | low | medium | high | not-assessable]
+        basis: [required if medium or high — specify which claims drive
+        the assessment and why they are likely to mislead]
+        → TAG: misinfo-risk:[value]
+
+    ── MODE: interpretive / philosophical ───────────────────────
+    - epistemic_effect:
+        What does this artefact do to the epistemic field it enters?
+        Do NOT assess for factual accuracy here — assess for epistemic
+        consequence. Evaluate along two dimensions:
+
+        closure_effect:
+          Does the artefact foreclose, narrow, or suppress inquiry?
+          [forecloses | narrows | neutral | opens | expands]
+          basis: [one sentence — what inquiry is opened or closed and how]
+
+        power_effect:
+          Does the artefact naturalise, contest, or ignore relations
+          of power or authority in its domain?
+          [naturalises | reinforces | contests | ignores | indeterminate]
+          basis: [one sentence — which relations and through what mechanism]
+
+        → TAG: epistemic-effect:closure:[value]
+        → TAG: epistemic-effect:power:[value]
+
+    ── MODE: mixed ──────────────────────────────────────────────
+        Complete both versions above for the respective sections
+        of the artefact. Specify which section each assessment applies to.
+
+- limitations_of_this_analysis:
+    Declare what this specific analysis could not do, with reference to
+    this artefact. This is retrospective and operational — completed after
+    analysis, not before.
+    Do NOT restate analyst limitations from §0 here. Where an analysis
+    limitation is caused by an analyst limitation, cross-reference the
+    L-id from §0 and state only the concrete consequence for this analysis.
+    For each limitation:
+      - limitation_id: [AL1, AL2, …]
+      - description: [one sentence — what specifically could not be assessed
+        or was inadequately assessed in this analysis]
+      - caused_by: [L-id from §0 | artefact_complexity | access |
+                   time_constraint | other — specify]
+      - consequence: [one sentence — how this limitation affects the
+        reliability or completeness of the analysis]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 6. NORMALIZATION NOTES
+
+- Dates: ISO 8601; uncertain → ~ prefix
+- Locations: contemporary name [historical name in brackets]
+- Loaded terms: preserve verbatim, flag as [LOADED_TERM — type]
+  → must carry tag: claim:cat-loaded-term
+- Units/currencies: convert to contemporary, preserve original in brackets
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 7. ZOTERO MAPPING
+
+Collect ALL tags from §§ 0–6 into a single deduplicated list, grouped by prefix.
+
+MUTUAL EXCLUSIVITY — mode-conditional tag pairs:
+  corroboration:        fires in mode:fact-critical ONLY
+  grounding:textual:    fires in mode:interpretive / mode:philosophical ONLY
+  grounding:scholarly:  fires in mode:interpretive / mode:philosophical ONLY
+  misinfo-risk:         fires in mode:fact-critical ONLY
+  epistemic-effect:closure:  fires in mode:interpretive / mode:philosophical ONLY
+  epistemic-effect:power:    fires in mode:interpretive / mode:philosophical ONLY
+  reliability:          fires in mode:fact-critical ONLY
+                        (reliability:not-applicable fires in other modes)
+In mode:mixed, both sides of each pair may fire, scoped to their sections.
+Do not flag absent tags from the inactive side of a pair as missing.
+
+Minimum expected prefix groups — ALL modes:
+  framework: | mode: | analyst: | analyst-limit: | type: | lang: |
+  circulation: | reception: | modality: | genre: | function: | absence: |
+  intertextuality: | claim: | surface: | extraction-confidence: |
+  verifiability: | inference: | inference-confidence: | alt-reading: |
+  argument: | fallacy:formal: | fallacy:informal: | fallacy:severity: |
+  stress-test: | integrity: | consistency: | bias: |
+
+Additional prefix groups — mode:fact-critical:
+  corroboration: | reliability: | misinfo-risk:
+
+Additional prefix groups — mode:interpretive / mode:philosophical:
+  grounding:textual: | grounding:scholarly: |
+  epistemic-effect:closure: | epistemic-effect:power:
+
+Fields:
+- Item Type:   {{ZOTERO_ITEM_TYPE}}  ← use verbatim, matches Zotero 8.2
+- Title
+- Author / Creator
+- Date
+- Archive / Source / URL
+- Language
+- Tags: [full collected tag list, grouped by prefix; must include {{TYPE_TAG}}]
+- Extra:
+    source_id:      {{ARTEFACT_ID}}
+    analyst_id:     [value]
+    analysis_date:  [value]
+    loaded_terms:   [list or N/A]
+    schema_version: 1.0
+    prompt_version: 1.0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 8. ID STRATEGY
+
+- source_id used: {{ARTEFACT_ID}}
+- Confirm ID used verbatim: [yes / no — flag if modified]
+- source_type prefix rationale: [one sentence]
+- Any ambiguities in ID components: [note or N/A]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 9. ANALYTICAL SUMMARY
+
+Write a short plain-language summary of this analysis for a reader
+who has not seen the artefact. Maximum 150 words.
+
+Requirements:
+- Open with what the artefact IS and what it DOES (genre +
+  illocutionary function), not with bibliographic facts
+- Name the most significant analytical finding — the thing that
+  most shapes how this artefact should be read or used
+- State the primary evaluative finding in mode-appropriate terms:
+    mode:fact-critical   → state misinformation risk level and the
+                           single strongest reason for that assessment
+    mode:interpretive    → state the epistemic effect (closure and
+                           power dimensions) and its significance
+    mode:philosophical   → state the argument's validity and the most
+                           consequential assumption stress-test finding
+    mode:mixed           → address the dominant mode's evaluative
+                           finding and note where the other mode applies
+- Note any critical limitation of this analysis
+- Write in full sentences, no bullet points, no schema terminology,
+  no tag syntax
+- Do not summarize the claim list — synthesize the analytical picture
+
+This section is the human-readable entry point for the dataset record.
+It must stand alone without reference to the numbered sections above.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONSTRAINTS
+
+- Do not speculate beyond evidence; flag the boundary between inference
+  and assertion explicitly.
+- Do not reproduce harmful, discriminatory, or privacy-violating content
+  outside of analytically necessary quotation — and flag when doing so.
+- Separate artefact content from analyst interpretation at every stage.
+- Preserve ambiguity where it genuinely exists; false precision is an
+  analytical error, not a quality signal.
+- If the artefact responds to another artefact, identify the relation
+  in the intertextuality field in §2 using relation_type:responds-to
+  or relation_type:contests as appropriate.
+- Tags must reflect what was actually found. Do not pre-populate speculatively.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+INPUT ARTEFACT
+{{ARTEFACT_CONTENT}}`;
+
+// ── Source type map ────────────────────────────────────────────────────────────
+const STM = {
+  JOURNALARTICLE:     {z:'Journal Article',          t:'type:journal-article'},
+  MAGAZINEARTICLE:    {z:'Magazine Article',         t:'type:magazine-article'},
+  NEWSPAPERARTICLE:   {z:'Newspaper Article',        t:'type:newspaper-article'},
+  BLOGPOST:           {z:'Blog Post',                t:'type:blog-post'},
+  BOOK:               {z:'Book',                     t:'type:book'},
+  BOOKSECTION:        {z:'Book Section',             t:'type:book-section'},
+  ENCYCLOPEDIAARTICLE:{z:'Encyclopedia Article',     t:'type:encyclopedia-article'},
+  DICTIONARYENTRY:    {z:'Dictionary Entry',         t:'type:dictionary-entry'},
+  REPORT:             {z:'Report',                   t:'type:report'},
+  MANUSCRIPT:         {z:'Manuscript',               t:'type:manuscript'},
+  THESIS:             {z:'Thesis',                   t:'type:thesis'},
+  STANDARD:           {z:'Standard',                 t:'type:standard'},
+  PATENT:             {z:'Patent',                   t:'type:patent'},
+  AUDIORECORDING:     {z:'Audio Recording',          t:'type:audio-recording'},
+  VIDEORECORDING:     {z:'Video Recording',          t:'type:video-recording'},
+  FILM:               {z:'Film',                     t:'type:film'},
+  TVBROADCAST:        {z:'TV Broadcast',             t:'type:tv-broadcast'},
+  RADIOBROADCAST:     {z:'Radio Broadcast',          t:'type:radio-broadcast'},
+  PODCAST:            {z:'Podcast',                  t:'type:podcast'},
+  ARTWORK:            {z:'Artwork',                  t:'type:artwork'},
+  MAP:                {z:'Map',                      t:'type:map'},
+  DATASET:            {z:'Dataset',                  t:'type:dataset'},
+  SOFTWARE:           {z:'Software',                 t:'type:software'},
+  WEBPAGE:            {z:'Webpage',                  t:'type:webpage'},
+  FORUMPOST:          {z:'Forum Post',               t:'type:forum-post'},
+  INTERVIEW:          {z:'Interview',                t:'type:interview'},
+  PRESENTATION:       {z:'Presentation',             t:'type:presentation'},
+  LETTER:             {z:'Letter',                   t:'type:letter'},
+  EMAIL:              {z:'Email',                    t:'type:email'},
+  CASE:               {z:'Case',                     t:'type:legal-case'},
+  BILL:               {z:'Bill',                     t:'type:bill'},
+  STATUTE:            {z:'Statute',                  t:'type:statute'},
+  HEARING:            {z:'Hearing',                  t:'type:hearing'},
+  CONFERENCEPAPER:    {z:'Conference Paper',         t:'type:conference-paper'},
+  DOCUMENT:           {z:'Document',                 t:'type:document'},
+};
+const stZ = v => STM[v]?.z || v;
+const stT = v => STM[v]?.t || 'type:document';
+
+// ── SHA-256 ────────────────────────────────────────────────────────────────────
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── Date/time utilities ────────────────────────────────────────────────────────
+function todayISO(){ return new Date().toISOString().slice(0,10).replace(/-/g,''); }
+function nowUTC(){   return new Date().toISOString().replace('T',' ').slice(0,19); }
+
+// ── Application init ───────────────────────────────────────────────────────────
+(function init() {
+  // Set version display
+  var verDisplay = document.getElementById('verDisplay');
+  if (verDisplay) verDisplay.textContent = 'v' + APP_VERSION;
+
+  // Update provider status button from persisted config
+  AXIOM_UI.updateProviderStatusBtn();
+
+  // No auto-open of config modal on load — user lands directly in workspace
+  // Users who want to configure an AI provider can click the ⦿ button in the header
+}());
+</script>
+
+</body>
+</html>
