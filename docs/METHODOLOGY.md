@@ -116,7 +116,7 @@ The schema used by the Artefact Analyser (inherited by aXIOM Module 4) already h
 
 ## Bibliography
 
-See: `docs/aXIOM_Bibliography.docx` (living document, updated after each brainstorming session)
+See: `docs/BIBLIOGRAPHY.md` (living document, updated after each brainstorming session)
 
 Key references:
 - **DSR:** Hevner et al. (2004)
