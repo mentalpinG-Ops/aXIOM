@@ -70,6 +70,7 @@ but does not constitute a validated scientific methodology. See
 
 | File | Description |
 | --- | --- |
+| `ANALYTICAL_COMMITMENTS.md` | Epistemic/analytical output commitments |
 | `BIBLIOGRAPHY.md` | Reference literature |
 | `DISCOVERY_PROTOCOL.md` | Protocol for pilot discovery sessions |
 | `DISCOVERY_SESSION_001.md` | Notes from first discovery session |
