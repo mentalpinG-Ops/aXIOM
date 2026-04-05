@@ -34,7 +34,38 @@ report for the teacher.
 ---
 
 ## Current Status
-Validation Focus (Culture-Science Foundations)
+
+### Validation Focus (Culture-Science Foundations)
+
+This project is currently in a validation phase. The primary goal is not reach,
+but analytical usefulness and methodological integrity.
+
+#### What the engine is designed to provide
+
+- **Evidence-linked findings**: every analytical claim must be traceable to
+  specific passages or segments in the source material.
+- **Separation of layers**: the engine distinguishes between
+  **extraction/description** (what is in the text) and **interpretation**
+  (a reading of what it means).
+- **Uncertainty is explicit**: outputs include confidence/uncertainty markers
+  and make room for alternative readings where reasonable.
+
+#### What it is not
+
+- It is **not** an objective grader or a truth machine.
+- It does **not** replace human interpretation. The human researcher/teacher
+  remains responsible for critique and synthesis.
+
+#### Feedback sought (high value)
+
+If you have domain experience in cultural studies, discourse analysis, semiotics,
+or qualitative research methods, feedback is most useful on:
+
+- Whether the proposed categories and output structure support scholarly review
+  and disagreement (counter-readings), rather than hiding it.
+- Whether the tool's separation between description and interpretation is clear
+  enough to prevent methodological misuse.
+
 **Phase: Architecture + Proof of Concept**
 
 - Architecture defined. No application code written yet.
@@ -75,6 +106,7 @@ but does not constitute a validated scientific methodology. See
 | `DISCOVERY_SESSION_001.md` | Notes from first discovery session |
 | `GITHUB_ISSUES_SETUP.md` | Issue label and workflow conventions |
 | `METHODOLOGY.md` | Analytical methodology and its current limitations |
+| `ANALYTICAL_COMMITMENTS.md` | Epistemic/analytical output commitments |
 | `pilot_discovery_document.docx` | User testing protocol for pilot sessions |
 
 ---
