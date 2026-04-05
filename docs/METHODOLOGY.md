@@ -137,7 +137,8 @@ All entries flagged for verification status. Unverified entries require DOI/libr
 - Grant applications
 - Institutional legitimization
 - 
-**Validation method:** Stress-test with domain expert in cultural studies methods or design science research (academic contact at UWR Institute of Philosophy identified as potential validator). Target: epistemological coherence, publication venue fit, institutional reception.
+**Validation method:** Stress-test with domain expert in cultural studies methods or design science research (academic contact). 
+Target: epistemological coherence, publication venue fit, institutional reception.
 
 ---
 
