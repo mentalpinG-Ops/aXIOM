@@ -1,6 +1,6 @@
 # aXIOM — ARCHITECTURE.md
-### Living Architecture Document — Version 0.1
-#### Last updated: 2026-04-03
+
+Living Architecture Document — Version 0.1 | Last updated: 2026-04-03
 
 ---
 

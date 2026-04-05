@@ -140,9 +140,4 @@ academy) and Institution B (applied sciences university).
 - Student-facing output
 - Modules 2 and 3 (Research Analyser) full build
 - German language support (v1.1, not v1.0)
-```
-
----
-
-**Step 3 — Commit the file**
 
