@@ -1,0 +1,930 @@
+TASK
+Convert the provided artefact (image, scan, text, audio transcript, dataset,
+or multimedia) into a structured analytical dataset entry.
+
+This schema supports three epistemological modes — fact-critical, interpretive,
+and philosophical — declared in §0 and governing field behaviour throughout.
+It is designed for research in misinformation studies, cultural analysis,
+discourse analysis, historical research, semiotics, and philosophy. The mode
+declaration determines which evaluative fields activate; the analytical
+framework determines the interpretive stance. Both must be declared before
+analysis begins.
+
+The schema is input-agnostic. Apply all sections regardless of artefact type;
+leave fields N/A only where genuinely inapplicable, with a brief reason.
+
+All tags generated during analysis are collected in § 7 (Zotero Mapping).
+Each section instructs which tags to generate. Use the prefix:value format
+throughout. Do not invent new prefixes; extend values within existing prefixes
+as needed.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ARTEFACT_ID: {{ARTEFACT_ID}}
+  generated:       {{GENERATED_AT}} UTC
+  method:          SHA-256 of (source_type + date + artefact content), first 8 hex chars
+  zotero_item_type: {{ZOTERO_ITEM_TYPE}}
+  type_tag:        {{TYPE_TAG}}
+  schema_version:  1.0
+  prompt_version:  1.0
+
+The model must use ARTEFACT_ID verbatim as source_id and TYPE_TAG verbatim
+in the Zotero tag list. Do not generate, modify, or interpret these values.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 0. METHODOLOGICAL DECLARATION
+
+Before extraction begins, declare:
+
+- analytical_framework:
+    State the interpretive stance being applied.
+    Do NOT default to "neutral" — all frameworks are positioned.
+    → TAG: framework:[value]
+      e.g. framework:discourse-analysis | framework:source-criticism |
+           framework:rhetorical-analysis | framework:fact-checking |
+           framework:content-analysis | framework:critical-discourse-analysis |
+           framework:semiotics | framework:narrative-analysis |
+           framework:archival-criticism
+
+- analytical_mode:
+    Declare the primary epistemological register of this analysis.
+    This selection activates and suppresses specific fields downstream —
+    follow the instructions in each affected section.
+
+    [fact-critical | interpretive | philosophical | mixed]
+
+    fact-critical  — primary question: is this accurate?
+                     Activates: misinformation_risk and corroboration_status
+                     full protocol.
+                     Applies to: news articles, institutional reports,
+                     political speech, social media posts, data claims.
+
+    interpretive   — primary question: what does this mean and do?
+                     Suppresses: misinformation_risk → replace with
+                     epistemic_effect field in §5.
+                     Reframes: corroboration_status → interpretive_grounding
+                     in §5.
+                     Applies to: cultural artefacts, historical documents,
+                     media texts, propaganda, visual material, oral testimony.
+
+    philosophical  — primary question: is this coherent and what does
+                     it presuppose?
+                     Suppresses: misinformation_risk and source_reliability
+                     as informant-trust assessment.
+                     Activates: conceptual claim types in §3,
+                     intertextuality in §2, assumption stress-test as
+                     primary analytical operation.
+                     Applies to: theoretical texts, philosophical arguments,
+                     normative documents, conceptual frameworks.
+
+    mixed          — two or more modes apply to distinct parts of the
+                     artefact. Specify which sections operate in which
+                     mode and why.
+
+    → TAG: mode:fact-critical | mode:interpretive | mode:philosophical |
+           mode:mixed
+
+- analyst_type: [human | AI | human+AI]
+    → TAG: analyst:[value]
+
+- analyst_id: [name, model version, or institutional affiliation]
+
+- analysis_date: [ISO format]
+
+- known_analyst_limitations:
+    Declare limitations of the analyst as an epistemic agent, independent
+    of this specific artefact. These are standing constraints that would
+    apply to any analysis this analyst performs — competencies, positionality,
+    domain knowledge gaps, access restrictions, linguistic range.
+    Do NOT describe consequences for this specific analysis here — those
+    belong in §5 limitations_of_this_analysis.
+    For each limitation:
+      - limitation_id: [L1, L2, …]
+      - type: [language | domain-knowledge | access | temporal-distance |
+               cultural-context | positionality | other — specify]
+      - description: [one sentence — the standing constraint]
+    → TAG (one per limitation): analyst-limit:[type value]
+      e.g. analyst-limit:language | analyst-limit:domain-knowledge |
+           analyst-limit:access | analyst-limit:temporal-distance |
+           analyst-limit:cultural-context | analyst-limit:positionality
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 1. METADATA
+
+source_id: {{ARTEFACT_ID}}  ← use verbatim, do not regenerate
+
+- source_type:
+    → TAG: type:[value]  ← USE THE PRECOMPUTED TAG ABOVE — do not modify
+      Zotero 8.2 item types mapped:
+      type:journal-article | type:magazine-article | type:newspaper-article |
+      type:blog-post | type:book | type:book-section | type:encyclopedia-article |
+      type:dictionary-entry | type:report | type:manuscript | type:thesis |
+      type:standard | type:patent | type:audio-recording | type:video-recording |
+      type:film | type:tv-broadcast | type:radio-broadcast | type:podcast |
+      type:artwork | type:map | type:dataset | type:software | type:webpage |
+      type:forum-post | type:interview | type:presentation | type:letter |
+      type:email | type:legal-case | type:bill | type:statute | type:hearing |
+      type:conference-paper | type:document
+
+- title (analyst-generated if artefact lacks one)
+- date_of_artefact [ISO; use ~ prefix if estimated]
+- date_certainty: [exact | estimated | unknown]
+- origin (institution, publication, platform, or geographic provenance)
+- language [ISO 639-1]
+    → TAG: lang:[ISO-639-1 code]
+
+- related_entities:
+    - persons (public role only)
+    - organizations
+    - events
+    - locations
+
+- circulation_context:
+    Describe original dissemination — where, through what channels, and
+    for whom this artefact was produced and first distributed.
+    This field covers production-side circulation only. Post-production
+    reception belongs in reception_context below.
+    → TAG: circulation:[value]
+      e.g. circulation:mass-media | circulation:institutional-internal |
+           circulation:social-network | circulation:academic |
+           circulation:legal-proceeding | circulation:restricted |
+           circulation:leaked | circulation:viral
+
+- reception_context:
+    How has this artefact been received, used, or instrumentalized
+    after its original production and circulation?
+    Do NOT repeat circulation_context here — this field covers
+    post-production history only.
+    If reception history is unknown or beyond analyst knowledge,
+    state explicitly and cross-reference the relevant L-id from §0.
+    Do not leave blank — absence of reception data is itself
+    analytically relevant.
+
+    Assess along three dimensions:
+
+    reception_history:
+      How was the artefact received at time of production, and how
+      has that reception changed over time?
+        immediate:   [describe initial reception, or "unknown"]
+        subsequent:  [describe significant shifts over time, or "none
+                     documented" | "unknown"]
+
+    instrumentalization:
+      Has the artefact been taken up, repurposed, or deployed by
+      actors or movements other than its original producers?
+      [yes — specify by whom and for what purpose | no | unknown]
+
+    canonical_status:
+      Has the artefact acquired canonical, marginal, suppressed, or
+      contested status within a relevant field or tradition?
+      [canonical | marginal | suppressed | contested | not-established]
+      basis: [one sentence — in which field and on what grounds]
+
+    → TAG: reception:documented    (if reception history is known)
+          reception:undocumented   (if no reception history available)
+          reception:contested      (if reception is itself disputed)
+          reception:not-assessable (if analyst lacks knowledge to assess
+                                    — cross-ref §0 L-id)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 2. ARTEFACT CHARACTERIZATION
+
+- genre:
+    → TAG: genre:[value]
+      e.g. genre:news-report | genre:propaganda | genre:administrative-record |
+           genre:scientific-abstract | genre:satire | genre:personal-testimony |
+           genre:data-visualization | genre:policy-document | genre:op-ed |
+           genre:press-release | genre:official-statement
+
+- modality_structure:
+    Is this artefact unimodal or multimodal?
+    [unimodal | multimodal]
+
+    If unimodal: state the single modality and proceed to the next field.
+
+    If multimodal: list each modality present and assign a modality_id
+    [M1, M2, …]. These IDs are used in §3 to attribute claims to their
+    modality source.
+
+    modality_types:
+      written-text | spoken-word | static-image | moving-image |
+      data-visualisation | musical-audio | ambient-audio | layout-design |
+      other [specify]
+
+    modal_relation:
+      How do the modalities relate to each other at the level of the
+      whole artefact? This is an observational assessment — do not
+      interpret, only characterise.
+      [reinforcing | contradicting | qualifying | displacing | ironic]
+      basis: [one sentence — which modalities, what the relation is,
+      and what it does to the artefact's overall meaning]
+
+    If the artefact is unimodal, state:
+    "Unimodal — modality_source field in §3 not required."
+
+    → TAG: modality:unimodal
+          modality:multimodal  (if more than one modality present)
+          modality:modal-relation:[value]  (if multimodal)
+
+- primary_illocutionary_function:
+    → TAG: function:[value]
+      function:assert | function:persuade | function:instruct |
+      function:classify | function:commemorate | function:conceal |
+      function:mobilize
+
+- implied_audience:
+    Who was this artefact produced for? Address three dimensions,
+    with mode-appropriate emphasis:
+
+    constructed_reader:
+      Who does the artefact assume, address, or construct as its
+      reader? (Not who actually received it — that belongs in
+      reception_context. This is the audience the artefact's form
+      and content presuppose.)
+
+    presupposed_competencies:
+      What knowledge, values, or interpretive frameworks does the
+      artefact assume its audience brings?
+      mode:philosophical — what conceptual or disciplinary competencies
+      does the argument demand?
+      mode:fact-critical — what prior beliefs or information does the
+      artefact assume the reader holds?
+      mode:interpretive  — what cultural codes or experiential
+      frameworks does the artefact activate?
+
+    exclusions:
+      Who is implicitly excluded, othered, or addressed only
+      instrumentally by this artefact? State with reasoning.
+
+- production_context:
+    What conditions shaped the creation of this artefact?
+    This field covers conditions of production only — not distribution
+    or dissemination (those belong in circulation_context).
+    Address three dimensions:
+
+    institutional_conditions:
+      What organization, institution, or social position produced this
+      artefact? What constraints, mandates, or interests shaped what
+      could be said and how?
+
+    material_constraints:
+      What formal, technological, or resource constraints shaped the
+      artefact's form? (e.g. genre conventions, platform affordances,
+      censorship, length limits, available evidence)
+
+    ideological_pressures:
+      What discursive formation, political context, or epistemic
+      environment constrained or enabled the artefact's claims and
+      framings at the moment of production?
+
+- notable_absences:
+    Observe and describe what is conspicuously not said, shown, or included.
+    This is an observational step only — do not evaluate or tag here.
+    For each absence identified, provide:
+      - absence_id: [NA1, NA2, …]
+      - description: what is missing and why it is conspicuous
+      - load_bearing: [yes | no] — does the artefact's meaning or argument
+        depend on this omission?
+    If load_bearing is yes, flag for extraction as claim:rhet-omission in § 3.
+    If none identified, state explicitly: "No significant absences detected."
+    → TAG: absence:detected  (if any identified, regardless of load_bearing)
+          absence:none-identified  (if none found)
+
+- intertextuality:
+    How does this artefact position itself in relation to other texts,
+    traditions, or discursive formations? This is an observational field —
+    record relations that are present in or strongly implied by the artefact.
+    Where a relation requires inference (e.g. silent presupposition, occlusion),
+    log the observation here and develop the inference in § 4 using the
+    IT-id as evidence_basis.
+
+    For each intertextual relation identified:
+      - relation_id: [IT1, IT2, …]
+      - referenced_text: [title, author, tradition, or corpus —
+          as specific as the artefact permits]
+      - relation_type:
+          cites              — explicit attribution to a source
+          paraphrases        — uncredited restatement of another text
+          responds-to        — direct engagement with a prior text
+          contests           — argues against an identified position
+          silently-presupposes — assumes a framework or claim without
+                                 acknowledgment → flag for §4 inference
+          occludes           — actively avoids or suppresses a reference
+                               that would be expected → flag for §4 inference
+          instantiates       — applies a theoretical framework from
+                               another text without necessarily citing it
+          parodies           — imitates for critical or comic effect
+      - significance: [one sentence — what this relation reveals about
+          the artefact's meaning, argument, or positioning]
+
+    If none identified, state: "No intertextual relations detected."
+    If analyst lacks domain knowledge to assess, state reason and
+    cross-reference the relevant L-id from §0.
+
+    → TAG: intertextuality:present       (if any relations identified)
+          intertextuality:none-detected
+          intertextuality:not-assessable  (if analyst lacks domain
+                                           knowledge — cross-ref §0 L-id)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 3. CLAIM EXTRACTION
+
+Each claim: atomic, non-overlapping, standardized English, attributed to
+artefact — not asserted as true by analyst.
+
+For each claim:
+
+- claim_id: [C1, C2, …]
+- claim_text
+- claim_type:
+    → TAG: claim:[value]
+
+    DESCRIPTIVE
+      claim:desc-factual | claim:desc-biographical | claim:desc-institutional |
+      claim:desc-statistical | claim:desc-causal
+
+    NORMATIVE
+      claim:norm-evaluative | claim:norm-prescriptive | claim:norm-classificatory
+
+    RHETORICAL
+      claim:rhet-framing  — selective emphasis shaping interpretation
+      claim:rhet-analogy  — claim via comparison
+      claim:rhet-appeal   — appeal to authority, emotion, or identity
+      claim:rhet-omission — meaningful absence that is argumentatively
+                            load-bearing (i.e. the artefact's meaning or
+                            argument depends on it).
+                            ONLY extract here if flagged as load_bearing:yes
+                            in § 2. Cross-reference the NA-id from § 2.
+                            Do not re-describe — state the analytical
+                            significance the §2 observation did not.
+
+    CATEGORICAL / ADMINISTRATIVE
+      claim:cat-legal | claim:cat-bureaucratic | claim:cat-taxonomic |
+      claim:cat-loaded-term  ← flag in Extra if used
+
+    CONCEPTUAL
+      claim:concept-definition    — stipulates or contests the meaning
+                                    of a term or concept
+      claim:concept-distinction   — draws a categorical boundary between
+                                    two or more concepts
+      claim:concept-proposition   — asserts a theoretical relationship
+                                    between concepts, not reducible to
+                                    empirical fact or value judgment
+      claim:concept-framework     — proposes or instantiates an overarching
+                                    conceptual scheme or analytical lens
+
+      NOTE: Conceptual claims are assessed for coherence and internal
+      consistency, not empirical verifiability. Set verifiability to
+      structurally-assessable for all claims in this category.
+      Do NOT mark conceptual claims as not-verifiable — that implies
+      untestability, which misrepresents their epistemic status.
+      Activated in all modes; primary operative category in
+      mode:philosophical.
+
+    AMBIGUOUS
+      claim:ambiguous
+
+- surface_form:
+    → TAG: surface:[value]
+      surface:explicit-statement | surface:implication | surface:visual |
+      surface:numerical | surface:omission | surface:juxtaposition |
+      surface:cross-modal-reinforcement — claim arises from two or more
+                                          modalities that amplify each other
+      surface:cross-modal-contradiction — claim arises from two or more
+                                          modalities that undercut each other
+      surface:cross-modal-displacement  — one modality overrides or
+                                          subordinates another
+      surface:cross-modal-irony         — modalities produce meaning by
+                                          mutual undercutting
+
+- modality_source:
+    For unimodal artefacts: omit this field (flagged in §2).
+    For multimodal artefacts: required for every claim.
+    [M-id from §2 | cross-modal]
+    cross-modal: this claim arises from the relation between modalities,
+    not from any single one.
+    Specify: which M-ids are in relation and what the relation produces.
+    Note: cross-modal claims must use a cross-modal surface_form value.
+
+- confidence_in_extraction:
+    → TAG: extraction-confidence:[high | medium | low]
+    + one-sentence basis (required)
+
+- verifiability:
+    → TAG: verifiability:[value]
+      verifiability:empirically-checkable | verifiability:historically-checkable |
+      verifiability:structurally-assessable | verifiability:not-verifiable |
+      verifiability:contested-domain
+
+NOTE: Collect the DISTINCT SET of claim, surface, extraction-confidence,
+verifiability, and modality_source tags across all claims. Do not repeat
+per claim. Carry forward to § 7. For multimodal artefacts, note which
+modalities generated claims and whether any cross-modal claims were found.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 4. DERIVED CLAIMS (INFERENCES)
+
+Label [A1, A2, …]. Must be logically entailed or interpretively warranted
+by extracted claims, distinguished from artefact content, falsifiable
+or assessable in principle.
+
+- inference_id
+
+- inference_text
+
+- inference_type:
+    → TAG: inference:[value]
+      inference:causal       — X produced or enabled Y
+      inference:intentional  — agent likely intended X (requires evidence basis)
+      inference:structural   — systemic or institutional pattern implied
+      inference:contextual   — meaning shifts given surrounding context
+      inference:evaluative   — epistemic status assessment
+      inference:network      — artefact connects to broader claim ecosystem
+      inference:historical   — implies or contradicts established record
+
+      inference:abductive    — inference to the best explanation.
+                               The analyst observes a pattern, tension,
+                               or structural feature X in the artefact and
+                               proposes H as the hypothesis that best
+                               accounts for it. This is NOT deduction from
+                               premises — it is construction of the most
+                               plausible explanatory account of underdetermined
+                               evidence.
+                               Primary operative type in mode:interpretive
+                               and mode:philosophical.
+
+                               For each abductive inference, provide ALL
+                               four required subfields:
+                                 observation: [what feature of the artefact
+                                   is being explained — C-id if applicable]
+                                 hypothesis: [the proposed explanation H]
+                                 competing_hypotheses: [at least one
+                                   alternative account H′ and one sentence
+                                   on why H is preferable to H′ — required,
+                                   not optional]
+                                 explanatory_warrant: [what makes H
+                                   preferable — coherence, scope, parsimony,
+                                   fit with evidence, theoretical grounding]
+
+- evidence_basis: [C-ids supporting this inference]
+
+- confidence_in_inference:
+    → TAG: inference-confidence:[high | medium | low | speculative]
+    + one-sentence basis (required)
+
+- alternative_interpretations:
+    Address the artefact AS A WHOLE. What would a reader operating from
+    a different framework, position, or context make of it? This is a
+    hermeneutic question about interpretive plurality — not an assessment
+    of individual premises (that belongs in §4A-2).
+    For each alternative reading:
+      - reading_id: [R1, R2, …]
+      - reading_text: [one sentence — the alternative interpretation]
+      - framework_basis: [what position or framework motivates this reading]
+      - cross_ref: [if this reading is motivated by a failed premise
+        identified in §4A-2, note the ARG-id here — do not repeat
+        the premise assessment]
+    → TAG: alt-reading:identified  (if any viable alternative found)
+          alt-reading:none-viable  (if no viable alternative found)
+
+NOTE: Collect distinct inference and inference-confidence tags for § 7.
+
+── 4A. ARGUMENT VALIDITY STRESS-TEST ─────────────────────────
+
+Apply only where the artefact makes or implies an argument
+(i.e. moves from premises to a conclusion, explicitly or implicitly).
+If the artefact is purely descriptive with no argumentative structure,
+state: "No argumentative structure detected — 4A not applicable."
+
+### 4A-1. ARGUMENT RECONSTRUCTION
+
+Identify the core argument(s) in standard form:
+  P1: [first premise]
+  P2: [second premise, if present]
+  …
+  C:  [conclusion drawn]
+
+Extract from the artefact's own content; do not supply missing steps.
+If premises are implicit, flag them as [IMPLICIT].
+Multiple arguments should be numbered ARG-1, ARG-2, etc.
+
+### 4A-2. PREMISE–CONCLUSION VALIDITY
+
+For each argument assess:
+
+- logical_form:
+    Does the conclusion follow from the premises IF the premises
+    were true? Assess the inferential structure independently of
+    factual accuracy.
+    [valid | invalid | indeterminate]
+    basis: [one sentence — name the logical form if identifiable,
+    e.g. modus ponens, modus tollens, disjunctive syllogism]
+
+- soundness_assessment:
+    Are the premises themselves well-supported by evidence?
+    Assess at the level of individual premises only — do not propose
+    alternative overall readings of the artefact here (that belongs
+    in §4 alternative_interpretations).
+    [sound | unsound | partially-sound | not-assessable]
+    basis: [cross-reference relevant C-ids from § 3]
+    cross_ref: [if a failed premise motivates a whole-artefact alternative
+    reading, flag it here for development in §4 alternative_interpretations
+    — do not develop the reading itself in this field]
+
+    → TAG: argument:valid | argument:invalid | argument:indeterminate
+    → TAG: argument:sound | argument:unsound | argument:partially-sound |
+           argument:not-assessable
+
+### 4A-3. FORMAL FALLACY DETECTION
+
+Check the inferential structure for formal invalidity.
+Assign fallacy_id [F1, F2, …] for each identified.
+
+- fallacy_id
+- fallacy_type:
+    affirming-the-consequent | denying-the-antecedent |
+    undistributed-middle | illicit-major | illicit-minor |
+    circular-reasoning | false-conversion | equivocation-structural |
+    other [specify]
+- location: [which argument — ARG-id — and which inferential step]
+- explanation: [one sentence — why this structure is invalid]
+
+    → TAG: fallacy:formal:[fallacy-type]  (one per fallacy found)
+    → TAG: fallacy:formal:none-detected   (if none found)
+
+### 4A-4. INFORMAL FALLACY DETECTION
+
+Identify discrete, locatable epistemically manipulative moves —
+specific moments in the artefact that can be pointed to. Assign [I1, I2, …].
+
+Do NOT describe systemic patterns or whole-artefact tendencies here —
+those belong in §5 bias_indicators. If a fallacy is part of a broader
+systemic bias pattern, note it with: "part of systemic pattern — see §5"
+but do not develop the pattern description here.
+
+- fallacy_id
+- fallacy_type:
+    ad-hominem | straw-man | false-dilemma | slippery-slope |
+    appeal-to-authority | appeal-to-emotion | appeal-to-nature |
+    appeal-to-tradition | hasty-generalization | post-hoc |
+    red-herring | tu-quoque | no-true-scotsman | moving-goalposts |
+    bandwagon | false-equivalence | naturalistic-fallacy |
+    loaded-question | other [specify]
+- location: [claim C-id or argument ARG-id where it occurs — required;
+  if not locatable to a specific claim or argument, it belongs in §5]
+- explanation: [one sentence — what makes this move epistemically
+  problematic in context]
+- systemic_pattern: [yes — note §5 bias type | no]
+- severity: [minor | moderate | major]
+    minor   — present but does not drive the argument
+    moderate — shapes presentation without being load-bearing
+    major   — the argument depends on this move to function
+
+    → TAG: fallacy:informal:[fallacy-type]  (one per fallacy found)
+    → TAG: fallacy:informal:none-detected   (if none found)
+    → TAG: fallacy:severity:minor | fallacy:severity:moderate |
+           fallacy:severity:major  (use highest severity found)
+
+### 4A-5. ASSUMPTION STRESS-TEST
+
+Identify the key assumptions the argument depends on — premises
+that are asserted or implied but not defended. For each:
+
+- assumption_id: [AS1, AS2, …]
+- assumption_text: [state the assumption explicitly]
+- load_bearing: [yes | no]
+    Does the argument fail or substantially weaken if this
+    assumption is false?
+- stress_result:
+    If this assumption is denied or significantly weakened,
+    what happens to the conclusion?
+    [conclusion-collapses | conclusion-weakens | conclusion-unaffected]
+- counter_evidence:
+    Is there known evidence or argument against this assumption?
+    [yes — specify briefly | no | unknown]
+
+    → TAG: stress-test:assumption-identified
+    → TAG: stress-test:conclusion-robust     (if all load-bearing
+                                              assumptions hold)
+    → TAG: stress-test:conclusion-fragile    (if ≥1 load-bearing
+                                              assumption is contested
+                                              or unsupported)
+    → TAG: stress-test:not-applicable        (if 4A not applicable)
+
+NOTE: Add all 4A tags (argument:, fallacy:formal:, fallacy:informal:,
+fallacy:severity:, stress-test:) to the deduplicated tag list in § 7.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 5. EPISTEMIC STATUS ASSESSMENT
+
+- artefact_integrity:
+    Universal — applies in all modes.
+    Is this artefact authentic, correctly attributed, unaltered, and
+    from the claimed provenance? This question is independent of whether
+    the artefact makes accurate truth claims.
+    [verified | probable | uncertain | disputed | fabricated]
+    basis: [one sentence — what grounds the assessment]
+    → TAG: integrity:[value]
+
+- informant_reliability:
+    MODE-CONDITIONAL.
+
+    ── MODE: fact-critical ──────────────────────────────────────
+    Does this source accurately report external states of affairs?
+    Assess the source as an epistemic informant about the world.
+    [high | medium | low | indeterminate]
+    basis: [one sentence — what grounds the assessment]
+    → TAG: reliability:[value]
+
+    ── MODE: interpretive / philosophical ───────────────────────
+    Informant reliability is not the operative frame for this
+    artefact type. Omit this field. Note here:
+    "Informant reliability not applicable — see epistemic_effect
+    in §5 for the relevant evaluative frame."
+    → TAG: reliability:not-applicable
+
+    ── MODE: mixed ──────────────────────────────────────────────
+    Apply fact-critical assessment to the relevant sections only.
+    Specify which sections and why.
+
+- internal_consistency:
+    Is the artefact consistent within itself? The operative meaning of
+    consistency varies by mode — apply the appropriate sense:
+
+    mode:fact-critical   — do the factual claims contradict each other?
+                           Are statistics, dates, and assertions mutually
+                           compatible throughout?
+
+    mode:interpretive    — do the modalities, framings, and rhetorical
+                           moves reinforce each other, or do they pull
+                           in different directions? (Cross-reference
+                           modality_structure in §2 if multimodal.)
+
+    mode:philosophical   — is the conceptual framework coherent
+                           throughout? Do later claims presuppose
+                           definitions or distinctions that contradict
+                           earlier ones?
+
+    mode:mixed           — assess consistency within each mode's
+                           section separately, then note any
+                           cross-section tensions.
+
+    → TAG: consistency:[high | medium | low]
+    basis: [one sentence — note the specific tension or confirmation
+    that grounds the assessment; do not leave basis blank]
+
+- corroboration_status / interpretive_grounding:
+    This field is MODE-CONDITIONAL. Apply the version that matches the
+    analytical_mode declared in §0.
+
+    ── MODE: fact-critical ──────────────────────────────────────
+    - corroboration_status:
+        Do NOT reassess verifiability here — that was done at claim level
+        in § 3. This field asks only: was corroboration actually attempted,
+        and what did it find?
+
+        Distinguish carefully:
+          corroboration:corroborated          — checked, independently confirmed
+          corroboration:partially-corroborated — checked, some claims confirmed,
+                                                some not
+          corroboration:uncorroborated        — checked, no confirming sources found
+          corroboration:contradicted          — checked, contradicting sources found
+          corroboration:not-attempted         — verifiable but not checked in this
+                                               analysis; state why
+          corroboration:not-assessable        — analyst lacks tools, access, or
+                                               domain competence; specify constraint
+
+        → TAG: corroboration:[value]
+        known_corroborating_sources: [list or N/A]
+        known_contradicting_sources: [list or N/A]
+        not_attempted_reason: [required if corroboration:not-attempted]
+        not_assessable_reason: [required if corroboration:not-assessable]
+
+    ── MODE: interpretive / philosophical ───────────────────────
+    - interpretive_grounding:
+        Is this analysis adequately grounded? Do NOT assess for factual
+        corroboration — assess for interpretive and theoretical warrant.
+        Evaluate along two dimensions:
+
+        textual_grounding:
+          How well does the interpretation account for the artefact's
+          own internal evidence?
+          [strongly-grounded | adequately-grounded | partially-grounded |
+           weakly-grounded | ungrounded]
+          basis: [one sentence — what evidence supports or undermines
+          the grounding]
+
+        scholarly_positioning:
+          How does this reading stand in relation to established
+          interpretations or theoretical frameworks in the relevant field?
+          [consonant | extends | revises | contests | isolated]
+          basis: [one sentence — name the frameworks or positions in
+          relation to which this reading is positioned]
+
+        → TAG: grounding:textual:[value]
+        → TAG: grounding:scholarly:[value]
+
+    ── MODE: mixed ──────────────────────────────────────────────
+        Apply both versions to their respective artefact sections.
+        Specify which section each assessment covers.
+
+- bias_indicators:
+    Assess tendencies across the whole artefact — dispositional patterns
+    in how information is selected, framed, or weighted. This is a
+    systemic assessment, not a catalogue of individual moves.
+    Do NOT log discrete locatable fallacies here — those belong in §4A-4.
+    If a bias pattern is instantiated by specific fallacies already logged
+    in §4A-4, cross-reference their fallacy_ids rather than re-describing
+    the individual moves.
+
+    For each bias pattern identified:
+      - bias_type: [value from list below]
+      - description: [one sentence — how this pattern manifests across
+        the artefact as a whole]
+      - instantiated_by: [fallacy_ids from §4A-4 if applicable, or N/A]
+
+    → TAG (one per bias type found): bias:[value]
+      bias:selection          — systematic exclusion of relevant information
+      bias:framing            — consistent positioning that favours one reading
+      bias:omission           — structural suppression of counter-evidence
+      bias:false-equivalence  — systemic treatment of unequal things as equal
+      bias:loaded-language    — pervasive use of evaluatively charged terms
+      bias:institutional-interest — artefact systematically serves producer's
+                                    institutional goals
+      bias:none-detected
+
+- misinformation_risk / epistemic_effect:
+    This field is MODE-CONDITIONAL. Apply the version that matches the
+    analytical_mode declared in §0.
+
+    ── MODE: fact-critical ──────────────────────────────────────
+    - misinformation_risk:
+        Is this artefact likely to produce false beliefs in its audience?
+        [none | low | medium | high | not-assessable]
+        basis: [required if medium or high — specify which claims drive
+        the assessment and why they are likely to mislead]
+        → TAG: misinfo-risk:[value]
+
+    ── MODE: interpretive / philosophical ───────────────────────
+    - epistemic_effect:
+        What does this artefact do to the epistemic field it enters?
+        Do NOT assess for factual accuracy here — assess for epistemic
+        consequence. Evaluate along two dimensions:
+
+        closure_effect:
+          Does the artefact foreclose, narrow, or suppress inquiry?
+          [forecloses | narrows | neutral | opens | expands]
+          basis: [one sentence — what inquiry is opened or closed and how]
+
+        power_effect:
+          Does the artefact naturalise, contest, or ignore relations
+          of power or authority in its domain?
+          [naturalises | reinforces | contests | ignores | indeterminate]
+          basis: [one sentence — which relations and through what mechanism]
+
+        → TAG: epistemic-effect:closure:[value]
+        → TAG: epistemic-effect:power:[value]
+
+    ── MODE: mixed ──────────────────────────────────────────────
+        Complete both versions above for the respective sections
+        of the artefact. Specify which section each assessment applies to.
+
+- limitations_of_this_analysis:
+    Declare what this specific analysis could not do, with reference to
+    this artefact. This is retrospective and operational — completed after
+    analysis, not before.
+    Do NOT restate analyst limitations from §0 here. Where an analysis
+    limitation is caused by an analyst limitation, cross-reference the
+    L-id from §0 and state only the concrete consequence for this analysis.
+    For each limitation:
+      - limitation_id: [AL1, AL2, …]
+      - description: [one sentence — what specifically could not be assessed
+        or was inadequately assessed in this analysis]
+      - caused_by: [L-id from §0 | artefact_complexity | access |
+                   time_constraint | other — specify]
+      - consequence: [one sentence — how this limitation affects the
+        reliability or completeness of the analysis]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 6. NORMALIZATION NOTES
+
+- Dates: ISO 8601; uncertain → ~ prefix
+- Locations: contemporary name [historical name in brackets]
+- Loaded terms: preserve verbatim, flag as [LOADED_TERM — type]
+  → must carry tag: claim:cat-loaded-term
+- Units/currencies: convert to contemporary, preserve original in brackets
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 7. ZOTERO MAPPING
+
+Collect ALL tags from §§ 0–6 into a single deduplicated list, grouped by prefix.
+
+MUTUAL EXCLUSIVITY — mode-conditional tag pairs:
+  corroboration:        fires in mode:fact-critical ONLY
+  grounding:textual:    fires in mode:interpretive / mode:philosophical ONLY
+  grounding:scholarly:  fires in mode:interpretive / mode:philosophical ONLY
+  misinfo-risk:         fires in mode:fact-critical ONLY
+  epistemic-effect:closure:  fires in mode:interpretive / mode:philosophical ONLY
+  epistemic-effect:power:    fires in mode:interpretive / mode:philosophical ONLY
+  reliability:          fires in mode:fact-critical ONLY
+                        (reliability:not-applicable fires in other modes)
+In mode:mixed, both sides of each pair may fire, scoped to their sections.
+Do not flag absent tags from the inactive side of a pair as missing.
+
+Minimum expected prefix groups — ALL modes:
+  framework: | mode: | analyst: | analyst-limit: | type: | lang: |
+  circulation: | reception: | modality: | genre: | function: | absence: |
+  intertextuality: | claim: | surface: | extraction-confidence: |
+  verifiability: | inference: | inference-confidence: | alt-reading: |
+  argument: | fallacy:formal: | fallacy:informal: | fallacy:severity: |
+  stress-test: | integrity: | consistency: | bias: |
+
+Additional prefix groups — mode:fact-critical:
+  corroboration: | reliability: | misinfo-risk:
+
+Additional prefix groups — mode:interpretive / mode:philosophical:
+  grounding:textual: | grounding:scholarly: |
+  epistemic-effect:closure: | epistemic-effect:power:
+
+Fields:
+- Item Type:   {{ZOTERO_ITEM_TYPE}}  ← use verbatim, matches Zotero 8.2
+- Title
+- Author / Creator
+- Date
+- Archive / Source / URL
+- Language
+- Tags: [full collected tag list, grouped by prefix; must include {{TYPE_TAG}}]
+- Extra:
+    source_id:      {{ARTEFACT_ID}}
+    analyst_id:     [value]
+    analysis_date:  [value]
+    loaded_terms:   [list or N/A]
+    schema_version: 1.0
+    prompt_version: 1.0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 8. ID STRATEGY
+
+- source_id used: {{ARTEFACT_ID}}
+- Confirm ID used verbatim: [yes / no — flag if modified]
+- source_type prefix rationale: [one sentence]
+- Any ambiguities in ID components: [note or N/A]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 9. ANALYTICAL SUMMARY
+
+Write a short plain-language summary of this analysis for a reader
+who has not seen the artefact. Maximum 150 words.
+
+Requirements:
+- Open with what the artefact IS and what it DOES (genre +
+  illocutionary function), not with bibliographic facts
+- Name the most significant analytical finding — the thing that
+  most shapes how this artefact should be read or used
+- State the primary evaluative finding in mode-appropriate terms:
+    mode:fact-critical   → state misinformation risk level and the
+                           single strongest reason for that assessment
+    mode:interpretive    → state the epistemic effect (closure and
+                           power dimensions) and its significance
+    mode:philosophical   → state the argument's validity and the most
+                           consequential assumption stress-test finding
+    mode:mixed           → address the dominant mode's evaluative
+                           finding and note where the other mode applies
+- Note any critical limitation of this analysis
+- Write in full sentences, no bullet points, no schema terminology,
+  no tag syntax
+- Do not summarize the claim list — synthesize the analytical picture
+
+This section is the human-readable entry point for the dataset record.
+It must stand alone without reference to the numbered sections above.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONSTRAINTS
+
+- Do not speculate beyond evidence; flag the boundary between inference
+  and assertion explicitly.
+- Do not reproduce harmful, discriminatory, or privacy-violating content
+  outside of analytically necessary quotation — and flag when doing so.
+- Separate artefact content from analyst interpretation at every stage.
+- Preserve ambiguity where it genuinely exists; false precision is an
+  analytical error, not a quality signal.
+- If the artefact responds to another artefact, identify the relation
+  in the intertextuality field in §2 using relation_type:responds-to
+  or relation_type:contests as appropriate.
+- Tags must reflect what was actually found. Do not pre-populate speculatively.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+INPUT ARTEFACT
+{{ARTEFACT_CONTENT}}
