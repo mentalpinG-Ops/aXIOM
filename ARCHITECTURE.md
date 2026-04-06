@@ -32,7 +32,18 @@ Module 4. Teacher-facing. Rubric-based student work evaluation against instituti
 aXIOM manages analytical overhead in the analysis phase of the academic work cycle — it does not replace human synthesis. The teacher reads, challenges, and decides. The tool carries the paperwork load.
 
 ### 1.3 The Engine
-Shared infrastructure underneath both applications. Input pipeline, content extraction, analytical schema, claim taxonomy, inference logic, SHA-256 ID system, structured output generation. Packaged as a shared Python library. No AI provider assumption. No user accounts. No Zotero dependency.
+Shared infrastructure underneath both applications. Input pipeline, 
+content extraction, SHA-256 ID system, AI provider communication, 
+response parsing, and structured output generation. Packaged as a 
+shared Python library. No AI provider assumption. No user accounts. 
+No Zotero dependency.
+
+Analytical schema, claim taxonomy, and inference logic belong to the 
+prompt layer — not the engine. Each application uses its own prompt: 
+the Research Analyser uses the Core Prompt (see `prompts/`), aXIOM 
+uses a separate Assessment Prompt informed by institutional context. 
+See `docs/ENGINE_ARCHITECTURE.md` for the three-layer separation 
+(transport / prompt / output) and section selection decisions.
 
 ---
 
