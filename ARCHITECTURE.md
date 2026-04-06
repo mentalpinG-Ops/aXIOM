@@ -106,6 +106,7 @@ Version history is maintained. Every assessment record is linked to the specific
 ---
 
 ## 4. Structured Output — Parsing and Failure Handling
+
 ### 4.1 The Pipeline
 Raw model output
 → Validation layer
@@ -113,18 +114,26 @@ Raw model output
 → Confidence scoring
 → Report assembly
 → Teacher review
+
 ### 4.2 Three Failure Modes and Their Solutions
+
 | Failure mode | Description | Solution |
 |--------------|-------------|----------|
 | Incomplete output | Model stops mid-assessment, fields missing | Retry with continuation prompt. After 3 retries: graceful failure message to teacher |
 | Malformed output | Structure wrong, cannot be parsed | Validation layer catches it, retry with explicit format instruction. Raw output preserved so teacher can see what model produced |
 | Shallow output | Structurally complete but analytically empty | Cannot be caught automatically. Transparency in report: confidence indicators per section, raw evidence cited from student text visible to teacher |
+
 ---
+
 ### 4.3 Retry Limit
 Maximum 3 retries across all failure types. After 3 retries the assessment fails gracefully with a plain-language error message. No cryptic technical errors exposed to the teacher.
+
 ---
+
 ## 5. Technology Stack
+
 ### 5.1 Decisions
+
 | Component | Choice | Rationale |
 |-----------|--------|-----------|
 | Backend | Python + FastAPI | Best AI-assistant support, readable, strong document processing libraries |
@@ -132,33 +141,46 @@ Maximum 3 retries across all failure types. After 3 retries the assessment fails
 | Frontend | Plain HTML + CSS + JavaScript | No framework overhead, close to existing HTML tool in spirit, maintainable solo |
 | Containerisation | Docker + Docker Compose | Single command deployment, platform-independent, one-file stack definition |
 | Package | Deployable container | Distributed as software, not a hosted service (phase 1) |
+
 ### 5.2 Development Environment
 Ubuntu desktop (local). Docker Compose runs the full stack locally. PostgreSQL runs in a container alongside the application. Browser points to localhost for the frontend.
+
 ### 5.3 Platform Support
 Linux (Ubuntu) — primary development environment. Mac (Intel and Apple Silicon) — must be explicitly tested before pilot. Windows (WSL2) — supported via Docker Desktop. All platforms supported via Docker — no platform-specific code.
+
 ---
+
 ## 6. Deployment Model
+
 ### 6.1 Phase 1 — Deployable Application
 Distributed as a Docker Compose package. Institution or teacher installs Docker, runs one command, opens browser. No server infrastructure managed by the project. No hosted service. No ongoing operational responsibility.
+
 ### 6.2 Phase 2 — SaaS (deferred)
 Hosted version added alongside deployable version. Teachers who cannot install Docker use the hosted version. Institutions requiring data sovereignty use their own deployment. Architecture is designed to support both from day one without requiring a rebuild.
+
 ### 6.3 Architecture Discipline for SaaS Readiness
 The following must be true from the first line of code to keep the SaaS path open:
 - No hardcoded infrastructure assumptions
 - Database queries scoped correctly for future multi-tenancy
 - Authentication abstracted, not hardcoded to one provider
 - All text strings in translation files, never hardcoded in UI
+
 ---
+
 ## 7. AI Provider Abstraction Layer
+
 ### 7.1 Scope
 AI abstraction layer applies to the aXIOM (module 4) only. The Research Analyser (modules 2 and 3) is Anthropic-native. The engine itself has no AI provider assumption.
+
 ### 7.2 Phase 1 Supported Configurations
+
 | Provider | Authentication | Priority |
 |----------|---------------|----------|
 | Anthropic Claude | API key | Primary — day one |
 | OpenAI GPT | API key | Day one — same pattern as Anthropic |
 | Azure OpenAI | Endpoint URL + API key + deployment name | Phase 2 |
 | Self-hosted local models | Configurable endpoint, no auth | Phase 2 |
+
 ### 7.3 Capability Probe
 Runs at setup against any unlisted or custom AI endpoint. Tests:
 - Structured output compliance (can the model return parseable schema output?)
@@ -166,41 +188,59 @@ Runs at setup against any unlisted or custom AI endpoint. Tests:
 - Response length (does it truncate before completing the schema?)
 - Image input support (does it handle embedded visual content?)
 - Polish and German language handling (separate test documents per language)
+
 **Probe outcomes:**
+
 | Result | Meaning | Action |
 |--------|---------|--------|
 | Green | Full compliance | Proceed normally |
 | Yellow | Partial compliance — known limitations | Flag degraded capabilities in UI, proceed with warnings |
 | Red | Structural compliance failure | Cannot proceed — clear plain-language explanation to administrator |
+
 Known-compatible model configurations skip the full probe and receive immediate green.
+
 ### 7.4 Visual Content Handling
 **Option B (default):** Extract text and embedded images from student submissions. Pass both to AI model for complete assessment.
+
 **Option C (automatic fallback):** If model fails image capability check in probe, switch to text-only extraction. Flag clearly in every report that visual content was present but not assessed. Teacher sees warning at setup. Particularly relevant for Institution A (art academy) where visual content in student work is the norm.
+
 ### 7.5 Prompt Template Design
 All prompt templates written for model-agnostic use. No Claude-specific prompting techniques in the aXIOM prompts. Templates must produce consistent structured output across supported providers.
+
 ---
+
 ## 8. Multilingual Architecture
+
 ### 8.1 Language Settings
 Three independent settings, each configurable separately:
+
 | Setting | Description |
 |---------|-------------|
 | UI language | Language the teacher navigates the application in |
 | Input language | Language the student work is written in |
 | Output language | Language the assessment report is produced in |
+
 ### 8.2 Languages
+
 | Language | Status | Notes |
 |----------|--------|-------|
 | English | Ships with v1.0 | Master language — source of truth for all strings |
 | Polish | Ships with v1.0 | AI-translated, human reviewed |
 | German | Ships with v1.1 | AI-translated, human reviewed |
 | Additional languages | N-language architecture — add translation file, no code changes | Future |
+
 ### 8.3 Translation Discipline
 English is written and finalised first. Translation runs only on stable English content. A translation status table is maintained in this document (see Appendix A). All translation files are JSON with explicit UTF-8 encoding.
+
 ### 8.4 Capability Probe — Language Testing
 The probe tests the configured AI model in both Polish and German using native academic text — not translations of English test documents. Each test document contains all language-specific diacritics deliberately.
+
 ---
+
 ## 9. UTF-8 Compliance
+
 UTF-8 is a standing requirement across every component. The following checklist applies to every new component added to the stack.
+
 ### 9.1 UTF-8 Compliance Checklist
 - [ ] Database initialised with explicit UTF-8 encoding
 - [ ] PostgreSQL collation configured for Polish and German text columns
@@ -214,9 +254,13 @@ UTF-8 is a standing requirement across every component. The following checklist 
 - [ ] AI API calls encode request body as UTF-8
 - [ ] All prompt templates declare expected input and output language explicitly
 - [ ] Capability probe test documents contain all Polish diacritics (ą ć ę ł ń ó ś ź ż) and German umlauts (ä ö ü ß)
+
 ---
+
 ## 10. Student Work File Formats
+
 ### 10.1 Supported Formats (Phase 1)
+
 | Format | Notes |
 |--------|-------|
 | DOCX | Primary format — must work perfectly |
@@ -224,47 +268,71 @@ UTF-8 is a standing requirement across every component. The following checklist 
 | TXT | Edge case — trivial to support |
 | RTF | Relevant for Mac users (TextEdit default) and older systems |
 | ODT | Relevant for LibreOffice users — common in European academic institutions |
+
 ### 10.2 Explicitly Excluded (Phase 1)
 Pages (.pages), scanned PDFs, handwritten work, standalone image files (JPG, PNG).
+
 ### 10.3 Unsupported Format Handling
 Graceful failure with a plain-language message explaining the format is not supported and what format to request from the student instead. No crashes, no cryptic errors.
+
 ---
+
 ## 11. Data Retention
+
 ### 11.1 Retention Period
 Study cycle length plus one year. Configured at setup by the teacher. Applies to all document types including thesis work.
+
 ### 11.2 Deletion Behaviour
 Automatic flagging when records reach expiry date. Teacher receives notification and confirms deletion — records are not deleted silently. Teacher can manually delete any record at any time before expiry.
+
 ### 11.3 Rationale
 Student work is personal data under GDPR. The institution owns the data in a locally deployed installation. The tool provides explicit retention and deletion controls so the institution can meet its own data governance obligations.
+
 ---
+
 ## 12. Report Output
+
 ### 12.1 Phase 1
 On-screen report displayed in the browser. Print stylesheet included from day one — designed alongside the screen report, not retrofitted. Print via browser (Ctrl+P) produces a clean, well-formatted output suitable for physical filing.
+
 ### 12.2 Print Stylesheet Requirements
 - Hides navigation, buttons, and UI chrome
 - Page breaks at section boundaries, never mid-finding
 - Black and white friendly — no colour-dependent meaning
 - Polish and German characters render correctly (handled by browser)
 - Typography clear at print resolution
+
 ### 12.3 Phase 2 (deferred)
 PDF export, DOCX export, direct sharing with examination boards.
+
 ### 12.4 Report Structure
 **OPEN — see to-do list.**
+
 ---
+
 ## 13. Pilot Programme
+
 ### 13.1 Target Institutions
 - Institution A — Academy of Fine Arts (Poland)
 - Institution B — University of Applied Sciences (Poland)
+
 ### 13.2 Pilot Approach
 **Phase 1 pilot:** One identified teacher. Observed live session. Tool used independently without facilitation guidance. Facilitator observes and takes notes using the Pilot Discovery Document.
+
 **Phase 2 pilot:** Wider group of testers using the tool independently and submitting self-reported feedback using the same document.
+
 ### 13.3 Pilot Discovery Document
-Separate document. Filed in repository as PILOT_DISCOVERY_v1.0.docx. Covers pre-session baseline, setup observation (with focus on API key friction), first use observation, debrief questions, and facilitator summary. Designed to work for both observed and self-reported sessions.
+Separate document. Filed in repository as `docs/pilot_discovery_document.docx`. Covers pre-session baseline, setup observation (with focus on API key friction), first use observation, debrief questions, and facilitator summary. Designed to work for both observed and self-reported sessions.
+
 ### 13.4 Known Friction Points
 API key setup is a confirmed friction point from prior observation. The setup wizard must treat API key configuration as a first-class onboarding problem — dedicated wizard step, inline guidance, visible test confirmation, plain-language error messages, cost estimate display.
+
 1:1 onboarding required. Group format insufficient for tool introduction. Individual sessions needed. The tool's utility is embedded in individual professional practice — access to the Lebenswelt of the individual assessor requires a 1:1 setting.
+
 ---
+
 ## 14. Open Questions (To-Do List)
+
 | Item | Description | Depends on |
 |------|-------------|------------|
 | Wizard Layer 1 fields | Specific fields within each wizard step | Further design session |
@@ -276,8 +344,11 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
 | Translation status tracking | Per-string translation status for Polish and German | Translation work begins |
 | Student-facing variant | Self-check tool for students before submission | Roadmap — deferred, not v1.0 scope |
+
 ---
+
 ## 15. Deferred Items (Phase 2)
+
 - Admin/supervisor institutional configuration layer
 - Multi-tenant data isolation and row-level security
 - Student-facing feedback (teacher-mediated)
@@ -288,8 +359,11 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 - Direct sharing with examination boards
 - Zotero integration (modules 2 and 3 only)
 - Research Analyser full platform build (Modules 2 and 3 — currently active as Artefact Analyser v1.0)
+
 ---
+
 ## Appendix A — Translation Status
+
 | String group | English | Polish | German |
 |--------------|---------|--------|--------|
 | UI navigation | ⬜ Pending | ⬜ Pending | ⬜ Pending |
@@ -298,9 +372,13 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Report output | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 | Capability probe messages | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 | Onboarding and setup | ⬜ Pending | ⬜ Pending | ⬜ Pending |
+
 Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approved
+
 ---
+
 ## Appendix B — Decision Log
+
 | Decision | Date | Rationale |
 |----------|------|-----------|
 | Two applications, one engine | 2026-03-27 | Research Analyser and aXIOM have different user types, different integration needs, and different deployment requirements |
