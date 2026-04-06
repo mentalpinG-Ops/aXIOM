@@ -2,8 +2,8 @@
 
 aXIOM project bibliography — consolidated reference list.
 
-**Version:** 0.3  
-**Last updated:** 2026-04-04  
+**Version:** 0.4  
+**Last updated:** 2026-04-06  
 **Maintained by:** X1  
 
 ---
@@ -108,13 +108,20 @@ Each entry is marked with its verification status:
 
 ## IX. Knowledge Commons & Surveillance Capitalism
 
-- **KC-01** 🔶  
-  Grassmuck, V. (2002/2004). *Freie Software: Zwischen Privat- und Gemeineigentum*. Bundeszentrale für politische Bildung (BPB).  
-  *Role in project: Knowledge commons framing. Informs X1's anti-vendor-lock-in values and self-hosted infrastructure decisions (NAS, Gitea, Syncthing).*
+- **KC-01** ✅  
+  Grassmuck, V. (2004). *Freie Software: Zwischen Privat- und Gemeineigentum* (2., korrigierte Aufl.). Bundeszentrale für politische Bildung. ISBN 978-3-89331-569-7 (Original work published 2002)  
+  Full text: https://freie-software.bpb.de/Grassmuck.pdf  
+  *Role in project: Knowledge commons (Wissensallmende) framing. Directly informs the project's open-source licensing decision and self-hosted infrastructure architecture (NAS, Gitea, Syncthing). Wissensallmende is an active project principle, not background reading.*
 
 - **KC-02** 🔶  
   Zuboff, S. (2019). *The age of surveillance capitalism: The fight for a human future at the new frontier of power*. PublicAffairs.  
   *Role in project: Reference frame for private data infrastructure design decisions. Not directly cited in project documents but shapes the normative position on data sovereignty.*
+
+## X. Analytical Schema — Foundations (pending)
+
+No peer-reviewed source currently underpins the Core Prompt's claim taxonomy (22 types), inference type system (8 types), or mode architecture (fact-critical / interpretive / philosophical). These emerged from AI-assisted prototyping and are validated through pilot use (DSR-01 evaluation framework).
+
+Candidate literature to be identified as part of Essay No 1 and Błocian engagement.
 
 ---
 
@@ -125,6 +132,7 @@ Each entry is marked with its verification status:
 | 0.1 | 2026-03-31 | Initial compilation from Session 1 (epistemological position) |
 | 0.2 | 2026-03-31 | DSR-01 verified (DOI confirmed) |
 | 0.3 | 2026-04-04 | Consolidated: added Research Framework sources (AIE, HAL, SEM, SCAF, BLOOM), Knowledge Commons (Grassmuck, Zuboff), Communities of Practice (Wenger), Learning by Design (Kalantzis/Cope). Restructured into thematic sections. |
+| 0.4 | 2026-04-06 | KC-01 verified (ISBN, full text URL confirmed). Role description updated: Wissensallmende as active project principle. Added Section X placeholder for analytical schema foundations (pending). |
 
 ---
 
