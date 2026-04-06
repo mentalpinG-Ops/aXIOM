@@ -1,10 +1,6 @@
-# CLAUDE.md — aXIOM Project Context
+# aXIOM — GitHub Copilot Instructions
 
-This file provides context for **Anthropic Claude Code** working on the aXIOM codebase.
-It is read automatically by Claude Code. It is not intended for GitHub Copilot — see
-`.github/copilot-instructions.md` for the equivalent Copilot context file.
-
-Read this before touching any file.
+This file provides project context for GitHub Copilot working on the aXIOM codebase.
 
 ---
 
@@ -91,7 +87,7 @@ The Academic Assessor (Module 4) supports multiple AI providers.
 Phase 1 supports Anthropic Claude and OpenAI GPT via API key.
 
 All prompt templates must be written for model-agnostic use. No
-Claude-specific prompting techniques in the aXIOM assessment prompts.
+provider-specific prompting techniques in the aXIOM assessment prompts.
 
 The Research Analyser (Modules 2 and 3) is Anthropic-native. This
 distinction is intentional and must be preserved.
@@ -130,6 +126,7 @@ academy) and Institution B (applied sciences university).
 ## Key documents
 
 - `ARCHITECTURE.md` — full architecture and decision log (source of truth)
+- `CONTRIBUTING.md` — contribution guidelines and coding standards
 - `docs/` — supporting documents including pilot discovery protocol
 
 ---
@@ -143,4 +140,3 @@ academy) and Institution B (applied sciences university).
 - Student-facing output
 - Modules 2 and 3 (Research Analyser) full build
 - German language support (v1.1, not v1.0)
-
