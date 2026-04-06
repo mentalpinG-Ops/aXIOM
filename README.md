@@ -25,7 +25,7 @@ Analyses cultural artefacts — film, media, political speech, visual
 material — using semiotic, ideological, and discourse analysis frameworks.
 Supports Zotero-based research workflows.
 
-**Module 4 — Academic Assessment**
+**Module 4 — Academic Assessor**
 Helps academic teachers assess whether student work meets the specific
 requirements of their department. Requirements are configured once and
 reused across multiple submissions. Produces a structured assessment
@@ -91,9 +91,11 @@ but does not constitute a validated scientific methodology. See
 | File / Folder | Description |
 | --- | --- |
 | `ARCHITECTURE.md` | System architecture and decision log |
-| `CLAUDE.md` | AI assistant project context |
+| `CLAUDE.md` | Anthropic Claude Code project context |
 | `COMMS.md` | Communication strategy for stakeholder-facing materials |
+| `CONTRIBUTING.md` | Contribution guidelines and coding standards |
 | `FEEDBACK.md` | Feedback intake log — routes items to project or comms tracks |
+| `.github/copilot-instructions.md` | GitHub Copilot project context |
 | `legacy/` | Original proof of concept (Artefact Analyser v1.0) |
 | `docs/` | Supporting documents (see below) |
 
