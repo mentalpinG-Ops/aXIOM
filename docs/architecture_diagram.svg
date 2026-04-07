@@ -1,0 +1,83 @@
+<svg width="100%" viewBox="0 0 680 620" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: white;">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- Header -->
+<text x="40" y="34" font-size="12" fill="#888780">Discovery phase active (2026-04-01) · Institution A + B — pilot</text>
+
+<!-- ENGINE container -->
+<rect x="40" y="490" width="600" height="90" rx="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="340" y="518" font-size="14" font-weight="500" fill="#2C2C2A" text-anchor="middle">Module 1 — the engine</text>
+<text x="340" y="538" font-size="12" fill="#444441" text-anchor="middle">Input pipeline · SHA-256 ID · AI provider abstraction · Output parsing</text>
+<text x="340" y="556" font-size="12" fill="#444441" text-anchor="middle">Shared Python library · No AI provider assumption · No user accounts</text>
+<rect x="556" y="494" width="72" height="20" rx="4" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+<text x="592" y="508" font-size="12" fill="#27500A" text-anchor="middle">in scope</text>
+
+<!-- APPLICATION A container -->
+<rect x="40" y="60" width="280" height="390" rx="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="180" y="90" font-size="14" font-weight="500" fill="#04342C" text-anchor="middle">Application A</text>
+<text x="180" y="108" font-size="12" fill="#085041" text-anchor="middle">Research analyser</text>
+
+<!-- Module 2 -->
+<rect x="60" y="130" width="240" height="80" rx="8" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="180" y="162" font-size="14" font-weight="500" fill="#04342C" text-anchor="middle">Module 2</text>
+<text x="180" y="180" font-size="12" fill="#085041" text-anchor="middle">Philosophical text analysis</text>
+<rect x="62" y="133" width="60" height="18" rx="4" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+<text x="92" y="145" font-size="12" fill="#27500A" text-anchor="middle">active</text>
+
+<!-- Module 3 -->
+<rect x="60" y="230" width="240" height="80" rx="8" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="180" y="262" font-size="14" font-weight="500" fill="#04342C" text-anchor="middle">Module 3</text>
+<text x="180" y="280" font-size="12" fill="#085041" text-anchor="middle">Cultural artefact analysis</text>
+<rect x="62" y="233" width="60" height="18" rx="4" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+<text x="92" y="245" font-size="12" fill="#27500A" text-anchor="middle">active</text>
+
+<!-- Artefact Analyser v1.0 -->
+<rect x="60" y="330" width="240" height="96" rx="8" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>
+<text x="180" y="360" font-size="14" font-weight="500" fill="#412402" text-anchor="middle">Artefact analyser v1.0</text>
+<text x="180" y="378" font-size="12" fill="#633806" text-anchor="middle">Single-file HTML · proof of concept</text>
+<text x="180" y="396" font-size="12" fill="#633806" text-anchor="middle">Active pilot delivery vehicle</text>
+
+<!-- APPLICATION B container -->
+<rect x="360" y="60" width="280" height="390" rx="14" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="500" y="90" font-size="14" font-weight="500" fill="#26215C" text-anchor="middle">Application B</text>
+<text x="500" y="108" font-size="12" fill="#3C3489" text-anchor="middle">aXIOM — teacher-facing</text>
+<rect x="382" y="68" width="116" height="20" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+<text x="440" y="82" font-size="12" fill="#712B13" text-anchor="middle">pending validation</text>
+
+<!-- Module 4 -->
+<rect x="380" y="130" width="240" height="80" rx="8" fill="#AFA9EC" stroke="#534AB7" stroke-width="0.5"/>
+<text x="500" y="162" font-size="14" font-weight="500" fill="#26215C" text-anchor="middle">Module 4 — aXIOM</text>
+<text x="500" y="180" font-size="12" fill="#3C3489" text-anchor="middle">Rubric-based student evaluation</text>
+<rect x="382" y="133" width="72" height="18" rx="4" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="418" y="145" font-size="12" fill="#633806" text-anchor="middle">build target</text>
+
+<!-- Workflows -->
+<rect x="380" y="230" width="240" height="200" rx="8" fill="#AFA9EC" stroke="#534AB7" stroke-width="0.5"/>
+<text x="500" y="256" font-size="14" font-weight="500" fill="#26215C" text-anchor="middle">Three workflows</text>
+<text x="500" y="276" font-size="12" fill="#3C3489" text-anchor="middle">1 · Formative checkpoint</text>
+<text x="500" y="296" font-size="12" fill="#3C3489" text-anchor="middle">2 · Thesis evaluation</text>
+<text x="500" y="316" font-size="12" fill="#3C3489" text-anchor="middle">3 · Compliance audit</text>
+<text x="500" y="344" font-size="12" fill="#3C3489" text-anchor="middle">Phase 1: teacher-managed</text>
+<text x="500" y="362" font-size="12" fill="#3C3489" text-anchor="middle">Phase 2: institution-managed</text>
+<text x="500" y="380" font-size="12" fill="#3C3489" text-anchor="middle">(deferred)</text>
+
+<!-- Arrows -->
+<line x1="180" y1="210" x2="180" y2="228" stroke="#888780" stroke-width="0.5" marker-end="url(#arrow)"/>
+<line x1="180" y1="310" x2="180" y2="328" stroke="#888780" stroke-width="0.5" marker-end="url(#arrow)"/>
+<path d="M180 452 L180 475 L340 475 L340 488" fill="none" stroke="#888780" stroke-width="0.5" marker-end="url(#arrow)"/>
+<path d="M500 452 L500 475 L340 475" fill="none" stroke="#888780" stroke-width="0.5"/>
+
+<!-- Legend -->
+<rect x="40" y="590" width="52" height="16" rx="4" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+<text x="66" y="601" font-size="12" fill="#27500A" text-anchor="middle">active</text>
+<rect x="104" y="590" width="80" height="16" rx="4" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="144" y="601" font-size="12" fill="#633806" text-anchor="middle">build target</text>
+<rect x="196" y="590" width="60" height="16" rx="4" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+<text x="226" y="601" font-size="12" fill="#27500A" text-anchor="middle">in scope</text>
+<rect x="268" y="590" width="116" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+<text x="326" y="601" font-size="12" fill="#712B13" text-anchor="middle">pending validation</text>
+</svg>
