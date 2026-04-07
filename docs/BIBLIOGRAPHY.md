@@ -28,11 +28,11 @@ Each entry is marked with its verification status:
 
 - **PHEN-01** ⚠️  
   Husserl, E. (1970). *The crisis of European sciences and transcendental phenomenology* (D. Carr, Trans.). Northwestern University Press. (Original work published 1936)  
-  *Role in project: Source for Lebenswelt concept. Relevant to Discovery phase as elicitation of lived assessment practice. Caution: name-dropping Husserl in the Błocian context is inappropriate given her Cassirer focus.*
+  *Role in project: Source for Lebenswelt concept. Relevant to Discovery phase as elicitation of lived assessment practice.*
 
 - **PHEN-02** ⚠️  
   Schütz, A., & Luckmann, T. (1973). *The structures of the life-world* (R. M. Zaner & H. T. Engelhardt Jr., Trans.). Northwestern University Press.  
-  *Role in project: Operationalises Lebenswelt for social science. Grounds the ethnographic strand of the Discovery phase. Same name-dropping caveat as PHEN-01.*
+  *Role in project: Operationalises Lebenswelt for social science. Grounds the ethnographic strand of the Discovery phase. *
 
 ## III. Qualitative & Ethnographic Methods
 
