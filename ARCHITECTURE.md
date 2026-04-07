@@ -6,6 +6,9 @@ Living Architecture Document — Version 0.1 | Last updated: 2026-04-03
 
 > This document captures all architecture decisions made to date. Decided items are closed and committed. Open items are explicitly marked as pending. Deferred items are recorded for future phases. This document must be updated at the end of every planning session.
 
+## 0. Platform architecture
+
+<img src="docs/architecture_diagram.svg" alt="aXIOM platform architecture" width="100%">
 ---
 
 ## 1. Platform Overview
