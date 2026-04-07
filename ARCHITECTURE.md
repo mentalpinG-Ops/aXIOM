@@ -1,6 +1,6 @@
 # aXIOM — ARCHITECTURE.md
 
-Living Architecture Document — Version 0.1 | Last updated: 2026-04-03
+Living Architecture Document — Version 0.1 | Last updated: 2026-04-07
 
 ---
 
@@ -72,8 +72,7 @@ Retrospective evaluation of finished, graded work against departmental or instit
 |-------|--------|---------------|
 | Programme requirements | Institution/department programme regulations | Teacher (phase 1) → Admin/supervisor (phase 2) |
 | Teacher criteria | Individual academic judgment within programme requirements | Teacher |
-
-AI use policy — Emerging layer. Not yet in wizard scope. See Open Questions
+| AI use policy | Institution/department AI use regulations for students | Not yet in wizard scope — see §14 Open Questions |
 
 National law is a background assumption. The institution is trusted to have produced programme requirements compliant with national law. The tool does not monitor legal compliance.
 
@@ -186,7 +185,9 @@ The following must be true from the first line of code to keep the SaaS path ope
 ## 7. AI Provider Abstraction Layer
 
 ### 7.1 Scope
-AI abstraction layer applies to the aXIOM (module 4) only. The Research Analyser (modules 2 and 3) is Anthropic-native. The engine itself has no AI provider assumption.
+Both applications support multiple AI providers. The engine itself has no AI provider assumption. Provider abstraction is implemented at the application layer in both the Research Analyser and aXIOM.
+
+The Research Analyser (modules 2 and 3) uses the same provider abstraction pattern as aXIOM. This is consistent with the legacy Artefact Analyser v1.0, which already implements multi-provider support (Anthropic, OpenAI, Azure OpenAI, custom endpoints). The rebuild preserves this.
 
 ### 7.2 Phase 1 Supported Configurations
 
@@ -195,11 +196,7 @@ AI abstraction layer applies to the aXIOM (module 4) only. The Research Analyser
 | Anthropic Claude | API key | Primary — day one |
 | OpenAI GPT | API key | Day one — same pattern as Anthropic |
 | Azure OpenAI | Endpoint URL + API key + deployment name | Phase 2 |
-| Self-hosted local models | Configurable endpoint, no auth | Phase 2 |
-
-Named candidates for Polish pilot context: Bielik and Plum 
-— Polish-language LLMs, locally installable, no internet dependency. 
-Relevant for institutions with data sovereignty requirements.
+| Self-hosted local models | Configurable endpoint, no auth | Phase 2 — named candidates for Polish pilot context: Bielik and Plum (Polish-language LLMs, locally installable, no internet dependency; relevant for institutions with data sovereignty requirements) |
 
 ### 7.3 Capability Probe
 Runs at setup against any unlisted or custom AI endpoint. Tests:
@@ -225,7 +222,7 @@ Known-compatible model configurations skip the full probe and receive immediate 
 **Option C (automatic fallback):** If model fails image capability check in probe, switch to text-only extraction. Flag clearly in every report that visual content was present but not assessed. Teacher sees warning at setup. Particularly relevant for Institution A (art academy) where visual content in student work is the norm.
 
 ### 7.5 Prompt Template Design
-All prompt templates written for model-agnostic use. No Claude-specific prompting techniques in the aXIOM prompts. Templates must produce consistent structured output across supported providers.
+All prompt templates written for model-agnostic use. No provider-specific prompting techniques in either application's prompts. Templates must produce consistent structured output across supported providers.
 
 ---
 
@@ -364,8 +361,7 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
 | Translation status tracking | Per-string translation status for Polish and German | Translation work begins |
 | Student-facing variant | Self-check tool for students before submission | Roadmap — deferred, not v1.0 scope |
-|Institutional AI policy field in wizard|  Should the wizard include a field for the teacher to declare the institution's current AI use policy for students?|
-|Relevant because Polish institutions are only beginning to formulate these policies (SGH 2024, Koźmiński 2025). |n/a| the compliance audit workflow (Workflow 3) may miss a layer of the institutional compliance standard.|
+| Institutional AI policy field in wizard | Should the wizard include a field for the teacher to declare the institution's current AI use policy for students? Polish institutions are only beginning to formalise these policies (SGH 2024, Koźmiński 2025). Without this field, Workflow 3 (compliance audit) may miss a layer of the institutional compliance standard. | Further design session |
 
 ---
 
@@ -412,7 +408,7 @@ Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approv
 | English and Polish day one | 2026-03-27 | Primary pilot institutions are Polish. German follows as third language |
 | N-language architecture | 2026-03-27 | Adding a language later should require only a translation file, not code changes |
 | UTF-8 standing requirement | 2026-03-27 | Polish and German diacritics touch every layer of the stack — discipline from day one prevents silent corruption |
-| AI abstraction in module 4 only | 2026-03-27 | Research Analyser is personal tool, Anthropic-native. aXIOM is institutional — universities have their own AI procurement |
+| AI abstraction in both applications | 2026-03-27 | Both Research Analyser and aXIOM support multiple AI providers. The engine has no provider assumption. Legacy Artefact Analyser v1.0 already implements multi-provider abstraction — the rebuild preserves this. Earlier documentation stated Modules 2–3 were Anthropic-native; this was incorrect and is superseded by this entry. |
 | Phase 1 auth: API key only | 2026-03-27 | Target institutions are small, teacher-deployed — no enterprise auth needed in phase 1 |
 | Supported formats: DOCX, PDF, TXT, RTF, ODT | 2026-03-27 | Covers typed work across Windows, Mac, and Linux academic environments. Scanned/handwritten excluded |
 | Visual content: Option B with Option C fallback | 2026-03-27 | Institution A is an art academy — visual content in student work is the norm. Option C fallback ensures graceful degradation when model lacks image capability |
@@ -422,5 +418,7 @@ Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approv
 | Core positioning principle adopted | 2026-04-03 | aXIOM manages analytical overhead in the analysis phase of the academic work cycle — it does not replace human synthesis. Added to ARCHITECTURE.md, CLAUDE.md, and COMMS.md as a non-negotiable framing principle. |
 | 1:1 onboarding required | 2026-04-03 | Group format insufficient for tool introduction. Individual sessions needed. Group dynamics suppress individual sense-making; access to the Lebenswelt of the individual assessor requires a 1:1 setting. |
 | Student-facing variant deferred | 2026-04-03 | Identified as potential extension — added to roadmap. Not v1.0 scope. |
+| Institutional AI policy added to open questions | 2026-04-07 | Polish academic institutions are only beginning to formalise AI use policies for students (SGH 2024, Koźmiński 2025). Wizard Layer 1 currently has no field for this. Workflow 3 (compliance audit) may miss this layer. Added to §14 for design decision. |
+| Bielik and Plum named as local LLM candidates | 2026-04-07 | Polish-language locally installable models relevant for pilot institutions with data sovereignty requirements. Added as named examples under self-hosted local models (Phase 2 slot). |
 
-Last updated: 2026-04-03
+Last updated: 2026-04-07
