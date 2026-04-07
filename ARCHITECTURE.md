@@ -73,6 +73,8 @@ Retrospective evaluation of finished, graded work against departmental or instit
 | Programme requirements | Institution/department programme regulations | Teacher (phase 1) → Admin/supervisor (phase 2) |
 | Teacher criteria | Individual academic judgment within programme requirements | Teacher |
 
+AI use policy — Emerging layer. Not yet in wizard scope. See Open Questions
+
 National law is a background assumption. The institution is trusted to have produced programme requirements compliant with national law. The tool does not monitor legal compliance.
 
 ### 2.4 Phase Structure
@@ -194,6 +196,10 @@ AI abstraction layer applies to the aXIOM (module 4) only. The Research Analyser
 | OpenAI GPT | API key | Day one — same pattern as Anthropic |
 | Azure OpenAI | Endpoint URL + API key + deployment name | Phase 2 |
 | Self-hosted local models | Configurable endpoint, no auth | Phase 2 |
+
+Named candidates for Polish pilot context: Bielik and Plum 
+— Polish-language LLMs, locally installable, no internet dependency. 
+Relevant for institutions with data sovereignty requirements.
 
 ### 7.3 Capability Probe
 Runs at setup against any unlisted or custom AI endpoint. Tests:
@@ -358,6 +364,8 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
 | Translation status tracking | Per-string translation status for Polish and German | Translation work begins |
 | Student-facing variant | Self-check tool for students before submission | Roadmap — deferred, not v1.0 scope |
+|Institutional AI policy field in wizard|  Should the wizard include a field for the teacher to declare the institution's current AI use policy for students?|
+|Relevant because Polish institutions are only beginning to formulate these policies (SGH 2024, Koźmiński 2025). |n/a| the compliance audit workflow (Workflow 3) may miss a layer of the institutional compliance standard.|
 
 ---
 
