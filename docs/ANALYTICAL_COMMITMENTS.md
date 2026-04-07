@@ -49,12 +49,22 @@ epistemically explicit.
 ---
 
 ## 4. Typical failure modes (and how we handle them)
-
 - **Shallow completeness**: output is structurally valid but analytically empty.
   - Mitigation: require evidence anchors + require rationale + prompt for
     interpretive stakes and counter-reading.
-- **Overconfident interpretation**: strong claims without sufficient grounding.
-  - Mitigation: force evidence references and explicit uncertainty.
+- **Hallucination vs. over-interpretation**: two distinct failure modes
+  requiring distinct mitigations — conflating them produces incorrect responses.
+  - **Hallucination**: the engine asserts something with no basis in the source
+    material (fabricated reference, invented segment).
+    — Mitigation: evidence anchor enforcement (rule 1).
+  - **Over-interpretation**: the engine correctly identifies something present
+    in the material but draws a claim that exceeds what the evidence supports
+    (e.g. "significant" when the evidence only shows "present").
+    — Mitigation: uncertainty markers (rule 4) + counter-reading requirement
+    (rule 3).
+  - These are structurally different errors: one is a sourcing failure, the
+    other is an inferential overreach. Anchoring evidence alone does not
+    prevent overreach.
 - **Category drift**: categories change meaning across runs/models.
   - Mitigation: categories are defined here and in the engine schema; prompts
     must conform to the definitions.
