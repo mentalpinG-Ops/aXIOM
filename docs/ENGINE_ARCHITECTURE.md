@@ -37,7 +37,7 @@ different prompts.
 | Use case | Prompt | Status |
 |---|---|---|
 | Artefact Analyser (research) | Core Prompt v1.0 | Exists, extracted to `prompts/CORE_PROMPT_v1_0.md` |
-| Academic Assessor (Module 4) | Assessment Prompt (TBD) | To be developed, informed by Core Prompt |
+| Academic Assessor (Module 4) | Assessment Prompt v1.0 | Exists, extracted to `prompts/ASSESSMENT_PROMPT_v1_0`. Ready for standalone testing. |
 
 The Assessment Prompt is not a subset of the Core Prompt. It is a
 separate prompt that is *conceptually informed* by the Core Prompt
@@ -169,9 +169,8 @@ Core Prompt and the project's product assumptions:
 
 ## 6. What this document does not cover
 
-- The Assessment Prompt itself (to be developed)
+- The Assessment Prompt itself — now exists at `prompts/ASSESSMENT_PROMPT_v1_0`. See `prompts/ASSESSMENT_PROMPT_v1_0_DESCRIPTION.md` for section-level documentation.
 - Transport layer technical implementation (see `ARCHITECTURE.md`)
-- Specific claim taxonomy reduction for Module 4
 - UI/UX of the setup wizard
 - Data retention and privacy architecture (see stakeholder presentation)
 
