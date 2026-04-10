@@ -112,5 +112,55 @@ and will be confirmed during pilot discovery sessions.
 
 ---
 
-*Last updated: 2026-03-30*
+*Last updated: 2026-04-10*  
 *See FEEDBACK.md for full item context.*
+
+---
+
+## Methodology Validation Issues (M01–M14)
+
+The following section documents how to use the methodology validation issue template for tracking the 14 Specification-Assumption Coherence Audits (SACA) across the methodological frameworks embedded in the engine.
+
+### Prerequisites
+
+Before opening any M01–M14 issue, ensure the following are complete:
+
+1. `docs/ENGINE-COHERENCE-AUDIT.md` — the foundational audit establishing epistemological coherence between the engine's cultural-science orientation, DSR, and phenomenological grounding (✅ complete)
+2. Familiarise yourself with `docs/METHODOLOGY-VALIDATION-ISSUE-TEMPLATE.md` — the template and protocol for each methodology check
+
+### Label for M01–M14 Issues
+
+Use the existing `methodology` label (hex `#5319e7`) for all M01–M14 issues.
+
+Add additional labels as appropriate:
+
+| Condition | Label to add |
+|---|---|
+| Conflict found that blocks prompt use | `blocking` |
+| Conflict found but does not block current work | `non-blocking` |
+| Conflict identified, resolution deferred | `deferred` |
+| Issue entered but not yet triaged | `triage` |
+
+### Issue Naming Convention
+
+Name each issue using the following format:
+
+```
+SACA — M[NN]: [Methodology Full Name]
+```
+
+Examples:
+- `SACA — M01: Critical Discourse Analysis (CDA)`
+- `SACA — M02: [Methodology Full Name]`
+
+### Issue Body
+
+Copy the template block from `docs/METHODOLOGY-VALIDATION-ISSUE-TEMPLATE.md` and fill in all fields. Do not open an issue with empty fields — complete at least sections 1 (profile) and 2 (methodology assumptions) before opening.
+
+### Sequencing
+
+Open issues in order M01 → M14. M01 (Critical Discourse Analysis) is the first triage test case and should be completed before opening M02.
+
+### Tracking
+
+The methodology register table in `docs/METHODOLOGY-VALIDATION-ISSUE-TEMPLATE.md` is the canonical tracking list. Update it with the GitHub issue number when each issue is opened.

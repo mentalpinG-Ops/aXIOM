@@ -98,7 +98,7 @@ Three methodological questions were identified as requiring resolution before ac
 
    **Candidate answer (not yet closed):** *Nachvollziehbarkeit* — traceable, intersubjectively verifiable reasoning — is the natural validity criterion for interpretively grounded DSR and is already the core concept of this project (see above). Whether this criterion is sufficient on its own, or requires supplementary measures (e.g. expert review, pilot evaluation rubric), requires dedicated analysis before publication.
 
-**Questions 2 and 3 require resolution before academic publication. Question 1 is closed.**
+**Questions 2 and 3 require resolution before academic publication. Question 1 is closed. Question 0 (engine coherence) is now resolved — see `docs/ENGINE-COHERENCE-AUDIT.md`.**
 
 ---
 
@@ -114,7 +114,7 @@ The schema used by the Artefact Analyser (inherited by aXIOM Module 4) already h
 
 **Implication:** The analytical engine is a **proof of concept**, not a validated scientific methodology. This framing absorbs the "scholarly isolation" finding (no comparable tools exist) without requiring prior art.
 
-**Alignment requirement:** Before academic publication, the engine's implicit cultural studies orientation must be checked for coherence with the interpretively grounded DSR framework stated above. If they belong to compatible traditions, this should be explicitly stated. If there is tension, it must be named and resolved. This is a prerequisite for the Academic Validation Path.
+**Alignment requirement:** ✅ RESOLVED. The engine's cultural studies orientation has been audited for coherence with the interpretively grounded DSR framework. The three traditions — cultural-science / qualitative analysis, DSR (Hevner et al. 2004), and phenomenological / interpretivist grounding — are compatible and operate at complementary levels of abstraction. No architectural modification is required. See `docs/ENGINE-COHERENCE-AUDIT.md` for the full audit and findings.
 
 ---
 
@@ -143,6 +143,25 @@ All entries flagged for verification status. Unverified entries require DOI/libr
 
 **Validation method:** Stress-test with domain expert in cultural studies methods or design science research (academic contact).  
 Target: epistemological coherence, publication venue fit, institutional reception.
+
+### Three-Stage Validation Sequence
+
+The academic validation process is structured in three sequential stages. Each stage is a prerequisite for the next.
+
+**Stage 1 — Engine coherence audit** ✅ COMPLETE  
+Does the engine's cultural-science and qualitative orientation align with the interpretively grounded DSR framework and phenomenological grounding?  
+→ Deliverable: `docs/ENGINE-COHERENCE-AUDIT.md`  
+→ Finding: The three traditions are coherent and complementary. No architectural modification required.
+
+**Stage 2 — Methodology validation framework** ⚠️ NEXT  
+Can each of the 14 methodological frameworks (M01–M14) cohere with both the engine AND the epistemological position?  
+→ Deliverable: Completed entries in `docs/METHODOLOGY-VALIDATION-ISSUE-TEMPLATE.md` and linked GitHub issues (one per methodology)  
+→ Process: Specification-Assumption Coherence Audit (SACA) — see issue template for protocol
+
+**Stage 3 — Conflict matrix for M01–M14** ⚠️ PENDING  
+Document conflicts found in each methodology's assumptions vs. the prompt-design specification.  
+→ Deliverable: Conflict matrix summarising all 14 methodology checks, resolutions, and outstanding modifications  
+→ Prerequisite: All 14 Stage 2 entries complete
 
 ---
 
