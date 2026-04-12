@@ -362,6 +362,7 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Translation status tracking | Per-string translation status for Polish and German | Translation work begins |
 | Student-facing variant | Self-check tool for students before submission | Roadmap — deferred, not v1.0 scope |
 | Institutional AI policy field in wizard | Should the wizard include a field for the teacher to declare the institution's current AI use policy for students? Polish institutions are only beginning to formalise these policies (SGH 2024, Koźmiński 2025). Without this field, Workflow 3 (compliance audit) may miss a layer of the institutional compliance standard. | Further design session |
+- **Institutional AI disclosure obligation**: aXIOM produces AI-assisted assessment output. Whether institutions are required to inform students that AI was involved in evaluating their work is currently unregulated but closing fast (cf. Elsevier GenAI Policy Sept. 2025, boundary between "assistance" and "research-process use" undefined). aXIOM must take an explicit position before pilot institutions ask. Candidate approaches: (a) mandatory disclosure template generated with every report, (b) configurable per institution, (c) documented as institution's responsibility. Decision deferred pending pilot feedback and Polish HEI regulatory scan.
 
 ---
 
