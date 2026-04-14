@@ -1,8 +1,6 @@
-Ein Schritt: neue Datei `COMPETITIVE_LANDSCAPE.md` im Repo-Root. Paste-ready:
 
----
 
-```markdown
+markdown
 # Competitive Landscape
 
 *Last updated: 2026-04-14 | Source: open-access web search, 2023–2025*
