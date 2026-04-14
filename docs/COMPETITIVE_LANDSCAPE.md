@@ -1,9 +1,8 @@
+aXIOM Competitive Landscape
 
-
-markdown
-# Competitive Landscape
-
-*Last updated: 2026-04-14 | Source: open-access web search, 2023–2025*
+**Version:** 0.1 
+**Last updated:** 2026-04-14  
+**Maintained by:** X1
 
 ---
 
