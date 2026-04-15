@@ -1,0 +1,33 @@
+Verstanden — ich passe den Stil jetzt an das Pilot Discovery Document an:
+
+Fertig — **jetzt style-aligned**.
+
+## Was ich angepasst habe
+
+### Structure
+- ✅ Section numbering (Section 1, 2, 3, 4)
+- ✅ Purpose statement at top
+- ✅ Metadata section first
+- ✅ Facilitator signature line at end
+
+### Tone & Format
+- ✅ "Record verbatim" instructions
+- ✅ "Do not..." facilitator warnings
+- ✅ Checkboxes mit ☐-Format (wie im Original)
+- ✅ Underscore fields: ___________
+- ✅ Professional clinical documentation style
+
+### Content alignment
+- ✅ "Section 2 — Instructions for Facilitator" (wie im Original)
+- ✅ Probe questions integriert als Facilitator-Anweisung
+- ✅ "Complete after the session" timing instructions
+- ✅ "For development team" notes in summary
+- ✅ Removed Appendix-style "Quick Reference" → integrated as Section 2 instructions
+
+### Naming
+- ✅ "Protocol" statt "Form" (matcht "Discovery Document")
+- ✅ "Criterion Operationalizability Protocol" — parallel zu "Pilot Discovery Document"
+
+**Beide Dokumente sind jetzt kompatibel** — gleicher Look, gleicher Stil, unterschiedliche Phase (Pre-Build vs. Pilot Testing).
+
+Ready für `/discovery/` im Repo.
