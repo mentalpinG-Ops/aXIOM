@@ -313,17 +313,13 @@
 
   // ── Step 4: Capability Probe ──────────────────────────────────────────────────
 
-  var KNOWN_COMPATIBLE_CONFIGS = {
-    anthropic: ['claude-sonnet-4-20250514', 'claude-3-5-haiku-20241022', 'claude-opus-4-5'],
-    openai:    ['gpt-4o', 'gpt-4o-mini'],
-  };
-
   async function onShowProbeStep() {
-    var cfg          = AXIOM_ASSESSOR_CONFIG.loadConfig();
-    var providerCfg  = (cfg.providerConfig || {})[state.selectedProvider] || {};
-    var model        = providerCfg.model || '';
-    var knownList    = KNOWN_COMPATIBLE_CONFIGS[state.selectedProvider] || [];
-    var isKnown      = knownList.indexOf(model) !== -1;
+    var cfg         = AXIOM_ASSESSOR_CONFIG.loadConfig();
+    var providerCfg = (cfg.providerConfig || {})[state.selectedProvider] || {};
+    var provider    = AXIOM_ASSESSOR_CONFIG.providers[state.selectedProvider];
+    var isKnown     = provider && typeof provider.isKnownCompatible === 'function'
+                      ? provider.isKnownCompatible(providerCfg)
+                      : false;
 
     resetProbeChecks();
 
@@ -515,10 +511,28 @@
   function initSkip() {
     var skipBtn = $('btnSkip');
     if (!skipBtn) return;
+    var pendingConfirm = false;
+
     skipBtn.addEventListener('click', function () {
-      if (!confirm(t('nav.skip') + '?')) return;
-      AXIOM_ASSESSOR_CONFIG.markOnboardingComplete();
-      window.location.href = 'index.html';
+      if (!pendingConfirm) {
+        // First click: change button to confirm state
+        pendingConfirm = true;
+        skipBtn.textContent = t('nav.skip.confirm');
+        skipBtn.style.color = 'var(--warn)';
+
+        // Auto-reset after 4 seconds if no action
+        setTimeout(function () {
+          if (pendingConfirm) {
+            pendingConfirm = false;
+            skipBtn.textContent = t('nav.skip');
+            skipBtn.style.color = '';
+          }
+        }, 4000);
+      } else {
+        // Second click: confirmed — mark complete and launch
+        AXIOM_ASSESSOR_CONFIG.markOnboardingComplete();
+        window.location.href = 'index.html';
+      }
     });
   }
 

@@ -87,6 +87,7 @@
 
   "nav.back": "← Wstecz",
   "nav.skip": "Pomiń konfigurację",
+  "nav.skip.confirm": "Kliknij ponownie, aby potwierdzić pominięcie",
 
   "error.generic": "Coś poszło nie tak. Spróbuj ponownie."
 }

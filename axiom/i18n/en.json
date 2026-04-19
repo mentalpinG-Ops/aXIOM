@@ -87,6 +87,7 @@
 
   "nav.back": "← Back",
   "nav.skip": "Skip setup",
+  "nav.skip.confirm": "Click again to confirm skip",
 
   "error.generic": "Something went wrong. Please try again."
 }
