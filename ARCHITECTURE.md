@@ -106,7 +106,51 @@ Steps flow in this order:
 4. Free text extension (Layer 2 — anything not covered above)
 5. Review and confirm (teacher sees complete requirement set, can return to any step before saving)
 
-Specific fields within each step: **OPEN — see to-do list.**
+#### Step 1 — Assignment context
+
+Provides the basic framing for the assessment. Feeds `{{OUTPUT_LANGUAGE}}` and supplies context for §0 (Assessment Configuration) and §2.1 (Document Check) of the Assessment Prompt.
+
+| Field | Type | Options / notes |
+|-------|------|-----------------|
+| Assignment type | Select | Essay, Seminar paper, Bachelor thesis, Master thesis, Project report, Portfolio, Other (reveals free-text field) |
+| Academic level | Select | Bachelor, Master, Doctoral, Other (reveals free-text field) |
+| Discipline / field | Text | Free text — e.g. Fine Arts, Applied Sciences, Philosophy |
+| Input language | Select | Polish, English, German — the language the student work is actually written in. Phase 1 supports these three languages only. |
+| Output language | Select | Polish, English, German — the language the assessment report is produced in |
+
+**Input language and submission language requirement:** Input language (Step 1) records the language the student actually submitted in. Submission language requirement (Step 2) records the programme's formal language requirement. If these differ, the mismatch is surfaced as a formal compliance finding in §2.3 of the assessment report. The engine does not block assessment on a mismatch — the teacher reviews and decides.
+
+#### Step 2 — Programme requirements (Studienordnung)
+
+Configures `{{INSTITUTION_FRAMEWORK}}`. Stored per institution/programme. Intended to be configured once and reused across assessments for the same programme.
+
+| Field | Type | Options / notes |
+|-------|------|-----------------|
+| Programme name | Text | e.g. BA Fine Arts, MA Applied Sciences |
+| Regulation document reference | Text | Document title and year — e.g. Studienordnung 2023 §4 |
+| Required length | Text | Minimum and/or maximum — e.g. 8 000–10 000 words |
+| Required structural elements | Multi-select | Abstract, Introduction, Theoretical framework, Methodology, Analysis, Discussion, Conclusion, Bibliography, Appendices |
+| Required citation style | Select | APA, MLA, Chicago, Harvard, Institutional style, None specified |
+| Submission language requirement | Select | Polish, English, German, Any — the language the submission must be written in per programme regulations |
+| Grading scale | Text | e.g. 2–5 (Polish), A–F, 0–100 |
+| Programme learning outcomes | Textarea | What the programme formally expects — used verbatim in requirements alignment |
+| Additional programme requirements | Textarea | Anything not captured in the fields above |
+
+#### Step 3 — Teacher criteria
+
+Configures `{{SEMINAR_REQUIREMENTS}}`. Configured per course. Can reference and extend programme requirements but cannot override them. The wizard checks for conflicts between teacher criteria and programme requirements on save. If a conflict is detected, the teacher is shown a plain-language explanation of the conflict and asked to resolve it before proceeding — assessment cannot run against conflicting requirements.
+
+| Field | Type | Options / notes |
+|-------|------|-----------------|
+| Course / seminar name | Text | e.g. Qualitative Research Methods, Contemporary Art Theory |
+| Semester | Text | e.g. Winter 2026 |
+| Assignment brief | Textarea | The task description given to students — verbatim or summarised |
+| Required analytical approach | Text | e.g. Grounded theory, Discourse analysis — leave blank if none specified |
+| Analytical depth expected | Select | Introductory, Intermediate, Advanced |
+| Original argument required | Radio | Required, Optional, Not applicable |
+| Source requirements | Text | e.g. Minimum 10 scholarly sources, primary sources required |
+| Specific evaluation criteria | Repeating block | One criterion per entry — label and description. No fixed upper limit. |
+| Additional teacher criteria | Textarea | Anything not captured in the fields above |
 
 ### 3.3 Three Operations on Requirement Sets
 
@@ -352,7 +396,6 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 
 | Item | Description | Depends on |
 |------|-------------|------------|
-| Wizard Layer 1 fields | Specific fields within each wizard step | Further design session |
 | Report structure and sections | What the assessment report contains and how it is organised | Further design session |
 | Print stylesheet design | Detailed design of print output | Report structure decision |
 | Cost visibility | Whether and how to show token usage and estimated cost per assessment run | Further design session |
