@@ -1,6 +1,6 @@
 # aXIOM — ARCHITECTURE.md
 
-Living Architecture Document — Version 0.1 | Last updated: 2026-04-07
+Living Architecture Document — Version 0.1 | Last updated: 2026-04-19
 
 ---
 
@@ -323,7 +323,90 @@ On-screen report displayed in the browser. Print stylesheet included from day on
 PDF export, DOCX export, direct sharing with examination boards.
 
 ### 12.4 Report Structure
-**OPEN — see to-do list.**
+
+The assessment report has seven sections (§0–§6). On screen they are
+presented in reading order: §6 (Assessment Report) appears first because
+it is the teacher-facing human-readable summary. §§0–5 contain the
+analytical detail and are collapsed by default, expandable on demand.
+
+**On-screen section order:**
+
+| Position | Section | Default state | Purpose |
+|----------|---------|---------------|---------|
+| 1 | §6 Assessment Report | Open | Human-readable summary — the teacher reads this first |
+| 2 | §5 Requirements Alignment | Open | Core criteria evaluation — load-bearing for grading decisions |
+| 3 | §2 Document Check | Collapsed | Structural and formal check — teacher expands if formal issues are flagged |
+| 4 | §3 Core Argument Analysis | Collapsed | Thesis identification and argument structure |
+| 5 | §4 Argument Quality Assessment | Collapsed | Logical validity, evidential support, reasoning errors |
+| 6 | §1 Submission Context | Collapsed | Confirms which requirements were loaded — useful for audit |
+| 7 | §0 Assessment Configuration | Collapsed | System-level metadata — primarily for audit and debugging |
+
+**Section contents:**
+
+**§6 — Assessment Report** (always open; teacher reads this first)
+- **6.1 Overall impression** — 1–2 sentence holistic judgment of the submission
+- **6.2 Strengths** — up to 5 genuine strengths with evidence citations; list is not inflated — fewer listed if fewer genuine strengths exist
+- **6.3 Areas for development** — significant shortfalls with evidence and a concrete description of what adequate development would look like
+- **6.4 Unmet requirements** — all requirements from §5 assessed as not-met, listed explicitly; states clearly if none
+- **6.5 Assessment confidence** — overall confidence level (high / medium / low) with 2–3 sentence rationale; lists elements that could not be assessed and explains why
+
+**§5 — Requirements Alignment** (always open)
+- **5.1 Programme requirements alignment** — each requirement evaluated: met / partially-met / not-met / not-assessable, with evidence citation and per-finding confidence level
+- **5.2 Seminar requirements alignment** — same structure as 5.1
+- **5.3 Alignment summary** — counts by status, list of critical gaps (not-met findings that are likely load-bearing for the grade decision), and overall section confidence level
+
+**§2 — Document Check** (collapsed)
+- **2.1 Basic identification** — language, document type, word count, modality (text-only or multimodal)
+- **2.2 Structural elements check** — standardised checklist of academic structure elements (abstract, introduction, theoretical framework, methodology, analysis, discussion, conclusion, reference list, appendices); each element: present / absent / present-but-underdeveloped / not-required
+- **2.3 Formal compliance check** — requirements-anchored check of formal requirements (length, format, citation style, language, anonymisation)
+- **2.4 Notable gaps vs requirements** — each gap given a gap_id (G1, G2…), classified by severity (structural / content / formal), anchored to the specific requirement
+
+**§3 — Core Argument Analysis** (collapsed)
+- **3.1 Thesis identification** — status: yes (clear thesis) / unclear / no; with mandatory confidence indicator
+- **3.2 Supporting claims** — for each claim: type (thesis-support / methodological / descriptive / conclusion), evidence basis, connection to thesis (strong / weak / unclear / absent), and confidence level
+- **3.3 Argument structure summary** — 2–4 sentences on whether supporting claims are additive or redundant
+
+**§4 — Argument Quality Assessment** (collapsed)
+- **4.1 Argument reconstruction** — premises → conclusion; implicit premises flagged
+- **4.2 Logical validity** — validity and soundness check; specific reasoning gaps listed
+- **4.3 Evidential support** — quantity (sufficient / insufficient / excessive-but-superficial), quality (appropriate-for-level / below-expectations / above-expectations), and integration (claim-anchored or listed without integration); specific citation issues listed
+- **4.4 Informal reasoning errors** — included only if present; each anchored to a specific passage and classified by severity (minor / significant / structural); taxonomy: overgeneralisation, unsupported-causal-claim, appeal-to-authority, straw-man, false-equivalence, circular-reasoning
+- **4.5 Assumption check** — significant undefended assumptions classified as load-bearing or peripheral, and as defended / partially-defended / undefended
+
+**§1 — Submission Context** (collapsed)
+- Confirmation that INSTITUTION_FRAMEWORK, SEMINAR_REQUIREMENTS, and MANUAL_NOTES have been received
+- 1–3 sentence summary of what each layer requires
+- Flags any requirement that is ambiguous, internally conflicting, or in conflict with another layer
+
+**§0 — Assessment Configuration** (collapsed)
+- System metadata: SUBMISSION_ID, GENERATED_AT, analytical framework (always "criteria-based academic assessment"), assessment mode (always "interpretive"), output language
+- Four standing system-level limitations declared verbatim (L1: AI findings require teacher review; L2: AI cannot assess originality or detect plagiarism; L3: visual content may not be fully assessable in text-only mode; L4: assessment quality depends on the accuracy of the requirements provided)
+
+---
+
+**Confidence indicators**
+
+Three levels are used throughout the report:
+
+| Level | Label | Screen colour | Print rendering |
+|-------|-------|---------------|-----------------|
+| High | High confidence | Green | Filled circle ● |
+| Medium | Medium confidence | Amber | Half-filled circle ◑ |
+| Low | Low confidence | Red | Empty circle ○ |
+
+Indicators are text-labelled at all times. Colour is supplementary and
+never the sole carrier of meaning (print-safe per §12.2).
+
+Confidence indicators appear:
+- Per individual requirement finding in §5.1 and §5.2
+- Per claim in §3.2
+- On thesis identification in §3.1
+- At section level in §5.3
+- As the overall assessment confidence in §6.5
+
+The overall confidence level in §6.5 is derived conservatively: if any
+analytical section (§§2–5) returns low confidence, the overall is low;
+if all sections return high, the overall is high; mixed cases yield medium.
 
 ---
 
@@ -353,8 +436,7 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Item | Description | Depends on |
 |------|-------------|------------|
 | Wizard Layer 1 fields | Specific fields within each wizard step | Further design session |
-| Report structure and sections | What the assessment report contains and how it is organised | Further design session |
-| Print stylesheet design | Detailed design of print output | Report structure decision |
+| Print stylesheet design | Detailed design of print output | ~~Report structure decision~~ Report structure decided (§12.4) — can now proceed |
 | Cost visibility | Whether and how to show token usage and estimated cost per assessment run | Further design session |
 | Update mechanism | How teachers update their installation without losing data | Further design session |
 | Onboarding flow design | Full setup experience beyond the capability probe | Pilot feedback |
@@ -421,5 +503,6 @@ Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approv
 | Student-facing variant deferred | 2026-04-03 | Identified as potential extension — added to roadmap. Not v1.0 scope. |
 | Institutional AI policy added to open questions | 2026-04-07 | Polish academic institutions are only beginning to formalise AI use policies for students (SGH 2024, Koźmiński 2025). Wizard Layer 1 currently has no field for this. Workflow 3 (compliance audit) may miss this layer. Added to §14 for design decision. |
 | Bielik and Plum named as local LLM candidates | 2026-04-07 | Polish-language locally installable models relevant for pilot institutions with data sovereignty requirements. Added as named examples under self-hosted local models (Phase 2 slot). |
+| Report structure and confidence indicator system defined | 2026-04-19 | Assessment report has seven sections (§0–§6). §6 and §5 are open by default; §§0–4 collapse. Confidence indicators use three levels (high / medium / low) displayed as text labels with supplementary colour coding (print-safe). Overall confidence in §6.5 derived conservatively from section-level confidence across §§2–5. Resolves GitHub Issue #2. |
 
-Last updated: 2026-04-07
+Last updated: 2026-04-19
