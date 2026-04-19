@@ -66,5 +66,10 @@
   "status.extractingImage": "Extracting image content with AI (OCR)…",
   "status.extractingPDF": "Extracting PDF content with AI…",
   "status.extractingDOCX": "Extracting DOCX content with AI…",
-  "status.readingText": "Reading text file…"
+  "status.readingText": "Reading text file…",
+  "cost.run.tokens": "↓{input} ↑{output}",
+  "cost.run.withCost": "↓{input} ↑{output} · {cost}",
+  "cost.session.tokens": "session ↓{input} ↑{output}",
+  "cost.session.withCost": "session ↓{input} ↑{output} · {cost}",
+  "cost.tooltip": "Token usage and estimated API cost for this session. Prices are estimates — check your provider dashboard for accurate billing."
 }
