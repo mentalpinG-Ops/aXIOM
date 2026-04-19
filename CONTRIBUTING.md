@@ -122,6 +122,36 @@ issue, pull request, or documentation. Refer to them as:
 
 ---
 
+## Privacy and anonymisation protocol
+
+Never include the following in any public file, commit message, issue, or PR:
+
+- Real institution names (universities, academies, schools)
+- Real names of academic staff, collaborators, or pilot participants
+- City or country identifiers that could identify a specific institution
+- Any other information that could de-anonymise a pilot participant or stakeholder
+
+When referencing institutions use the pseudonyms above. When referencing academic
+contacts or collaborators use neutral role labels such as "academic collaborator",
+"pilot participant", or "validator". When referencing pilot locations use generic
+terms such as "a city in Poland".
+
+Every privacy-related replacement made to public files must be logged in
+`PRIVACY_CLEANUP.md` at the repository root. Each entry must record:
+
+- The file path and line reference
+- The original text (or a description of it)
+- The replacement text
+- The reason for the replacement
+
+Run a privacy scan before opening any PR that touches documentation:
+```
+grep -rn "UWR\|SGH\|Koźmiński\|Wałbrzych\|Błocian" --include="*.md" --include="*.html" --include="*.js" --include="*.py" .
+```
+If the scan returns any results, anonymise them before merging.
+
+---
+
 ## What is deferred (do not build in phase 1)
 
 - SaaS hosted version
