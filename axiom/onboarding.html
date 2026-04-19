@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aXIOM — Setup</title>
+<link rel="stylesheet" href="css/onboarding.css">
+</head>
+<body>
+
+<!-- ── Page header ── -->
+<header class="page-header">
+  <span class="app-wordmark">
+    aXIOM
+    <span class="subtitle">// academic assessor</span>
+  </span>
+  <button class="btn-skip" id="btnSkip" data-i18n="nav.skip">Skip setup</button>
+</header>
+
+<!-- ── Progress ── -->
+<div class="progress-container" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+  <div class="progress-track">
+    <div class="progress-fill" id="progressBar" aria-valuenow="0"></div>
+  </div>
+  <span class="progress-label" id="progressText" aria-live="polite"></span>
+</div>
+
+<!-- ── Wizard card ── -->
+<main class="wizard-card" role="main">
+
+  <!-- ── Step 1: Welcome ── -->
+  <section id="step1" class="step hidden" aria-labelledby="step1-title">
+
+    <h1 class="step-title" id="step1-title" data-i18n="step.welcome.title">Welcome to aXIOM</h1>
+
+    <p class="step-lead" data-i18n="step.welcome.lead">
+      aXIOM helps you evaluate whether student work meets your department's specific requirements.
+    </p>
+    <p class="step-body" data-i18n="step.welcome.body">
+      The tool carries the analytical paperwork. You read, challenge, and decide.
+    </p>
+
+    <div class="welcome-checklist">
+      <p class="checklist-heading" data-i18n="step.welcome.what.heading">What you'll need to get started</p>
+      <ul class="checklist">
+        <li data-i18n="step.welcome.what.item1">An account with an AI provider (Anthropic or OpenAI)</li>
+        <li data-i18n="step.welcome.what.item2">An API key from that provider — we'll walk you through it</li>
+        <li data-i18n="step.welcome.what.item3">About five minutes</li>
+      </ul>
+    </div>
+
+    <button class="btn-primary" id="btnWelcomeCta" data-i18n="step.welcome.cta">Get started →</button>
+
+  </section>
+
+  <!-- ── Step 2: Choose provider ── -->
+  <section id="step2" class="step hidden" aria-labelledby="step2-title">
+
+    <h1 class="step-title" id="step2-title" data-i18n="step.provider.title">Choose your AI provider</h1>
+
+    <p class="step-description" data-i18n="step.provider.description">
+      aXIOM uses an AI provider to analyse student work. Choose the provider you have an account with — or create an account now.
+    </p>
+
+    <div class="provider-cards" role="radiogroup" aria-label="AI provider">
+
+      <div class="provider-card selected" data-provider="anthropic"
+           role="radio" aria-pressed="true" tabindex="0">
+        <div class="provider-card-name" data-i18n="step.provider.anthropic.label">Anthropic Claude</div>
+        <div class="provider-card-desc" data-i18n="step.provider.anthropic.description">
+          Best choice if you're starting fresh. Recommended for Polish-language student work.
+        </div>
+        <a class="provider-card-link"
+           href="https://console.anthropic.com"
+           target="_blank" rel="noopener"
+           data-i18n="step.provider.anthropic.link">Create account at console.anthropic.com</a>
+      </div>
+
+      <div class="provider-card" data-provider="openai"
+           role="radio" aria-pressed="false" tabindex="0">
+        <div class="provider-card-name" data-i18n="step.provider.openai.label">OpenAI GPT</div>
+        <div class="provider-card-desc" data-i18n="step.provider.openai.description">
+          Good choice if you already have an OpenAI account.
+        </div>
+        <a class="provider-card-link"
+           href="https://platform.openai.com"
+           target="_blank" rel="noopener"
+           data-i18n="step.provider.openai.link">Create account at platform.openai.com</a>
+      </div>
+
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-primary" id="btnProviderCta" data-i18n="step.provider.cta">Continue →</button>
+      <button class="btn-back" id="btnProviderBack" data-i18n="nav.back">← Back</button>
+    </div>
+
+  </section>
+
+  <!-- ── Step 3: API Key ── -->
+  <section id="step3" class="step hidden" aria-labelledby="step3-title">
+
+    <h1 class="step-title" id="apikeyTitle">Set up your API key</h1>
+
+    <!-- Provider-specific instructions injected here by onboarding.js -->
+    <div class="instructions-box">
+      <p class="instructions-heading" data-i18n="step.apikey.instructions.heading">How to get your API key</p>
+      <div id="apikeyInstructions"></div>
+    </div>
+
+    <!-- API key input -->
+    <div class="form-group">
+      <label class="field-label" for="apikeyInput" data-i18n="step.apikey.field.label">API Key</label>
+      <div class="field-row">
+        <input type="password" id="apikeyInput" autocomplete="off" spellcheck="false"
+               placeholder="sk-ant-…" />
+        <button class="btn-toggle" id="apikeyShowToggle"
+                data-i18n="step.apikey.field.show"
+                aria-label="Show or hide key">Show</button>
+      </div>
+    </div>
+
+    <!-- Model selector — injected here by onboarding.js -->
+    <div id="apikeyModelContainer"></div>
+
+    <!-- Connection test -->
+    <div class="test-row">
+      <button class="btn-test" id="apikeyTestBtn" data-i18n="step.apikey.test.button">Test connection</button>
+      <span class="test-hint" data-i18n="step.apikey.test.hint">
+        Run a quick check to confirm your key works before continuing.
+      </span>
+    </div>
+    <div class="test-result" id="apikeyTestResult" aria-live="polite" role="status"></div>
+
+    <!-- Security note -->
+    <div class="note-security" id="apikeySecurityNote">
+      Your key is stored only on this device. It is never sent anywhere except the provider's API.
+    </div>
+
+    <!-- Cost note -->
+    <p class="note-cost" data-i18n="step.apikey.cost.note">
+      Cost estimate: a single assessment typically costs €0.01–€0.05 depending on the length of student work and the model you choose.
+    </p>
+
+    <div class="nav-row">
+      <button class="btn-primary" id="apikeyCtaBtn" disabled
+              data-i18n="step.apikey.cta">Continue →</button>
+      <button class="btn-back" id="btnApiKeyBack" data-i18n="nav.back">← Back</button>
+    </div>
+
+  </section>
+
+  <!-- ── Step 4: Capability probe ── -->
+  <section id="step4" class="step hidden" aria-labelledby="step4-title">
+
+    <h1 class="step-title" id="step4-title" data-i18n="step.probe.title">Checking your setup</h1>
+
+    <p class="step-description" data-i18n="step.probe.description">
+      Running a quick check to confirm your AI provider can handle aXIOM's assessment tasks. This takes a few seconds.
+    </p>
+
+    <div class="probe-checks" role="list" aria-label="Capability checks">
+
+      <div class="probe-check running" id="probeCheckConnection" role="listitem">
+        <span class="check-name" data-i18n="step.probe.check.connection">Connection</span>
+        <span class="check-status" aria-live="polite">… Checking…</span>
+      </div>
+
+      <div class="probe-check running" id="probeCheckStructured" role="listitem">
+        <span class="check-name" data-i18n="step.probe.check.structured">Structured output</span>
+        <span class="check-status" aria-live="polite">… Checking…</span>
+      </div>
+
+      <div class="probe-check running" id="probeCheckPolish" role="listitem">
+        <span class="check-name" data-i18n="step.probe.check.polish">Polish language handling</span>
+        <span class="check-status" aria-live="polite">… Checking…</span>
+      </div>
+
+    </div>
+
+    <div class="probe-feedback" id="probeFeedback" role="alert" aria-live="polite"></div>
+
+    <div class="nav-row">
+      <button class="btn-primary hidden" id="probeCtaBtn"></button>
+      <button class="btn-back" id="btnProbeBack" data-i18n="nav.back">← Back</button>
+    </div>
+
+  </section>
+
+  <!-- ── Step 5: Ready ── -->
+  <section id="step5" class="step hidden" aria-labelledby="step5-title">
+
+    <h1 class="step-title" id="step5-title" data-i18n="step.ready.title">You're ready to go</h1>
+
+    <div class="ready-summary" role="list" aria-label="Setup summary">
+      <div class="summary-row" role="listitem">
+        <span class="summary-label">Provider</span>
+        <span class="summary-value" id="readySummaryProvider"></span>
+      </div>
+      <div class="summary-row" role="listitem">
+        <span class="summary-label">Model</span>
+        <span class="summary-value" id="readySummaryModel"></span>
+      </div>
+      <div class="summary-row" role="listitem">
+        <span class="summary-label">Capability</span>
+        <span class="summary-value" id="readySummaryProbe"></span>
+      </div>
+    </div>
+
+    <p class="step-description" data-i18n="step.ready.description">
+      aXIOM is configured and ready to run assessments. You can change your AI provider settings at any time from within the application.
+    </p>
+
+    <div class="nav-row">
+      <button class="btn-primary" id="btnReadyCta" data-i18n="step.ready.cta">Open aXIOM →</button>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- ── Scripts — load order matters ── -->
+<!-- 1. Config namespace (must be first) -->
+<script src="js/config.js"></script>
+<!-- 2. Provider plugins (register into AXIOM_ASSESSOR_CONFIG.providers) -->
+<script src="js/providers/anthropic.js"></script>
+<script src="js/providers/openai.js"></script>
+<!-- 3. Onboarding wizard logic (depends on config and providers) -->
+<script src="js/onboarding.js"></script>
+
+</body>
+</html>
