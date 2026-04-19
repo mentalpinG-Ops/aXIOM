@@ -355,7 +355,7 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Wizard Layer 1 fields | Specific fields within each wizard step | Further design session |
 | Report structure and sections | What the assessment report contains and how it is organised | Further design session |
 | Print stylesheet design | Detailed design of print output | Report structure decision |
-| Cost visibility | Whether and how to show token usage and estimated cost per assessment run | Further design session |
+| Cost visibility | ~~Whether and how to show token usage and estimated cost per assessment run~~ **Resolved — see decision log** | — |
 | Update mechanism | How teachers update their installation without losing data | Further design session |
 | Onboarding flow design | Full setup experience beyond the capability probe | Pilot feedback |
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
@@ -421,5 +421,6 @@ Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approv
 | Student-facing variant deferred | 2026-04-03 | Identified as potential extension — added to roadmap. Not v1.0 scope. |
 | Institutional AI policy added to open questions | 2026-04-07 | Polish academic institutions are only beginning to formalise AI use policies for students (SGH 2024, Koźmiński 2025). Wizard Layer 1 currently has no field for this. Workflow 3 (compliance audit) may miss this layer. Added to §14 for design decision. |
 | Bielik and Plum named as local LLM candidates | 2026-04-07 | Polish-language locally installable models relevant for pilot institutions with data sovereignty requirements. Added as named examples under self-hosted local models (Phase 2 slot). |
+| Cost visibility: full per-run display with session total | 2026-04-19 | Decision: show token usage (input ↓ + output ↑) and estimated API cost after every AI call, plus a running session total, in the application footer. Rationale: teachers using personal API keys have a direct financial stake in cost; full visibility is more useful than hiding it. Cost is estimated from a per-model price table (not live provider data) — a caveat is shown on hover. Models not in the price table show token counts without a cost estimate. Prices are updated manually and may lag provider changes; this is acceptable for a teacher-deployed tool. |
 
-Last updated: 2026-04-07
+Last updated: 2026-04-19

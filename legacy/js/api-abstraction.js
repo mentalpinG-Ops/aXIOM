@@ -1,5 +1,4 @@
 /* api-abstraction.js — Unified AI API interface
-   Artefact Analyser v1.0 — AI-agnostic refactor
    Dispatches callAI() to whichever provider is currently configured.
    UTF-8. See REFACTORING_NOTES.md for architecture notes.
 */
@@ -16,7 +15,7 @@
  *
  * @param {string} systemPrompt
  * @param {Array}  userBlocks
- * @returns {Promise<string>} extracted text from model response
+ * @returns {Promise<{text: string, usage: {inputTokens: number, outputTokens: number}|null, model: string}>}
  * @throws {Error} on provider misconfiguration or API failure
  */
 async function callAI(systemPrompt, userBlocks) {
@@ -50,5 +49,13 @@ async function callAI(systemPrompt, userBlocks) {
   }
 
   var data = await resp.json();
-  return provider.parseResponse(data);
+  var modelId = (typeof provider.selectModel === 'function')
+    ? provider.selectModel(providerCfg)
+    : '';
+
+  return {
+    text:  provider.parseResponse(data),
+    usage: (typeof provider.parseUsage === 'function') ? provider.parseUsage(data) : null,
+    model: modelId,
+  };
 }
