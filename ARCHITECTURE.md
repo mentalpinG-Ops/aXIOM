@@ -355,6 +355,7 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Wizard Layer 1 fields | Specific fields within each wizard step | Further design session |
 | Report structure and sections | What the assessment report contains and how it is organised | Further design session |
 | Print stylesheet design | Detailed design of print output | Report structure decision |
+| Print footer localisation | CSS `@page` margin-box `content` properties cannot access the JavaScript i18n system. The running footer in `legacy/css/print.css` is English-only. Candidate approaches: (a) server-side generation of a locale-specific `<style>` block, (b) JavaScript injection of a locale-specific `@page` rule before the browser print dialog opens. Decision deferred until report structure and i18n pipeline are finalised. | Report structure decision; i18n pipeline |
 | Cost visibility | Whether and how to show token usage and estimated cost per assessment run | Further design session |
 | Update mechanism | How teachers update their installation without losing data | Further design session |
 | Onboarding flow design | Full setup experience beyond the capability probe | Pilot feedback |
