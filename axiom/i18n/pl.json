@@ -41,6 +41,7 @@
   "step.apikey.field.hide": "Ukryj",
   "step.apikey.model.label": "Model",
   "step.apikey.security.note": "Twój klucz jest przechowywany wyłącznie na tym urządzeniu. Nie jest nigdzie wysyłany poza API firmy {provider}.",
+  "step.apikey.security.note.default": "Twój klucz jest przechowywany wyłącznie na tym urządzeniu. Nie jest nigdzie wysyłany poza API dostawcy.",
   "step.apikey.cost.note": "Szacowany koszt: jedna ocena zazwyczaj kosztuje od 0,01 € do 0,05 € w zależności od długości pracy studenta i wybranego modelu.",
   "step.apikey.test.button": "Testuj połączenie",
   "step.apikey.test.testing": "Testowanie…",
@@ -73,6 +74,9 @@
   "step.probe.cta.fail": "← Wróć i zmień konfigurację",
 
   "step.ready.title": "Jesteś gotowy",
+  "step.ready.summary.label.provider": "Dostawca",
+  "step.ready.summary.label.model": "Model",
+  "step.ready.summary.label.capability": "Możliwości",
   "step.ready.summary.provider": "Dostawca AI: {provider}",
   "step.ready.summary.model": "Model: {model}",
   "step.ready.summary.probe": "Sprawdzenie możliwości: {result}",

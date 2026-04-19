@@ -132,10 +132,8 @@
     </div>
     <div class="test-result" id="apikeyTestResult" aria-live="polite" role="status"></div>
 
-    <!-- Security note -->
-    <div class="note-security" id="apikeySecurityNote">
-      Your key is stored only on this device. It is never sent anywhere except the provider's API.
-    </div>
+    <!-- Security note — content is injected dynamically in onboarding.js via apikeySecurityNote -->
+    <div class="note-security" id="apikeySecurityNote" data-i18n="step.apikey.security.note.default"></div>
 
     <!-- Cost note -->
     <p class="note-cost" data-i18n="step.apikey.cost.note">
@@ -194,15 +192,15 @@
 
     <div class="ready-summary" role="list" aria-label="Setup summary">
       <div class="summary-row" role="listitem">
-        <span class="summary-label">Provider</span>
+        <span class="summary-label" data-i18n="step.ready.summary.label.provider">Provider</span>
         <span class="summary-value" id="readySummaryProvider"></span>
       </div>
       <div class="summary-row" role="listitem">
-        <span class="summary-label">Model</span>
+        <span class="summary-label" data-i18n="step.ready.summary.label.model">Model</span>
         <span class="summary-value" id="readySummaryModel"></span>
       </div>
       <div class="summary-row" role="listitem">
-        <span class="summary-label">Capability</span>
+        <span class="summary-label" data-i18n="step.ready.summary.label.capability">Capability</span>
         <span class="summary-value" id="readySummaryProbe"></span>
       </div>
     </div>

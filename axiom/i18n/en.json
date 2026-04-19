@@ -41,6 +41,7 @@
   "step.apikey.field.hide": "Hide",
   "step.apikey.model.label": "Model",
   "step.apikey.security.note": "Your key is stored only on this device in browser storage. It is never sent anywhere except {provider}'s API.",
+  "step.apikey.security.note.default": "Your key is stored only on this device in browser storage. It is never sent anywhere except the provider's API.",
   "step.apikey.cost.note": "Cost estimate: a single assessment typically costs €0.01–€0.05 depending on the length of student work and the model you choose.",
   "step.apikey.test.button": "Test connection",
   "step.apikey.test.testing": "Testing…",
@@ -73,6 +74,9 @@
   "step.probe.cta.fail": "← Go back and change setup",
 
   "step.ready.title": "You're ready to go",
+  "step.ready.summary.label.provider": "Provider",
+  "step.ready.summary.label.model": "Model",
+  "step.ready.summary.label.capability": "Capability",
   "step.ready.summary.provider": "AI provider: {provider}",
   "step.ready.summary.model": "Model: {model}",
   "step.ready.summary.probe": "Capability check: {result}",
