@@ -180,6 +180,52 @@ The following must be true from the first line of code to keep the SaaS path ope
 - Authentication abstracted, not hardcoded to one provider
 - All text strings in translation files, never hardcoded in UI
 
+### 6.4 Update Mechanism for Local Installations
+
+Teachers update by running `bash update.sh` from the installation directory.
+The script is included in every release package alongside `docker-compose.yml`.
+
+**Design principles**
+
+- Data is never at risk during an update. The database lives in a named Docker
+  volume (`axiom_pgdata`) that persists independently of the application
+  containers. Pulling a new image and restarting the containers does not touch
+  the volume.
+- A timestamped SQL dump (UTF-8 encoded) is created before any container is
+  stopped. If the update fails, the restore command is printed to the terminal.
+- Schema migrations are applied automatically as part of the application startup
+  sequence (Alembic `upgrade head`). No manual migration step. Multiple version
+  jumps are handled in one pass.
+- The update script performs a health check after restart and reports success or
+  failure with plain-language instructions. No cryptic output.
+
+**Update sequence**
+
+| Step | What happens |
+|------|-------------|
+| 1 | Pre-update database backup created (`backups/axiom_backup_TIMESTAMP.sql`) |
+| 2 | `docker compose pull` — new images downloaded |
+| 3 | `docker compose down` — running containers stopped gracefully |
+| 4 | `docker compose up --detach` — new containers started; Alembic runs migrations |
+| 5 | Health check against `/health` endpoint; success or rollback instructions |
+
+**Rollback**
+
+If the health check fails, the previous image is still cached by Docker.
+The teacher can restart with the previous image and restore the database from
+the backup file using the command printed by the update script.
+
+**Backup retention**
+
+Backups accumulate in `./backups/`. The teacher is instructed to delete old
+files once satisfied with the update. No automatic deletion — the teacher
+confirms deletion in line with the GDPR retention principle (§11).
+
+**Reference files**
+
+- `update.sh` — update script (included in release package)
+- `docs/UPDATING.md` — plain-language guide for teachers
+
 ---
 
 ## 7. AI Provider Abstraction Layer
@@ -356,7 +402,7 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Report structure and sections | What the assessment report contains and how it is organised | Further design session |
 | Print stylesheet design | Detailed design of print output | Report structure decision |
 | Cost visibility | Whether and how to show token usage and estimated cost per assessment run | Further design session |
-| Update mechanism | How teachers update their installation without losing data | Further design session |
+| Update mechanism | How teachers update their installation without losing data | Closed — see §6.4 |
 | Onboarding flow design | Full setup experience beyond the capability probe | Pilot feedback |
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
 | Translation status tracking | Per-string translation status for Polish and German | Translation work begins |
@@ -421,5 +467,6 @@ Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approv
 | Student-facing variant deferred | 2026-04-03 | Identified as potential extension — added to roadmap. Not v1.0 scope. |
 | Institutional AI policy added to open questions | 2026-04-07 | Polish academic institutions are only beginning to formalise AI use policies for students (SGH 2024, Koźmiński 2025). Wizard Layer 1 currently has no field for this. Workflow 3 (compliance audit) may miss this layer. Added to §14 for design decision. |
 | Bielik and Plum named as local LLM candidates | 2026-04-07 | Polish-language locally installable models relevant for pilot institutions with data sovereignty requirements. Added as named examples under self-hosted local models (Phase 2 slot). |
+| Update mechanism: named Docker volume + update.sh + Alembic | 2026-04-19 | Data lives in a named Docker volume independent of containers. `update.sh` backs up the database, pulls new images, restarts services, and runs Alembic migrations automatically. Teacher runs one command. See §6.4. |
 
-Last updated: 2026-04-07
+Last updated: 2026-04-19
