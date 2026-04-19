@@ -359,7 +359,7 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Update mechanism | How teachers update their installation without losing data | Further design session |
 | Onboarding flow design | Full setup experience beyond the capability probe | Pilot feedback |
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
-| Translation status tracking | Per-string translation status for Polish and German | Translation work begins |
+| Translation status tracking | ~~Per-string translation status for Polish and German~~ **Resolved** — `tools/check_translations.py` compares language JSON files against `en.json` and reports per-string status. See Appendix A. | — |
 | Student-facing variant | Self-check tool for students before submission | Roadmap — deferred, not v1.0 scope |
 | Institutional AI policy field in wizard | Should the wizard include a field for the teacher to declare the institution's current AI use policy for students? Polish institutions are only beginning to formalise these policies (SGH 2024, Koźmiński 2025). Without this field, Workflow 3 (compliance audit) may miss a layer of the institutional compliance standard. | Further design session |
 - **Institutional AI disclosure obligation**: aXIOM produces AI-assisted assessment output. Whether institutions are required to inform students that AI was involved in evaluating their work is currently unregulated but closing fast (cf. Elsevier GenAI Policy Sept. 2025, boundary between "assistance" and "research-process use" undefined). aXIOM must take an explicit position before pilot institutions ask. Candidate approaches: (a) mandatory disclosure template generated with every report, (b) configurable per institution, (c) documented as institution's responsibility. Decision deferred pending pilot feedback and Polish HEI regulatory scan.
@@ -383,16 +383,49 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 
 ## Appendix A — Translation Status
 
-| String group | English | Polish | German |
-|--------------|---------|--------|--------|
-| UI navigation | ⬜ Pending | ⬜ Pending | ⬜ Pending |
+### Tooling
+
+Per-string translation status is tracked automatically by `tools/check_translations.py`.
+Run it from the repository root to see which strings are missing or untranslated:
+
+```
+python tools/check_translations.py           # report all languages
+python tools/check_translations.py --lang pl # report Polish only
+python tools/check_translations.py --strict  # exit 1 if any strings are incomplete
+```
+
+Status key used in the script output:
+
+| Symbol | Meaning |
+|--------|---------|
+| ✅ | Translated — value present and non-empty |
+| ✏️ | In progress — key present in language file but value is empty |
+| ⬜ | Missing — key absent from language file entirely |
+
+### Per-group status
+
+The table below is a high-level view updated by hand when a group reaches a milestone.
+Run `check_translations.py` for the authoritative per-string detail.
+
+| String group | English | Polish (v1.0) | German (v1.1) |
+|--------------|---------|---------------|----------------|
+| UI navigation (header, tab, panel) | ✅ Approved | ✏️ In progress | ⬜ Pending |
+| Modal / provider config | ✅ Approved | ✏️ In progress | ⬜ Pending |
+| Buttons | ✅ Approved | ✏️ In progress | ⬜ Pending |
+| Labels and placeholders | ✅ Approved | ✏️ In progress | ⬜ Pending |
+| Status / error messages | ✅ Approved | ✏️ In progress | ⬜ Pending |
 | Wizard steps | ⬜ Pending | ⬜ Pending | ⬜ Pending |
-| Error messages | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 | Report output | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 | Capability probe messages | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 | Onboarding and setup | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 
-Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approved
+### Language files
+
+| File | Language | Scope | Ships with |
+|------|----------|-------|------------|
+| `legacy/i18n/en.json` | English (master) | Artefact Analyser v1.0 | v1.0 |
+| `legacy/i18n/pl.json` | Polish | Artefact Analyser v1.0 | v1.0 |
+| `legacy/i18n/de.json` | German | Artefact Analyser v1.0 | v1.1 — not yet created |
 
 ---
 
