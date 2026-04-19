@@ -348,16 +348,83 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 
 ---
 
-## 14. Open Questions (To-Do List)
+## 14. Onboarding Flow
+
+### 14.1 Design Rationale
+API key setup is a confirmed friction point from pilot observation (§13.4). The onboarding wizard treats it as a first-class problem, not an afterthought. Every design decision in the wizard follows from that priority.
+
+### 14.2 Wizard Steps
+
+The onboarding wizard runs once on first launch and produces a fully configured, probe-verified installation. It has five steps.
+
+| Step | Name | Purpose |
+|------|------|---------|
+| 1 | Welcome | Orient the teacher. Name the tool. State what they will need. Set the five-minute expectation. |
+| 2 | Choose provider | Select Anthropic Claude or OpenAI GPT. Cards show description and account creation link. Anthropic is pre-selected and recommended for Polish-language work. |
+| 3 | Configure API key | Dedicated step. First-class treatment — see §14.3. |
+| 4 | Capability probe | Automated check of the configured provider. Results shown per check. Known-compatible model configurations skip to green. See §14.4. |
+| 5 | Ready | Confirmation with configuration summary. Launch button to main application. |
+
+### 14.3 API Key Step — First-Class Treatment
+
+The API key step is designed around the confirmed friction point. Requirements:
+
+- **Dedicated step** — API key is not combined with other configuration.
+- **Step-by-step instructions** — numbered, provider-specific. Links to the exact console page where the key is found. No assumption that the teacher knows what an API key is or where to find it.
+- **Show/hide toggle** — password field with visible toggle. The teacher can verify what they pasted without exposing the key by default.
+- **Test connection button** — calls the live API with a minimal probe request before the teacher proceeds. The Continue button is disabled until the test passes.
+- **Plain-language error messages** — no technical codes or HTTP status messages exposed. Specific guidance per failure type: empty key, wrong format, rejected key, rate limit, network failure. Each message tells the teacher what to do next.
+- **Security note** — explicit statement that the key is stored only on the device and sent only to the provider's API. Shown on the step, not buried in a help page.
+- **Cost estimate** — single-line estimate (€0.01–€0.05 per assessment) shown on the step. Cost is not revealed after setup; it is part of the informed consent at configuration time.
+
+### 14.4 Capability Probe
+
+Runs in step 4 immediately after the API key step. Three checks:
+
+| Check | What it tests | Pass condition |
+|-------|--------------|----------------|
+| Connection | Can the tool reach the provider API? | Already established by test in step 3. Marked pass immediately. |
+| Structured output | Does the model follow a JSON schema reliably? | Model returns valid JSON matching the required schema. |
+| Polish language handling | Does the model handle Polish diacritics correctly? | Model processes and acknowledges Polish text containing all Polish diacritics. |
+
+**Known-compatible model configurations** (all Phase 1 supported models) skip the full probe and receive immediate green. Full probe runs only for unlisted or custom model configurations.
+
+**Probe outcomes:**
+
+| Result | Meaning | Action |
+|--------|---------|--------|
+| Pass | All checks passed or skipped (known-compatible) | Continue to step 5 |
+| Warn | One or more checks passed with limitations | Continue button labelled "Continue with warnings →". Warnings shown on screen. Probe result stored and surfaced in main app. |
+| Fail | Structural failure — tool cannot run assessments | Continue blocked. Teacher directed back to step 3 to change provider or model. Plain-language explanation shown. |
+
+### 14.5 i18n
+All wizard strings are in `axiom/i18n/en.json` (English master) and `axiom/i18n/pl.json` (Polish). The wizard auto-detects browser language and loads the appropriate file. Falls back to English if the locale file is missing. No strings are hardcoded in HTML or JavaScript.
+
+### 14.6 Implementation Files
+
+| File | Purpose |
+|------|---------|
+| `axiom/onboarding.html` | Wizard HTML — five step sections, static structure |
+| `axiom/css/onboarding.css` | Wizard styles — matches design language of legacy tool |
+| `axiom/js/config.js` | Config management — localStorage, onboarding state, probe result |
+| `axiom/js/providers/anthropic.js` | Anthropic provider plugin — validation, headers, test and probe request builders |
+| `axiom/js/providers/openai.js` | OpenAI provider plugin — same interface |
+| `axiom/js/onboarding.js` | Wizard logic — step navigation, test connection, capability probe, i18n |
+| `axiom/i18n/en.json` | English translation strings (master language) |
+| `axiom/i18n/pl.json` | Polish translation strings |
+
+---
+
+## 15. Open Questions (To-Do List)
 
 | Item | Description | Depends on |
 |------|-------------|------------|
 | Wizard Layer 1 fields | Specific fields within each wizard step | Further design session |
 | Report structure and sections | What the assessment report contains and how it is organised | Further design session |
 | Print stylesheet design | Detailed design of print output | Report structure decision |
+| Print footer localisation | CSS `@page` margin-box `content` properties cannot access the JavaScript i18n system. The running footer in `legacy/css/print.css` is English-only. Candidate approaches: (a) server-side generation of a locale-specific `<style>` block, (b) JavaScript injection of a locale-specific `@page` rule before the browser print dialog opens. Decision deferred until report structure and i18n pipeline are finalised. | Report structure decision; i18n pipeline |
 | Cost visibility | ~~Whether and how to show token usage and estimated cost per assessment run~~ **Resolved — see decision log** | — |
 | Update mechanism | How teachers update their installation without losing data | Further design session |
-| Onboarding flow design | Full setup experience beyond the capability probe | Pilot feedback |
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
 | Translation status tracking | Per-string translation status for Polish and German | Translation work begins |
 | Student-facing variant | Self-check tool for students before submission | Roadmap — deferred, not v1.0 scope |
@@ -366,7 +433,7 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 
 ---
 
-## 15. Deferred Items (Phase 2)
+## 16. Deferred Items (Phase 2)
 
 - Admin/supervisor institutional configuration layer
 - Multi-tenant data isolation and row-level security
@@ -390,7 +457,7 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 | Error messages | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 | Report output | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 | Capability probe messages | ⬜ Pending | ⬜ Pending | ⬜ Pending |
-| Onboarding and setup | ⬜ Pending | ⬜ Pending | ⬜ Pending |
+| Onboarding and setup | ✅ Approved | ✅ Approved | ⬜ Pending |
 
 Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approved
 
@@ -422,5 +489,6 @@ Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approv
 | Institutional AI policy added to open questions | 2026-04-07 | Polish academic institutions are only beginning to formalise AI use policies for students (SGH 2024, Koźmiński 2025). Wizard Layer 1 currently has no field for this. Workflow 3 (compliance audit) may miss this layer. Added to §14 for design decision. |
 | Bielik and Plum named as local LLM candidates | 2026-04-07 | Polish-language locally installable models relevant for pilot institutions with data sovereignty requirements. Added as named examples under self-hosted local models (Phase 2 slot). |
 | Cost visibility: full per-run display with session total | 2026-04-19 | Decision: show token usage (input ↓ + output ↑) and estimated API cost after every AI call, plus a running session total, in the application footer. Rationale: teachers using personal API keys have a direct financial stake in cost; full visibility is more useful than hiding it. Cost is estimated from a per-model price table (not live provider data) — a caveat is shown on hover. Models not in the price table show token counts without a cost estimate. Prices are updated manually and may lag provider changes; this is acceptable for a teacher-deployed tool. |
+| Onboarding flow designed and implemented | 2026-04-19 | Full five-step onboarding wizard built for Module 4 (Academic Assessor). API key step treated as first-class problem: dedicated step, numbered provider-specific instructions, show/hide toggle, live test-connection button, plain-language error messages per failure type, security note, cost estimate. Capability probe runs three automated checks (connection, structured output, Polish language handling); known-compatible Phase 1 models skip the probe automatically. All strings in i18n files. English and Polish ship with this release. |
 
 Last updated: 2026-04-19
