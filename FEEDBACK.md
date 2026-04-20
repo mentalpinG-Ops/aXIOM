@@ -108,7 +108,7 @@ Copy the template below, assign the next available ID, and set status to `triage
 
 ### FB-006 — Group format insufficient for tool introduction
 - **Date:** 2026-04-01
-- **Source:** Pilot (Discovery Session 001, Wałbrzych)
+- **Source:** Pilot (Discovery Session 001, a city in Poland)
 - **Status:** filed
 - **Nature:** both
 - **Summary:** Group discussion format surfaced collective orientations but

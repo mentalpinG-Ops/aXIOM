@@ -1,0 +1,342 @@
+/* aXIOM — Print Stylesheet
+   UTF-8 encoded. Supports Polish diacritics (v1.0); German diacritics
+   deferred to v1.1 per ARCHITECTURE.md §15 but require no additional
+   print-specific handling — browser UTF-8 rendering covers both.
+   Designed alongside the screen report per ARCHITECTURE.md §12.2.
+   Media: print only — this file has no effect on screen rendering.
+
+   Requirements (ARCHITECTURE.md §12.2):
+     · Hides navigation, buttons, and UI chrome
+     · Page breaks at section boundaries, never mid-finding
+     · Black and white friendly — no colour-dependent meaning
+     · Polish and German characters render correctly (handled by browser)
+     · Typography clear at print resolution
+*/
+
+@media print {
+
+  /* ── Page setup ──────────────────────────────────────────────── */
+  @page {
+    size: A4 portrait;
+    margin: 20mm 20mm 22mm 20mm;
+    orphans: 3;
+    widows: 3;
+  }
+
+  @page :first {
+    margin-top: 15mm;
+  }
+
+  /*
+     Running footer via CSS Paged Media (@page margin boxes).
+     Note: @page content properties cannot access the JavaScript i18n system.
+     The footer text below is English-only. If a localised footer is required,
+     generate a locale-specific <style> block server-side or inject it via JS
+     before the browser print dialog opens.
+  */
+  @page {
+    @bottom-left {
+      content: "aXIOM — Academic Assessment Report";
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 7pt;
+      color: #555;
+    }
+    @bottom-right {
+      content: counter(page) " / " counter(pages);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 7pt;
+      color: #555;
+    }
+  }
+
+  /* ── Base reset for print ────────────────────────────────────── */
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  html,
+  body {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 11pt;
+    line-height: 1.55;
+    display: block;
+    min-height: auto;
+    grid-template-rows: none;
+  }
+
+  /* ── Hide all UI chrome ──────────────────────────────────────── */
+  header,
+  footer,
+  nav,
+  .modal-overlay,
+  .workspace,
+  .tabs,
+  .tab,
+  .tab-pane,
+  .panel,
+  .panel-header,
+  .ctrl-row,
+  .id-bar,
+  .url-row,
+  .drop-zone,
+  .extracting,
+  .source-info,
+  .extracted-label,
+  .hash-method,
+  .divider,
+  button,
+  select,
+  input,
+  textarea {
+    display: none !important;
+  }
+
+  /* ── Report container ────────────────────────────────────────── */
+  /*
+     .report is the top-level wrapper for the assessment report.
+     It must be shown even though .workspace (its likely parent in
+     screen layout) is hidden.
+  */
+  .report {
+    display: block !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    color: #000;
+    background: #fff;
+  }
+
+  /* ── Report title block ──────────────────────────────────────── */
+  .report-title {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17pt;
+    font-weight: bold;
+    color: #000;
+    margin: 0 0 3mm;
+    padding-bottom: 3mm;
+    border-bottom: 1pt solid #000;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .report-meta {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 8.5pt;
+    color: #222;
+    margin: 0 0 10mm;
+  }
+
+  .report-meta table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 8.5pt;
+  }
+
+  .report-meta td {
+    padding: 0.8mm 1.5mm;
+    vertical-align: top;
+    border: none;
+  }
+
+  .report-meta td:first-child {
+    font-weight: bold;
+    white-space: nowrap;
+    width: 32%;
+  }
+
+  /* ── Sections ────────────────────────────────────────────────── */
+  /*
+     Each major report section (§6.1 Overall impression, §6.2 Strengths,
+     §6.3 Areas for development, §6.4 Unmet requirements,
+     §6.5 Assessment confidence) gets a .report-section wrapper.
+
+     Sections do not break mid-content by default; add .break-before to
+     force a new page at the start of a section (e.g. the first major
+     section after the title block).
+  */
+  .report-section {
+    margin: 0 0 8mm;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Force a fresh page at the start of a section when requested */
+  .report-section.break-before {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  /* Avoid orphaned headings at the bottom of a page */
+  .report-section-heading {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10.5pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #000;
+    border-bottom: 0.5pt solid #000;
+    padding-bottom: 1mm;
+    margin: 0 0 3mm;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .report-section-subheading {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9.5pt;
+    font-weight: bold;
+    color: #000;
+    margin: 3mm 0 1.5mm;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* ── Individual findings ─────────────────────────────────────── */
+  /*
+     Each finding (strength, area for development, etc.) gets a
+     .report-finding block. Never breaks mid-finding.
+  */
+  .report-finding {
+    margin: 0 0 4mm;
+    padding: 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .report-finding-label {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9pt;
+    font-weight: bold;
+    color: #000;
+    margin: 0 0 1mm;
+  }
+
+  .report-finding-text {
+    font-size: 10.5pt;
+    line-height: 1.5;
+    color: #000;
+    margin: 0;
+  }
+
+  /* Evidence citation block — indented, light border, italic */
+  .report-finding-evidence {
+    font-size: 9pt;
+    font-style: italic;
+    color: #222;
+    margin: 1.5mm 0 0 4mm;
+    padding-left: 3mm;
+    border-left: 0.5pt solid #777;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /*
+     Confidence indicators.
+     .confidence-high/.confidence-medium/.confidence-low print
+     identically so the report is meaningful in monochrome.
+
+     The "Confidence:" label text and the level value (e.g. "High")
+     must be supplied by the HTML template using translated strings
+     from the i18n system — do not add them here via ::before/::after.
+  */
+  .report-confidence {
+    display: inline;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 8.5pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #000;
+  }
+
+  .confidence-high,
+  .confidence-medium,
+  .confidence-low {
+    color: #000;
+  }
+
+  /* ── Requirement alignment table ─────────────────────────────── */
+  /*
+     Used in §5 / §6.4 to show which requirements are met, partially
+     met, or unmet. Table cells use text symbols, not colour fills.
+  */
+  .report-alignment-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 9pt;
+    margin: 0 0 4mm;
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+
+  .report-alignment-table th,
+  .report-alignment-table td {
+    border: 0.5pt solid #555;
+    padding: 1.5mm 2mm;
+    text-align: left;
+    vertical-align: top;
+    color: #000;
+  }
+
+  .report-alignment-table th {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    background: none; /* no shading — works in B&W */
+    border-bottom: 1pt solid #000;
+  }
+
+  /*
+     Text-only status markers.
+     The visible text (e.g. "✓ Met") must be supplied by the HTML
+     template using translated strings from the i18n system so that
+     Polish and other locales render correct labels. These classes
+     provide font styling only — do not add ::before text here.
+  */
+  .status-met,
+  .status-partial,
+  .status-unmet,
+  .status-na {
+    font-weight: bold;
+  }
+
+  /* Header row does not break away from body */
+  .report-alignment-table thead {
+    display: table-header-group;
+  }
+
+  /* ── AI-generated content notice ─────────────────────────────── */
+  .report-disclosure {
+    margin: 10mm 0 0;
+    padding: 3mm 0 0;
+    border-top: 0.5pt solid #777;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 7pt;
+    color: #444;
+    page-break-before: avoid;
+    break-before: avoid;
+  }
+
+  /* ── Hyperlinks: print target URL ───────────────────────────── */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 8pt;
+    color: #444;
+    font-style: italic;
+    word-break: break-all;
+  }
+
+  /* Suppress URL for same-page anchors */
+  a[href^="#"]::after {
+    content: "";
+  }
+
+} /* end @media print */
