@@ -168,4 +168,4 @@ Document conflicts found in each methodology's assumptions vs. the prompt-design
 **Notes:**
 - This document is a living artifact — expect updates as pilot sessions proceed
 - Methodological decisions should be documented in session log
-- Academic contact at UWR Institute of Philosophy identified as potential validator for philosophical/cultural studies framing
+- Academic contact at a partner university identified as potential validator for philosophical/cultural studies framing

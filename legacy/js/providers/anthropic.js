@@ -63,6 +63,14 @@
       return data.content.map(function (b) { return b.text || ''; }).join('');
     },
 
+    parseUsage(data) {
+      if (!data || !data.usage) return null;
+      return {
+        inputTokens:  data.usage.input_tokens  || 0,
+        outputTokens: data.usage.output_tokens || 0,
+      };
+    },
+
     selectModel(cfg) {
       return cfg.model || 'claude-sonnet-4-20250514';
     },

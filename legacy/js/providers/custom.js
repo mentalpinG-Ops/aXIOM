@@ -87,6 +87,14 @@
         data.choices[0].message.content) || '';
     },
 
+    parseUsage(data) {
+      if (!data || !data.usage) return null;
+      return {
+        inputTokens:  data.usage.prompt_tokens     || 0,
+        outputTokens: data.usage.completion_tokens || 0,
+      };
+    },
+
     selectModel(cfg) {
       return cfg.model || 'custom';
     },

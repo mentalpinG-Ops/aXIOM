@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Artefact Analyser v1.0 — Prompt Builder</title>
 <link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/print.css" media="print">
 </head>
 <body>
 
@@ -211,6 +212,10 @@ ID is computed automatically from content + date + source type."></textarea>
   <button class="btn-secondary" id="copyBtn" disabled>Copy to Clipboard</button>
   <button class="btn-secondary" id="clearBtn">Clear</button>
   <span class="status" id="statusMsg"></span>
+  <span class="cost-display hidden" id="costDisplay" title="Token usage and estimated API cost for this session">
+    <span class="cost-run" id="costRun"></span>
+    <span class="cost-session" id="costSession"></span>
+  </span>
 </footer>
 
 <!-- ── Scripts — load order matters ── -->

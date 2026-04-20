@@ -188,3 +188,8 @@ button.btn-secondary:disabled{opacity:.4;cursor:default;}
 .status.error{color:var(--error);}
 .status.warn{color:var(--warn);}
 .divider{width:1px;height:16px;background:var(--border-active);}
+.cost-display{display:flex;flex-direction:column;align-items:flex-end;gap:1px;
+  font-family:var(--mono);padding:4px 0;}
+.cost-display.hidden{display:none;}
+.cost-run{font-size:10px;color:var(--text-dim);}
+.cost-session{font-size:9px;color:var(--text-dimmer);}

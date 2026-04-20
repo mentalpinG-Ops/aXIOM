@@ -121,7 +121,7 @@ Each entry is marked with its verification status:
 
 No peer-reviewed source currently underpins the Core Prompt's claim taxonomy (22 types), inference type system (8 types), or mode architecture (fact-critical / interpretive / philosophical). These emerged from AI-assisted prototyping and are validated through pilot use (DSR-01 evaluation framework).
 
-Candidate literature to be identified as part of Essay No 1 and Błocian engagement.
+Candidate literature to be identified as part of Essay No 1 and academic collaborator engagement.
 
 ---
 
