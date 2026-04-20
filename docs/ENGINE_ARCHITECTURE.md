@@ -69,7 +69,7 @@ DSR evaluates artefacts through use, not through theoretical derivation
 Session 001). Validation is ongoing.
 
 **Academic foundation:** to be developed separately as part of
-aXIOM-als-Projekt (Essay, Błocian engagement). This does not block
+aXIOM-als-Projekt (Essay, academic collaborator engagement). This does not block
 product development (aXIOM-als-Produkt).
 
 ---
