@@ -224,6 +224,52 @@ The following must be true from the first line of code to keep the SaaS path ope
 - Authentication abstracted, not hardcoded to one provider
 - All text strings in translation files, never hardcoded in UI
 
+### 6.4 Update Mechanism for Local Installations
+
+Teachers update by running `bash update.sh` from the installation directory.
+The script is included in every release package alongside `docker-compose.yml`.
+
+**Design principles**
+
+- Data is never at risk during an update. The database lives in a named Docker
+  volume (`axiom_pgdata`) that persists independently of the application
+  containers. Pulling a new image and restarting the containers does not touch
+  the volume.
+- A timestamped SQL dump (UTF-8 encoded) is created before any container is
+  stopped. If the update fails, the restore command is printed to the terminal.
+- Schema migrations are applied automatically as part of the application startup
+  sequence (Alembic `upgrade head`). No manual migration step. Multiple version
+  jumps are handled in one pass.
+- The update script performs a health check after restart and reports success or
+  failure with plain-language instructions. No cryptic output.
+
+**Update sequence**
+
+| Step | What happens |
+|------|-------------|
+| 1 | Pre-update database backup created (`backups/axiom_backup_TIMESTAMP.sql`) |
+| 2 | `docker compose pull` — new images downloaded |
+| 3 | `docker compose down` — running containers stopped gracefully |
+| 4 | `docker compose up --detach` — new containers started; Alembic runs migrations |
+| 5 | Health check against `/health` endpoint; success or rollback instructions |
+
+**Rollback**
+
+If the health check fails, the previous image is still cached by Docker.
+The teacher can restart with the previous image and restore the database from
+the backup file using the command printed by the update script.
+
+**Backup retention**
+
+Backups accumulate in `./backups/`. The teacher is instructed to delete old
+files once satisfied with the update. No automatic deletion — the teacher
+confirms deletion in line with the GDPR retention principle (§11).
+
+**Reference files**
+
+- `update.sh` — update script (included in release package)
+- `docs/UPDATING.md` — plain-language guide for teachers
+
 ---
 
 ## 7. AI Provider Abstraction Layer
@@ -467,7 +513,7 @@ All wizard strings are in `axiom/i18n/en.json` (English master) and `axiom/i18n/
 | Print stylesheet design | Detailed design of print output | Report structure decision |
 | Print footer localisation | CSS `@page` margin-box `content` properties cannot access the JavaScript i18n system. The running footer in `legacy/css/print.css` is English-only. Candidate approaches: (a) server-side generation of a locale-specific `<style>` block, (b) JavaScript injection of a locale-specific `@page` rule before the browser print dialog opens. Decision deferred until report structure and i18n pipeline are finalised. | Report structure decision; i18n pipeline |
 | Cost visibility | ~~Whether and how to show token usage and estimated cost per assessment run~~ **Resolved — see decision log** | — |
-| Update mechanism | How teachers update their installation without losing data | Further design session |
+| Update mechanism | ~~How teachers update their installation without losing data~~ **Closed — see §6.4** | — |
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
 | Translation status tracking | ~~Per-string translation status for Polish and German~~ **Resolved** — `tools/check_translations.py` compares language JSON files against `en.json` and reports per-string status. See Appendix A. | — |
 | Student-facing variant | Self-check tool for students before submission | Roadmap — deferred, not v1.0 scope |
@@ -564,6 +610,7 @@ Run `check_translations.py` for the authoritative per-string detail.
 | Student-facing variant deferred | 2026-04-03 | Identified as potential extension — added to roadmap. Not v1.0 scope. |
 | Institutional AI policy added to open questions | 2026-04-07 | Polish academic institutions are only beginning to formalise AI use policies for students (Polish HEI 2024, Polish HEI 2025). Wizard Layer 1 currently has no field for this. Workflow 3 (compliance audit) may miss this layer. Added to §14 for design decision. |
 | Bielik and Plum named as local LLM candidates | 2026-04-07 | Polish-language locally installable models relevant for pilot institutions with data sovereignty requirements. Added as named examples under self-hosted local models (Phase 2 slot). |
+| Update mechanism: named Docker volume + update.sh + Alembic | 2026-04-19 | Data lives in a named Docker volume independent of containers. `update.sh` backs up the database, pulls new images, restarts services, and runs Alembic migrations automatically. Teacher runs one command. See §6.4. |
 | Cost visibility: full per-run display with session total | 2026-04-19 | Decision: show token usage (input ↓ + output ↑) and estimated API cost after every AI call, plus a running session total, in the application footer. Rationale: teachers using personal API keys have a direct financial stake in cost; full visibility is more useful than hiding it. Cost is estimated from a per-model price table (not live provider data) — a caveat is shown on hover. Models not in the price table show token counts without a cost estimate. Prices are updated manually and may lag provider changes; this is acceptable for a teacher-deployed tool. |
 | Onboarding flow designed and implemented | 2026-04-19 | Full five-step onboarding wizard built for Module 4 (Academic Assessor). API key step treated as first-class problem: dedicated step, numbered provider-specific instructions, show/hide toggle, live test-connection button, plain-language error messages per failure type, security note, cost estimate. Capability probe runs three automated checks (connection, structured output, Polish language handling); known-compatible Phase 1 models skip the probe automatically. All strings in i18n files. English and Polish ship with this release. |
 
