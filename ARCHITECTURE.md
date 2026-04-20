@@ -106,7 +106,51 @@ Steps flow in this order:
 4. Free text extension (Layer 2 — anything not covered above)
 5. Review and confirm (teacher sees complete requirement set, can return to any step before saving)
 
-Specific fields within each step: **OPEN — see to-do list.**
+#### Step 1 — Assignment context
+
+Provides the basic framing for the assessment. Feeds `{{OUTPUT_LANGUAGE}}` and supplies context for §0 (Assessment Configuration) and §2.1 (Document Check) of the Assessment Prompt.
+
+| Field | Type | Options / notes |
+|-------|------|-----------------|
+| Assignment type | Select | Essay, Seminar paper, Bachelor thesis, Master thesis, Project report, Portfolio, Other (reveals free-text field) |
+| Academic level | Select | Bachelor, Master, Doctoral, Other (reveals free-text field) |
+| Discipline / field | Text | Free text — e.g. Fine Arts, Applied Sciences, Philosophy |
+| Input language | Select | Polish, English, German — the language the student work is actually written in. Phase 1 supports these three languages only. |
+| Output language | Select | Polish, English, German — the language the assessment report is produced in |
+
+**Input language and submission language requirement:** Input language (Step 1) records the language the student actually submitted in. Submission language requirement (Step 2) records the programme's formal language requirement. If these differ, the mismatch is surfaced as a formal compliance finding in §2.3 of the assessment report. The engine does not block assessment on a mismatch — the teacher reviews and decides.
+
+#### Step 2 — Programme requirements (Studienordnung)
+
+Configures `{{INSTITUTION_FRAMEWORK}}`. Stored per institution/programme. Intended to be configured once and reused across assessments for the same programme.
+
+| Field | Type | Options / notes |
+|-------|------|-----------------|
+| Programme name | Text | e.g. BA Fine Arts, MA Applied Sciences |
+| Regulation document reference | Text | Document title and year — e.g. Studienordnung 2023 §4 |
+| Required length | Text | Minimum and/or maximum — e.g. 8 000–10 000 words |
+| Required structural elements | Multi-select | Abstract, Introduction, Theoretical framework, Methodology, Analysis, Discussion, Conclusion, Bibliography, Appendices |
+| Required citation style | Select | APA, MLA, Chicago, Harvard, Institutional style, None specified |
+| Submission language requirement | Select | Polish, English, German, Any — the language the submission must be written in per programme regulations |
+| Grading scale | Text | e.g. 2–5 (Polish), A–F, 0–100 |
+| Programme learning outcomes | Textarea | What the programme formally expects — used verbatim in requirements alignment |
+| Additional programme requirements | Textarea | Anything not captured in the fields above |
+
+#### Step 3 — Teacher criteria
+
+Configures `{{SEMINAR_REQUIREMENTS}}`. Configured per course. Can reference and extend programme requirements but cannot override them. The wizard checks for conflicts between teacher criteria and programme requirements on save. If a conflict is detected, the teacher is shown a plain-language explanation of the conflict and asked to resolve it before proceeding — assessment cannot run against conflicting requirements.
+
+| Field | Type | Options / notes |
+|-------|------|-----------------|
+| Course / seminar name | Text | e.g. Qualitative Research Methods, Contemporary Art Theory |
+| Semester | Text | e.g. Winter 2026 |
+| Assignment brief | Textarea | The task description given to students — verbatim or summarised |
+| Required analytical approach | Text | e.g. Grounded theory, Discourse analysis — leave blank if none specified |
+| Analytical depth expected | Select | Introductory, Intermediate, Advanced |
+| Original argument required | Radio | Required, Optional, Not applicable |
+| Source requirements | Text | e.g. Minimum 10 scholarly sources, primary sources required |
+| Specific evaluation criteria | Repeating block | One criterion per entry — label and description. No fixed upper limit. |
+| Additional teacher criteria | Textarea | Anything not captured in the fields above |
 
 ### 3.3 Three Operations on Requirement Sets
 
@@ -394,25 +438,91 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 
 ---
 
-## 14. Open Questions (To-Do List)
+## 14. Onboarding Flow
+
+### 14.1 Design Rationale
+API key setup is a confirmed friction point from pilot observation (§13.4). The onboarding wizard treats it as a first-class problem, not an afterthought. Every design decision in the wizard follows from that priority.
+
+### 14.2 Wizard Steps
+
+The onboarding wizard runs once on first launch and produces a fully configured, probe-verified installation. It has five steps.
+
+| Step | Name | Purpose |
+|------|------|---------|
+| 1 | Welcome | Orient the teacher. Name the tool. State what they will need. Set the five-minute expectation. |
+| 2 | Choose provider | Select Anthropic Claude or OpenAI GPT. Cards show description and account creation link. Anthropic is pre-selected and recommended for Polish-language work. |
+| 3 | Configure API key | Dedicated step. First-class treatment — see §14.3. |
+| 4 | Capability probe | Automated check of the configured provider. Results shown per check. Known-compatible model configurations skip to green. See §14.4. |
+| 5 | Ready | Confirmation with configuration summary. Launch button to main application. |
+
+### 14.3 API Key Step — First-Class Treatment
+
+The API key step is designed around the confirmed friction point. Requirements:
+
+- **Dedicated step** — API key is not combined with other configuration.
+- **Step-by-step instructions** — numbered, provider-specific. Links to the exact console page where the key is found. No assumption that the teacher knows what an API key is or where to find it.
+- **Show/hide toggle** — password field with visible toggle. The teacher can verify what they pasted without exposing the key by default.
+- **Test connection button** — calls the live API with a minimal probe request before the teacher proceeds. The Continue button is disabled until the test passes.
+- **Plain-language error messages** — no technical codes or HTTP status messages exposed. Specific guidance per failure type: empty key, wrong format, rejected key, rate limit, network failure. Each message tells the teacher what to do next.
+- **Security note** — explicit statement that the key is stored only on the device and sent only to the provider's API. Shown on the step, not buried in a help page.
+- **Cost estimate** — single-line estimate (€0.01–€0.05 per assessment) shown on the step. Cost is not revealed after setup; it is part of the informed consent at configuration time.
+
+### 14.4 Capability Probe
+
+Runs in step 4 immediately after the API key step. Three checks:
+
+| Check | What it tests | Pass condition |
+|-------|--------------|----------------|
+| Connection | Can the tool reach the provider API? | Already established by test in step 3. Marked pass immediately. |
+| Structured output | Does the model follow a JSON schema reliably? | Model returns valid JSON matching the required schema. |
+| Polish language handling | Does the model handle Polish diacritics correctly? | Model processes and acknowledges Polish text containing all Polish diacritics. |
+
+**Known-compatible model configurations** (all Phase 1 supported models) skip the full probe and receive immediate green. Full probe runs only for unlisted or custom model configurations.
+
+**Probe outcomes:**
+
+| Result | Meaning | Action |
+|--------|---------|--------|
+| Pass | All checks passed or skipped (known-compatible) | Continue to step 5 |
+| Warn | One or more checks passed with limitations | Continue button labelled "Continue with warnings →". Warnings shown on screen. Probe result stored and surfaced in main app. |
+| Fail | Structural failure — tool cannot run assessments | Continue blocked. Teacher directed back to step 3 to change provider or model. Plain-language explanation shown. |
+
+### 14.5 i18n
+All wizard strings are in `axiom/i18n/en.json` (English master) and `axiom/i18n/pl.json` (Polish). The wizard auto-detects browser language and loads the appropriate file. Falls back to English if the locale file is missing. No strings are hardcoded in HTML or JavaScript.
+
+### 14.6 Implementation Files
+
+| File | Purpose |
+|------|---------|
+| `axiom/onboarding.html` | Wizard HTML — five step sections, static structure |
+| `axiom/css/onboarding.css` | Wizard styles — matches design language of legacy tool |
+| `axiom/js/config.js` | Config management — localStorage, onboarding state, probe result |
+| `axiom/js/providers/anthropic.js` | Anthropic provider plugin — validation, headers, test and probe request builders |
+| `axiom/js/providers/openai.js` | OpenAI provider plugin — same interface |
+| `axiom/js/onboarding.js` | Wizard logic — step navigation, test connection, capability probe, i18n |
+| `axiom/i18n/en.json` | English translation strings (master language) |
+| `axiom/i18n/pl.json` | Polish translation strings |
+
+---
+
+## 15. Open Questions (To-Do List)
 
 | Item | Description | Depends on |
 |------|-------------|------------|
-| Wizard Layer 1 fields | Specific fields within each wizard step | Further design session |
 | Report structure and sections | What the assessment report contains and how it is organised | Further design session |
 | Print stylesheet design | Detailed design of print output | Report structure decision |
-| Cost visibility | Whether and how to show token usage and estimated cost per assessment run | Further design session |
-| Update mechanism | How teachers update their installation without losing data | Closed — see §6.4 |
-| Onboarding flow design | Full setup experience beyond the capability probe | Pilot feedback |
+| Print footer localisation | CSS `@page` margin-box `content` properties cannot access the JavaScript i18n system. The running footer in `legacy/css/print.css` is English-only. Candidate approaches: (a) server-side generation of a locale-specific `<style>` block, (b) JavaScript injection of a locale-specific `@page` rule before the browser print dialog opens. Decision deferred until report structure and i18n pipeline are finalised. | Report structure decision; i18n pipeline |
+| Cost visibility | ~~Whether and how to show token usage and estimated cost per assessment run~~ **Resolved — see decision log** | — |
+| Update mechanism | ~~How teachers update their installation without losing data~~ **Closed — see §6.4** | — |
 | Connection between modules 3 and 4 | How cultural artefact analysis output (module 3) relates to aXIOM assessment (module 4) | Deferred until module 3 is in scope |
-| Translation status tracking | Per-string translation status for Polish and German | Translation work begins |
+| Translation status tracking | ~~Per-string translation status for Polish and German~~ **Resolved** — `tools/check_translations.py` compares language JSON files against `en.json` and reports per-string status. See Appendix A. | — |
 | Student-facing variant | Self-check tool for students before submission | Roadmap — deferred, not v1.0 scope |
-| Institutional AI policy field in wizard | Should the wizard include a field for the teacher to declare the institution's current AI use policy for students? Polish institutions are only beginning to formalise these policies (SGH 2024, Koźmiński 2025). Without this field, Workflow 3 (compliance audit) may miss a layer of the institutional compliance standard. | Further design session |
+| Institutional AI policy field in wizard | Should the wizard include a field for the teacher to declare the institution's current AI use policy for students? Polish institutions are only beginning to formalise these policies (Polish HEI 2024, Polish HEI 2025). Without this field, Workflow 3 (compliance audit) may miss a layer of the institutional compliance standard. | Further design session |
 - **Institutional AI disclosure obligation**: aXIOM produces AI-assisted assessment output. Whether institutions are required to inform students that AI was involved in evaluating their work is currently unregulated but closing fast (cf. Elsevier GenAI Policy Sept. 2025, boundary between "assistance" and "research-process use" undefined). aXIOM must take an explicit position before pilot institutions ask. Candidate approaches: (a) mandatory disclosure template generated with every report, (b) configurable per institution, (c) documented as institution's responsibility. Decision deferred pending pilot feedback and Polish HEI regulatory scan.
 
 ---
 
-## 15. Deferred Items (Phase 2)
+## 16. Deferred Items (Phase 2)
 
 - Admin/supervisor institutional configuration layer
 - Multi-tenant data isolation and row-level security
@@ -429,16 +539,49 @@ API key setup is a confirmed friction point from prior observation. The setup wi
 
 ## Appendix A — Translation Status
 
-| String group | English | Polish | German |
-|--------------|---------|--------|--------|
-| UI navigation | ⬜ Pending | ⬜ Pending | ⬜ Pending |
+### Tooling
+
+Per-string translation status is tracked automatically by `tools/check_translations.py`.
+Run it from the repository root to see which strings are missing or untranslated:
+
+```
+python tools/check_translations.py           # report all languages
+python tools/check_translations.py --lang pl # report Polish only
+python tools/check_translations.py --strict  # exit 1 if any strings are incomplete
+```
+
+Status key used in the script output:
+
+| Symbol | Meaning |
+|--------|---------|
+| ✅ | Translated — value present and non-empty |
+| ✏️ | In progress — key present in language file but value is empty |
+| ⬜ | Missing — key absent from language file entirely |
+
+### Per-group status
+
+The table below is a high-level view updated by hand when a group reaches a milestone.
+Run `check_translations.py` for the authoritative per-string detail.
+
+| String group | English | Polish (v1.0) | German (v1.1) |
+|--------------|---------|---------------|----------------|
+| UI navigation (header, tab, panel) | ✅ Approved | ✏️ In progress | ⬜ Pending |
+| Modal / provider config | ✅ Approved | ✏️ In progress | ⬜ Pending |
+| Buttons | ✅ Approved | ✏️ In progress | ⬜ Pending |
+| Labels and placeholders | ✅ Approved | ✏️ In progress | ⬜ Pending |
+| Status / error messages | ✅ Approved | ✏️ In progress | ⬜ Pending |
 | Wizard steps | ⬜ Pending | ⬜ Pending | ⬜ Pending |
-| Error messages | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 | Report output | ⬜ Pending | ⬜ Pending | ⬜ Pending |
 | Capability probe messages | ⬜ Pending | ⬜ Pending | ⬜ Pending |
-| Onboarding and setup | ⬜ Pending | ⬜ Pending | ⬜ Pending |
+| Onboarding and setup | ✅ Approved | ✅ Approved | ⬜ Pending |
 
-Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approved
+### Language files
+
+| File | Language | Scope | Ships with |
+|------|----------|-------|------------|
+| `legacy/i18n/en.json` | English (master) | Artefact Analyser v1.0 | v1.0 |
+| `legacy/i18n/pl.json` | Polish | Artefact Analyser v1.0 | v1.0 |
+| `legacy/i18n/de.json` | German | Artefact Analyser v1.0 | v1.1 — not yet created |
 
 ---
 
@@ -465,8 +608,10 @@ Status key: ⬜ Pending — ✏️ In progress — 👁 In review — ✅ Approv
 | Core positioning principle adopted | 2026-04-03 | aXIOM manages analytical overhead in the analysis phase of the academic work cycle — it does not replace human synthesis. Added to ARCHITECTURE.md, CLAUDE.md, and COMMS.md as a non-negotiable framing principle. |
 | 1:1 onboarding required | 2026-04-03 | Group format insufficient for tool introduction. Individual sessions needed. Group dynamics suppress individual sense-making; access to the Lebenswelt of the individual assessor requires a 1:1 setting. |
 | Student-facing variant deferred | 2026-04-03 | Identified as potential extension — added to roadmap. Not v1.0 scope. |
-| Institutional AI policy added to open questions | 2026-04-07 | Polish academic institutions are only beginning to formalise AI use policies for students (SGH 2024, Koźmiński 2025). Wizard Layer 1 currently has no field for this. Workflow 3 (compliance audit) may miss this layer. Added to §14 for design decision. |
+| Institutional AI policy added to open questions | 2026-04-07 | Polish academic institutions are only beginning to formalise AI use policies for students (Polish HEI 2024, Polish HEI 2025). Wizard Layer 1 currently has no field for this. Workflow 3 (compliance audit) may miss this layer. Added to §14 for design decision. |
 | Bielik and Plum named as local LLM candidates | 2026-04-07 | Polish-language locally installable models relevant for pilot institutions with data sovereignty requirements. Added as named examples under self-hosted local models (Phase 2 slot). |
 | Update mechanism: named Docker volume + update.sh + Alembic | 2026-04-19 | Data lives in a named Docker volume independent of containers. `update.sh` backs up the database, pulls new images, restarts services, and runs Alembic migrations automatically. Teacher runs one command. See §6.4. |
+| Cost visibility: full per-run display with session total | 2026-04-19 | Decision: show token usage (input ↓ + output ↑) and estimated API cost after every AI call, plus a running session total, in the application footer. Rationale: teachers using personal API keys have a direct financial stake in cost; full visibility is more useful than hiding it. Cost is estimated from a per-model price table (not live provider data) — a caveat is shown on hover. Models not in the price table show token counts without a cost estimate. Prices are updated manually and may lag provider changes; this is acceptable for a teacher-deployed tool. |
+| Onboarding flow designed and implemented | 2026-04-19 | Full five-step onboarding wizard built for Module 4 (Academic Assessor). API key step treated as first-class problem: dedicated step, numbered provider-specific instructions, show/hide toggle, live test-connection button, plain-language error messages per failure type, security note, cost estimate. Capability probe runs three automated checks (connection, structured output, Polish language handling); known-compatible Phase 1 models skip the probe automatically. All strings in i18n files. English and Polish ship with this release. |
 
 Last updated: 2026-04-19

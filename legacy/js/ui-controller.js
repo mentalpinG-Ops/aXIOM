@@ -42,11 +42,69 @@
   var fileExtracting  = $('fileExtracting');
   var fileMsg         = $('fileMsg');
   var siRows          = $('siRows');
+  var costDisplay     = $('costDisplay');
+  var costRun         = $('costRun');
+  var costSession     = $('costSession');
 
   // ── State ───────────────────────────────────────────────────────────────────
   var currentID   = '';
   var builtPrompt = '';
   var activeTab   = 'paste';
+
+  // ── Cost tracking ────────────────────────────────────────────────────────────
+  var sessionInputTokens  = 0;
+  var sessionOutputTokens = 0;
+  var sessionCostUSD      = 0;
+  var sessionHasCost      = false;
+
+  function fmtTokens(n) {
+    return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+  }
+
+  function fmtCost(usd) {
+    if (usd < 0.001) return '<$0.001';
+    return '$' + usd.toFixed(3);
+  }
+
+  /**
+   * Record token usage from a callAI result and update the cost display.
+   * @param {{ text: string, usage: {inputTokens: number, outputTokens: number}|null, model: string }} result
+   * @returns {string} the text content of the result
+   */
+  function trackUsage(result) {
+    if (!result || !result.usage) return result ? result.text : '';
+
+    var u = result.usage;
+    sessionInputTokens  += u.inputTokens;
+    sessionOutputTokens += u.outputTokens;
+
+    var runCost = AXIOM_CONFIG.estimateCost(result.model, u.inputTokens, u.outputTokens);
+    if (runCost !== null) {
+      sessionCostUSD += runCost;
+      sessionHasCost  = true;
+    }
+
+    // Per-run display
+    var runText = '↓' + fmtTokens(u.inputTokens) + ' ↑' + fmtTokens(u.outputTokens);
+    if (runCost !== null) runText += ' · ' + fmtCost(runCost);
+    costRun.textContent = runText;
+
+    // Session total display
+    var sesText = 'session ↓' + fmtTokens(sessionInputTokens) + ' ↑' + fmtTokens(sessionOutputTokens);
+    if (sessionHasCost) sesText += ' · ' + fmtCost(sessionCostUSD);
+    costSession.textContent = sesText;
+
+    costDisplay.classList.remove('hidden');
+    return result.text;
+  }
+
+  /**
+   * Wrapper around callAI that tracks token usage and returns the text string.
+   * Drop-in replacement for callers that previously used callAI directly.
+   */
+  async function aiCall(systemPrompt, userBlocks) {
+    return trackUsage(await callAI(systemPrompt, userBlocks));
+  }
 
   // ── Utilities ───────────────────────────────────────────────────────────────
   function escHtml(s) {
@@ -284,7 +342,7 @@
 
       var extracted, meta = {};
       if (rawText.length > 200) {
-        extracted = await callAI(
+        extracted = await aiCall(
           'You are an artefact extraction assistant. Given raw webpage text, extract analytically relevant content.\n'
           + 'Respond ONLY in this exact format with no markdown fences:\n'
           + 'JSON:\n{"title":"...","origin":"...","date":"...","language":"..."}\nCONTENT:\n'
@@ -292,7 +350,7 @@
           [{ type: 'text', text: 'URL: ' + url + '\n\nPAGE TEXT (truncated to 8000 chars):\n' + rawText.slice(0, 8000) }]
         );
       } else {
-        extracted = await callAI(
+        extracted = await aiCall(
           'You are an artefact extraction assistant. The user wants to analyse content at the given URL.\n'
           + 'Use your knowledge or web search capabilities to retrieve and summarise the content at that URL.\n'
           + 'Respond ONLY in this exact format with no markdown fences:\n'
@@ -369,7 +427,7 @@
         fileMsg.textContent = 'Extracting image content with AI (OCR)…';
         var imgB64 = await toB64(file);
         var imgMt  = ext === 'png' ? 'image/png' : 'image/jpeg';
-        content = await callAI(
+        content = await aiCall(
           'Extract all text visible in this image via OCR. Then briefly describe any non-text visual elements that would be analytically relevant (layout, charts, design, symbols).\nFormat:\nTEXT CONTENT:\n[all visible text, preserving structure]\nVISUAL DESCRIPTION:\n[description of non-text elements]',
           [
             { type: 'image', source: { type: 'base64', media_type: imgMt, data: imgB64 } },
@@ -380,7 +438,7 @@
       } else if (ext === 'pdf') {
         fileMsg.textContent = 'Extracting PDF content with AI…';
         var pdfB64 = await toB64(file);
-        var rawPdf = await callAI(
+        var rawPdf = await aiCall(
           'Extract the analytically relevant content from this PDF document.\n'
           + 'Respond ONLY in this exact format with no markdown fences:\n'
           + 'JSON:\n{"title":"...","origin":"...","date":"...","language":"..."}\nCONTENT:\n'
@@ -399,7 +457,7 @@
         fileMsg.textContent = 'Extracting DOCX content with AI…';
         var docxB64 = await toB64(file);
         var docxMt  = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        var rawDocx = await callAI(
+        var rawDocx = await aiCall(
           'Extract the analytically relevant content from this Word document.\n'
           + 'Respond ONLY in this exact format with no markdown fences:\n'
           + 'JSON:\n{"title":"...","origin":"...","date":"...","language":"..."}\nCONTENT:\n'

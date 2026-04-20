@@ -12,6 +12,35 @@ const AXIOM_CONFIG = (function () {
   // Provider registry — populated by provider scripts loaded after this file
   const providers = {};
 
+  /**
+   * Per-model API pricing in USD per million tokens.
+   * Prices are estimates and subject to provider changes.
+   * Models not listed here will have no cost estimate shown.
+   */
+  const MODEL_PRICING = {
+    // Anthropic Claude
+    'claude-sonnet-4-20250514':  { input:  3.00, output: 15.00 },
+    'claude-3-5-haiku-20241022': { input:  0.80, output:  4.00 },
+    'claude-opus-4-5':           { input: 15.00, output: 75.00 },
+    // OpenAI GPT
+    'gpt-4o':      { input: 2.50, output: 10.00 },
+    'gpt-4o-mini': { input: 0.15, output:  0.60 },
+  };
+
+  /**
+   * Estimate cost in USD for a single AI call.
+   * Returns null when no pricing data is available for the model.
+   * @param {string} modelId
+   * @param {number} inputTokens
+   * @param {number} outputTokens
+   * @returns {number|null}
+   */
+  function estimateCost(modelId, inputTokens, outputTokens) {
+    var pricing = MODEL_PRICING[modelId];
+    if (!pricing) return null;
+    return (inputTokens * pricing.input + outputTokens * pricing.output) / 1e6;
+  }
+
   /** Load persisted config from localStorage. Returns a plain object. */
   function loadConfig() {
     try {
@@ -44,5 +73,5 @@ const AXIOM_CONFIG = (function () {
     return provider.validate(providerCfg).valid;
   }
 
-  return { providers, STORAGE_KEY, loadConfig, saveConfig, isConfigured };
+  return { providers, STORAGE_KEY, loadConfig, saveConfig, isConfigured, estimateCost };
 }());

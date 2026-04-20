@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-01  
 **Format:** Semi-structured group discussion  
-**Location:** Wr
+**Location:** a city in Poland
 **Participants:** 4 (academics/artists from personal network)  
 **Facilitator:** X1  
 **Session type:** Informal introduction — not a formal pilot session  
