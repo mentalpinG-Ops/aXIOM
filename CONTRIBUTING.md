@@ -71,6 +71,56 @@ v1.0. German ships with v1.1.
 
 ---
 
+## Translation workflow
+
+### Adding new strings
+
+1. Write the English string in `legacy/i18n/en.json` (and in the corresponding
+   application i18n file when Module 4 files are created).
+2. Add the same key with an empty string value (`""`) to every language file
+   that already exists (e.g. `pl.json`). This marks the string as awaiting
+   translation without blocking English usage.
+3. Run `python tools/check_translations.py` to confirm the new key appears
+   as ✏️ (in progress) and not ⬜ (missing).
+
+### Translating strings
+
+1. Translate the English value into the target language.
+2. Replace the empty string in the language file with the translated text.
+3. Run `python tools/check_translations.py --lang LANG` to verify the string
+   moves from ✏️ to ✅ in the report.
+
+### Checking translation status
+
+```
+# Show status for all language files
+python tools/check_translations.py
+
+# Show status for Polish only
+python tools/check_translations.py --lang pl
+
+# Show all strings including already-translated ones
+python tools/check_translations.py --verbose
+
+# Exit with code 1 if any strings are incomplete (useful in CI)
+python tools/check_translations.py --strict
+```
+
+The authoritative per-string status is always produced by the script.
+The high-level group table in ARCHITECTURE.md Appendix A is updated by
+hand when a group reaches a milestone (all strings in the group translated
+and reviewed).
+
+### Language file locations
+
+| File | Language | Ships with |
+|------|----------|------------|
+| `legacy/i18n/en.json` | English (master) | v1.0 |
+| `legacy/i18n/pl.json` | Polish | v1.0 |
+| `legacy/i18n/de.json` | German | v1.1 — create when German translation begins |
+
+---
+
 ## AI provider guidelines
 
 All prompt templates must be written for model-agnostic use. Do not use
