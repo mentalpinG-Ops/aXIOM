@@ -442,9 +442,10 @@ Indicators are text-labelled at all times. Colour is supplementary and
 never the sole carrier of meaning (print-safe per §12.2).
 
 Confidence indicators appear:
-- Per individual requirement finding in §5.1 and §5.2
-- Per claim in §3.2
 - On thesis identification in §3.1
+- Per claim in §3.2
+- At subsection level throughout §4
+- Per individual requirement finding in §5.1 and §5.2
 - At section level in §5.3
 - As the overall assessment confidence in §6.5
 
