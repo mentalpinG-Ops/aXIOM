@@ -449,9 +449,14 @@ Confidence indicators appear:
 - At section level in §5.3
 - As the overall assessment confidence in §6.5
 
-The overall confidence level in §6.5 is derived conservatively: if any
-analytical section (§§2–5) returns low confidence, the overall is low;
-if all sections return high, the overall is high; mixed cases yield medium.
+The overall confidence level in §6.5 is derived conservatively from the
+lowest explicitly reported confidence-bearing output across analytical
+sections (§§2–5). Where a section exposes only per-finding, per-claim, or
+thesis-level confidence rather than a section-level value, that section is
+treated as low if any such item is low, high only if all such items are
+high, and medium otherwise. Accordingly, if any analytical section (§§2–5)
+yields low confidence under this rule, the overall is low; if all yield
+high, the overall is high; mixed cases yield medium.
 
 ---
 
