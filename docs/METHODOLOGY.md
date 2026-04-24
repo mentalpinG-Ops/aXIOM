@@ -1,7 +1,7 @@
 # aXIOM Methodology
 
 **Version:** 0.1 (Draft)  
-**Last updated:** 2026-04-06 06:20:02  
+**Last updated:** 2026-04-24  
 **Status:** Methodological foundation — requires academic validation before publication
 
 ---
@@ -12,17 +12,17 @@ aXIOM occupies a **hybrid methodological position** combining two research tradi
 
 ### Design Science Research (DSR)
 
-**Core principle:** Knowledge is produced by building artifacts that solve real problems. The artifact itself — not just the description of it — constitutes the scholarly contribution.
+**Core principle:** Knowledge is produced by building artefacts that solve real problems. The artefact itself — not just the description of it — constitutes the scholarly contribution.
 
 **For aXIOM:** The aXIOM Academic Assessor (Module 4) is the research output. Its construction, evaluation, and refinement generate design knowledge about AI-assisted academic assessment.
 
-**Framework:** Hevner et al. (2004) — artifact as contribution, utility as validity criterion
+**Framework:** Hevner et al. (2004) — artefact as contribution, utility as validity criterion
 
 ### Phenomenological / Interpretivist Research
 
-**Core principle:** Before designing interventions, understand the practice from within. The *Lebenswelt* (lived experience) of faculty members — how they actually think about and conduct assessment — is the primary source of design requirements.
+**Core principle:** Before designing interventions, understand the practice from within. The *Lebenswelt* (lived experience) of faculty members — how they actually think about and conduct assessment — is the ground truth for design.
 
-**For aXIOM:** The Discovery phase should not be treated as informal user research — it must be conducted as empirical research with explicit epistemological grounding. The requirement schema should emerge from observed assessment practice, not from designer assumption. The specific protocol has not yet been committed (see Discovery Phase Methodology below).
+**For aXIOM:** The Discovery Phase should not be treated as informal user research — it must be conducted as empirical research with explicit epistemological grounding. The requirement schema should emerge from this work rather than being imposed a priori.
 
 **Tradition:** Husserl (Lebenswelt), Schütz (interpretive sociology), qualitative methods (Flick, Bohnsack)
 
@@ -30,10 +30,10 @@ aXIOM occupies a **hybrid methodological position** combining two research tradi
 
 ## The Combination: Interpretively Grounded DSR
 
-> **DSR** tells us: building the artifact is the contribution  
-> **Phenomenology** tells us: the artifact must be grounded in lived practice
+> **DSR** tells us: building the artefact is the contribution  
+> **Phenomenology** tells us: the artefact must be grounded in lived practice
 
-This is not unusual in human-centered computing and participatory design research. It resolves a specific problem for aXIOM: DSR alone cannot justify *why* a schema-based approach is the right intervention for assessment practice. The phenomenological grounding provides that justification.
+This is not unusual in human-centred computing and participatory design research. It resolves a specific problem for aXIOM: DSR alone cannot justify *why* a schema-based approach is the right intervention. Phenomenological grounding supplies that justification.
 
 ---
 
@@ -44,13 +44,13 @@ This is not unusual in human-centered computing and participatory design researc
 
 ### The Productive Tension
 
-aXIOM uses a **structured, schema-driven** approach (which appears positivist) to support **interpretive, judgment-based** assessment (which is fundamentally anti-positivist).
+aXIOM uses a **structured, schema-driven** approach (which appears positivist) to support **interpretive, judgement-based** assessment (which is fundamentally anti-positivist).
 
-This is not a contradiction — it is the core contribution. The schema does not replace faculty judgment. It makes judgment **traceable and intersubjectively discussable**.
+This is not a contradiction — it is the core contribution. The schema does not replace faculty judgement. It makes judgement **traceable and intersubjectively discussable**.
 
 ### Why This Matters
 
-In qualitative and cultural research, *Nachvollziehbarkeit* is a quality criterion — can another researcher follow your reasoning? Can you trace claims back to evidence? aXIOM applies this principle to academic assessment: can a teacher, examiner, or appeals board trace the basis for an assessment decision back to the student text and the stated requirements?
+In qualitative and cultural research, *Nachvollziehbarkeit* is a quality criterion — can another researcher follow your reasoning? Can you trace claims back to evidence? aXIOM applies this principle to academic assessment by making the reasoning process explicit and reviewable.
 
 ---
 
@@ -61,12 +61,15 @@ In qualitative and cultural research, *Nachvollziehbarkeit* is a quality criteri
 The pilot discovery sessions are planned but not yet defined as formal research. Three options exist, each with different epistemological commitments:
 
 #### Option A — Informal User Research
+
 Observe and interview faculty pragmatically, report findings descriptively. Low overhead, fast. Cannot claim empirical grounding in a defensible academic sense.
 
 #### Option B — Structured Qualitative Fieldwork
+
 Formal qualitative study with defined protocol:
+
 - *Leitfadeninterview* (semi-structured interviews) with faculty  
-- *Gruppendiskussion* (focus group) for collective norm elicitation   
+- *Gruppendiskussion* (focus group) for collective norm elicitation  
 - *Teilnehmende Beobachtung* (participant observation) of assessment situations
 
 Analysis: qualitative content analysis, thematic analysis, or documentary method.
@@ -74,11 +77,13 @@ Analysis: qualitative content analysis, thematic analysis, or documentary method
 **Result:** Schema is empirically grounded. Discovery phase publishable as standalone study. Requires ethics approval and methodological expertise.
 
 #### Option C — Participatory Design
+
 Faculty as co-designers, not research subjects. Schema emerges from design workshops, card sorting, think-aloud protocols. Aligned with participatory design tradition.
 
 ### Decision Status
 
 **Not yet committed.** The choice depends on:
+
 - Publication target venues  
 - Available methodological expertise  
 - Institutional requirements at pilot sites  
@@ -92,29 +97,34 @@ Faculty as co-designers, not research subjects. Schema emerges from design works
 
 Three methodological questions were identified as requiring resolution before academic publication. Current status:
 
+0. **Engine coherence** — ✅ Resolved. The analytical engine’s cultural-studies orientation has been audited for coherence with the interpretively grounded DSR framework (see `docs/ENGINE-COHERENCE-AUDIT.md`).
 1. **Epistemological position** — ✅ Resolved. Interpretively grounded DSR (see above).
-2. **Discovery phase status** — ⚠️ Open. Three options exist, not yet chosen (see above).
+2. **Discovery Phase status** — ⚠️ Open. Three options exist, not yet chosen (see above).
 3. **Validation logic** — ⚠️ Open. How will we know the tool "works"? Not technically — methodologically. What counts as evidence of validity in a PoC framing?
 
-   **Candidate answer (not yet closed):** *Nachvollziehbarkeit* — traceable, intersubjectively verifiable reasoning — is the natural validity criterion for interpretively grounded DSR and is already the core concept of this project (see above). Whether this criterion is sufficient on its own, or requires supplementary measures (e.g. expert review, pilot evaluation rubric), requires dedicated analysis before publication.
-
-**Questions 2 and 3 require resolution before academic publication. Question 1 is closed. Question 0 (engine coherence) is now resolved — see `docs/ENGINE-COHERENCE-AUDIT.md`.**
+   **Candidate answer (not yet closed):** *Nachvollziehbarkeit* — traceable, intersubjectively verifiable reasoning — is the natural validity criterion for interpretively grounded DSR and is a plausible evaluation target for a PoC.
 
 ---
 
 ## Relationship to the Analytical Engine
 
+### Components (terminology)
+
+- **Analytical engine**: the existing schema-driven assessment engine (proof-of-concept) whose orientation has been audited for coherence.
+- **Artefact Analyser**: the module that applies the schema to a target artefact and produces a traceable assessment.
+- **Module 4 — aXIOM Academic Assessor**: the academic-assessment instantiation that inherits the schema and reasoning structure from the Artefact Analyser.
+
 The schema used by the Artefact Analyser (inherited by aXIOM Module 4) already has an implicit *cultural studies* orientation:
 
 - §0 Methodological Declaration — explicit positioning of analytical stance  
 - Interpretive/philosophical mode distinction  
-- Claim taxonomy recognizing non-empirical knowledge types
+- Claim taxonomy recognising non-empirical knowledge types
 
 **Current status:** These are operational but not theoretically articulated for the academic assessment context. The methodological tradition they belong to has not been explicitly named.
 
-**Implication:** The analytical engine is a **proof of concept**, not a validated scientific methodology. This framing absorbs the "scholarly isolation" finding (no comparable tools exist) without requiring prior art.
+**Implication:** The analytical engine is a **proof of concept**, not a validated scientific methodology. This framing absorbs the "scholarly isolation" finding (no comparable tools exist) without over-claiming.
 
-**Alignment requirement:** ✅ RESOLVED. The engine's cultural studies orientation has been audited for coherence with the interpretively grounded DSR framework. The three traditions — cultural-science / qualitative analysis, DSR (Hevner et al. 2004), and phenomenological / interpretivist grounding — are compatible and operate at complementary levels of abstraction. No architectural modification is required. See `docs/ENGINE-COHERENCE-AUDIT.md` for the full audit and findings.
+**Alignment requirement:** ✅ RESOLVED. The engine's cultural studies orientation has been audited for coherence with the interpretively grounded DSR framework.
 
 ---
 
@@ -123,6 +133,7 @@ The schema used by the Artefact Analyser (inherited by aXIOM Module 4) already h
 See: `docs/BIBLIOGRAPHY.md` (living document, updated after each brainstorming session)
 
 Key references:
+
 - **DSR:** Hevner et al. (2004)
 - **Phenomenology:** Husserl (1936/1970), Schütz (1932/1967)
 - **Qualitative methods:** Flick (2014), Bohnsack (2014), Mayring (2015)
@@ -137,9 +148,10 @@ All entries flagged for verification status. Unverified entries require DOI/libr
 **Current status:** This methodology is a working hypothesis, not a validated framework.
 
 **Validation required before:**
+
 - Formal academic publication  
 - Grant applications  
-- Institutional legitimization
+- Institutional legitimisation
 
 **Validation method:** Stress-test with domain expert in cultural studies methods or design science research (academic contact).  
 Target: epistemological coherence, publication venue fit, institutional reception.
@@ -166,6 +178,7 @@ Document conflicts found in each methodology's assumptions vs. the prompt-design
 ---
 
 **Notes:**
-- This document is a living artifact — expect updates as pilot sessions proceed
+
+- This document is a living artefact — expect updates as pilot sessions proceed
 - Methodological decisions should be documented in session log
 - Academic contact at a partner university identified as potential validator for philosophical/cultural studies framing
