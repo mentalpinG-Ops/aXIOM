@@ -105,8 +105,9 @@ This is a long-term consideration, not a current commitment.
 |----------|----------|---------|--------|
 | Stakeholder explainer | Faculty, department heads | What aXIOM is and is not — non-technical | Not yet created |
 | Pilot one-pager | Pilot institution contacts | Project overview for in-person meetings | Not yet created |
+| Prompt test guide | Pilot teacher (X1), stakeholder | Standalone instructions for testing Assessment Prompt v1.0 without platform infrastructure | Created — `prompts/PROMPT_TEST_GUIDE.md` |
 
 ---
 
-*Last updated: 2026-04-03*
-*Fed by: FEEDBACK.md items FB-001, FB-002, FB-003*
+*Last updated: 2026-04-24*
+*Fed by: FEEDBACK.md items FB-001, FB-002, FB-003, FB-008*

@@ -133,9 +133,21 @@ Copy the template below, assign the next available ID, and set status to `triage
 - **Summary:** The AA-Schema prompt is the genuine innovation; it can be replicated in any AI provider's project/agent feature with system instructions. Platform layer (Module 4, deployment, wizard UI) lacks validated user need. Critical question: what does aXIOM deliver that a Claude Project with the same prompt cannot?
 - **Candidate answers:** (1) Aggregation over time—patterns across semester, criteria drift detection; (2) Institutional control—data residency, GDPR, audit trail; (3) Nothing yet—platform may be premature.
 - **Action:** Test prompt standalone with real user before building further platform infrastructure. Defer Module 4 build pending validation.
-- **Progress:** Assessment Prompt v1.0 written and committed to `prompts/ASSESSMENT_PROMPT_v1_0`. Companion description at `prompts/ASSESSMENT_PROMPT_v1_0_DESCRIPTION.md`. Prompt is ready for standalone testing in any AI provider's chat interface (Claude, ChatGPT) without platform infrastructure. Next step: run prompt against a real student submission with a pilot teacher.
+- **Progress:** Assessment Prompt v1.0 written and committed to `prompts/ASSESSMENT_PROMPT_v1_0`. Companion description at `prompts/ASSESSMENT_PROMPT_v1_0_DESCRIPTION.md`. Standalone test guide created at `prompts/PROMPT_TEST_GUIDE.md`. Prompt is ready for standalone testing in any AI provider's chat interface (Claude, ChatGPT) without platform infrastructure. Next step: run prompt against a real student submission with pilot teacher (X1) and stakeholder. Testing tracked in FB-008.
 - **Routed to:** Pilot teacher (Institution A or B) — standalone test session required
 
 ---
 
-*Last updated: 2026-04-11*
+### FB-008 — Assessment Prompt v1.0 standalone test session
+- **Date:** 2026-04-24
+- **Source:** GitHub Issue (prompt testing task)
+- **Status:** triage
+- **Nature:** project
+- **Priority:** blocking
+- **Summary:** Assessment Prompt v1.0 and slim variant require a standalone test session with pilot teacher (X1) and a stakeholder before the prompt can be marked production-ready per PROMPT_GOVERNANCE.md criteria. A test guide has been created at `prompts/PROMPT_TEST_GUIDE.md`. Session to be run using a real student submission in Claude or ChatGPT without any platform infrastructure.
+- **Action:** Schedule 1:1 session with X1 (pilot teacher, Institution A or B). Provide `prompts/PROMPT_TEST_GUIDE.md`, the prompt files, and a student submission. Record findings using the feedback template in the test guide. After session: update prompt status in PROMPT_GOVERNANCE.md and record session findings.
+- **Routed to:** Pilot teacher (X1) — session to be scheduled
+
+---
+
+*Last updated: 2026-04-24*
