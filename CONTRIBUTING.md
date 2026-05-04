@@ -186,19 +186,14 @@ contacts or collaborators use neutral role labels such as "academic collaborator
 "pilot participant", or "validator". When referencing pilot locations use generic
 terms such as "a city in Poland".
 
-Every privacy-related replacement made to public files must be logged in
-`PRIVACY_CLEANUP.md` at the repository root. Each entry must record:
+The maintainer keeps a private wordlist of names, institutions, and
+locations that must not appear in public files. Before opening a PR that
+touches documentation, run the privacy scan from the maintainer's local
+toolchain. If matches are found, anonymise per the rules above before
+merging.
 
-- The file path and line reference
-- The original text (or a description of it)
-- The replacement text
-- The reason for the replacement
-
-Run a privacy scan before opening any PR that touches documentation:
-```
-grep -rn "UWR\|SGH\|Koźmiński\|Wałbrzych\|Błocian" --include="*.md" --include="*.html" --include="*.js" --include="*.py" .
-```
-If the scan returns any results, anonymise them before merging.
+Privacy replacement decisions are tracked in the maintainer's private
+notes, not in this repository.
 
 ---
 
