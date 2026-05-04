@@ -109,7 +109,7 @@ but does not constitute a validated scientific methodology. See
 | `GITHUB_ISSUES_SETUP.md` | Issue label and workflow conventions |
 | `METHODOLOGY.md` | Analytical methodology and its current limitations |
 | `ANALYTICAL_COMMITMENTS.md` | Epistemic/analytical output commitments |
-| `pilot_discovery_document.docx` | User testing protocol for pilot sessions |
+
 
 ---
 
