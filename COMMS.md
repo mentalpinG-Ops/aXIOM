@@ -1,6 +1,11 @@
 # COMMS.md
 ## aXIOM — Communication Strategy
 
+> **Status note (2026-05-18):** This document predates the scope
+> decoupling of 2026-05-18. For the current active/deferred track
+> split see [`STATUS.md`](./STATUS.md). Content below is preserved
+> as historical record.
+
 This document captures communication strategy decisions for the aXIOM project.
 It is fed by `FEEDBACK.md` (communication-track items) and informs how the project
 is presented to non-technical audiences including pilot institution faculty,

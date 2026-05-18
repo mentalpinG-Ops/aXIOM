@@ -1,5 +1,12 @@
 # Prompt Governance — mentalpinG-Ops ↔ aXIOM
 
+> **Status note (2026-05-18):** This document predates the scope
+> decoupling of 2026-05-18. The workshop→product transfer pipeline
+> described below reflects pre-DFS framing. DFS (Declarative Frame
+> Schema) is the load-bearing methodological IP; see
+> [`STATUS.md`](./STATUS.md) and [`HISTORY.md`](./HISTORY.md).
+> Content below is preserved as historical record.
+
 ## Principle
 
 Prompts are developed and tested in **mentalpinG-Ops**.  

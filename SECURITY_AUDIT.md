@@ -1,5 +1,10 @@
 # Privacy & Security Audit — aXIOM
 
+> **Status note (2026-05-18):** Findings below are
+> accepted-not-remediated while the software/pilot track is deferred.
+> See [`STATUS.md`](./STATUS.md). Remediation resumes if the track is
+> reactivated.
+
 **Date:** 2026-05-04
 **Branch:** `claude/privacy-security-audit-hZmDk`
 **Scope:** Full repository at HEAD of `main`, including `axiom/` (Module 4
