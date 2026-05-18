@@ -31,15 +31,26 @@ aXIOM has two tracks. As of 2026-05-18 they are formally decoupled.
 - Security findings in `SECURITY_AUDIT.md` (accepted-not-remediated
   while the track is deferred).
 
-## Reactivation conditions
+## Repository status
 
-The deferred track resumes if **either** of the following holds:
+This repository is preserved as a **public vitrine** of the aXIOM
+project at the time of the 2026-05-18 scope-cut. No further commits
+are planned here.
+
+The active methodology track (aXIOM-as-Project + DFS) continues
+elsewhere — not in this repository.
+
+## Reactivation (would resume work elsewhere, not here)
+
+If the deferred track ever reactivates, work would resume in a
+separate repository under one of these conditions:
 
 - (a) DFS-track-internal deployment need emerges.
 - (b) External stakeholder request makes pilot/tool deployment
   load-bearing again.
 
-No timeline. No commitment.
+No timeline. No commitment. This repository remains read-only
+regardless.
 
 ## Notes on unamended files
 

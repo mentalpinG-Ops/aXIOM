@@ -1,9 +1,13 @@
 # aXIOM
 
-> **Status note (2026-05-18):** This document predates the scope
-> decoupling of 2026-05-18. For the current active/deferred track
-> split see [`STATUS.md`](./STATUS.md). Content below is preserved
-> as historical record.
+> **Status note (2026-05-18):** This repository is preserved as a
+> **public vitrine** of the aXIOM project at the 2026-05-18
+> scope-cut. No further commits are planned here. The active
+> methodology track continues outside this repository.
+>
+> For the current active/deferred track split see
+> [`STATUS.md`](./STATUS.md). The content below predates the
+> scope-cut and is preserved as historical record.
 
 aXIOM is an AI-assisted analysis platform for academic research and
 teaching. It is built around four modules that share a common analytical
