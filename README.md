@@ -6,8 +6,57 @@
 > methodology track continues outside this repository.
 >
 > For the current active/deferred track split see
-> [`STATUS.md`](./STATUS.md). The content below predates the
-> scope-cut and is preserved as historical record.
+> [`STATUS.md`](./STATUS.md). The content below the *Historical
+> README content* line predates the scope-cut and is preserved as
+> historical record.
+
+## About this repository
+
+This is a public snapshot of the **aXIOM** project at the time of its
+2026-05-18 scope-cut. aXIOM is a methodological project organised
+around the **Declarative Frame Schema (DFS)** — an apparatus for
+AI-assisted analysis of cultural and textual artefacts.
+
+The repository archives the **product/pilot branch** of the project:
+
+- an early HTML proof-of-concept (`legacy/` — *Artefact Analyser v1.0*),
+- an institutional onboarding wizard for an Academic Assessor module
+  (`axiom/`),
+- supporting architecture, methodology, and discovery documents
+  (`docs/`),
+- corresponding governance files (`CONTRIBUTING.md`,
+  `PROMPT_GOVERNANCE.md`, `SECURITY_AUDIT.md`, etc.).
+
+This branch is **deferred**. The repository receives no further
+commits.
+
+The **methodology track** — DFS development, conceptual work,
+academic contact lines — continues outside this repository. If the
+deferred product/pilot branch ever reactivates, work would resume in
+a separate repository.
+
+## Key files for visitors
+
+| File | What it tells you |
+|---|---|
+| [`STATUS.md`](./STATUS.md) | Current active/deferred track split, reactivation conditions, vitrine intent. |
+| [`HISTORY.md`](./HISTORY.md) | Conceptual evolution timeline from Q1-2026 to the scope-cut. |
+| [`CHANGELOG.md`](./CHANGELOG.md) | Structural and scope-level changes. |
+| [`docs/METHODOLOGY.md`](./docs/METHODOLOGY.md) | Analytical methodology snapshot. |
+| [`docs/ANALYTICAL_COMMITMENTS.md`](./docs/ANALYTICAL_COMMITMENTS.md) | Epistemic output commitments. |
+| [`docs/README.md`](./docs/README.md) | Per-file track index for `docs/`. |
+| [`SECURITY_AUDIT.md`](./SECURITY_AUDIT.md) | Privacy/security audit (findings deferred). |
+| [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Architecture document (pre-scope-cut). |
+
+---
+
+## Historical README content
+
+The content below predates the 2026-05-18 scope-cut and is preserved
+verbatim as historical record. It describes the project as it was
+framed before the methodology track and the product/pilot track were
+formally decoupled. Treat it as a snapshot of the original framing,
+not as a current description.
 
 aXIOM is an AI-assisted analysis platform for academic research and
 teaching. It is built around four modules that share a common analytical
