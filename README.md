@@ -2,8 +2,7 @@
 
 > **Status note (2026-05-18):** This repository is preserved as a
 > **public vitrine** of the aXIOM project at the 2026-05-18
-> scope-cut. No further commits are planned here. The active
-> methodology track continues outside this repository.
+> scope-cut. No further commits are planned here. "Ongoing methodology development takes place outside this repository, in the mentalpinG-Ops organisation on GitHub. For inquiries: mentalpingoperator@gmail.com"
 >
 > For the current active/deferred track split see
 > [`STATUS.md`](./STATUS.md). The content below the *Historical
