@@ -1,5 +1,12 @@
 # CONTRIBUTING.md — aXIOM Contribution Guidelines
 
+> **Status note (2026-05-18):** This document predates the scope
+> decoupling of 2026-05-18. For the current active/deferred track
+> split see [`STATUS.md`](./STATUS.md). Content below is preserved
+> as historical record. The pilot-institution blanking rule
+> (Institution A / Institution B) remains in force regardless of
+> track status.
+
 Thank you for your interest in contributing to aXIOM. Please read these
 guidelines before opening an issue or submitting a pull request.
 

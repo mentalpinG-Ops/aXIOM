@@ -1,5 +1,10 @@
 # aXIOM — ARCHITECTURE.md
 
+> **Status note (2026-05-18):** This document predates the scope
+> decoupling of 2026-05-18. For the current active/deferred track
+> split see [`STATUS.md`](./STATUS.md). Content below is preserved
+> as historical record.
+
 Living Architecture Document — Version 0.1 | Last updated: 2026-04-19
 
 ---

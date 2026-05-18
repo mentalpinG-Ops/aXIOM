@@ -1,5 +1,10 @@
 # aXIOM
 
+> **Status note (2026-05-18):** This document predates the scope
+> decoupling of 2026-05-18. For the current active/deferred track
+> split see [`STATUS.md`](./STATUS.md). Content below is preserved
+> as historical record.
+
 aXIOM is an AI-assisted analysis platform for academic research and
 teaching. It is built around four modules that share a common analytical
 engine.
