@@ -1,5 +1,12 @@
 # aXIOM — GitHub Copilot Instructions
 
+> **Status note (2026-05-18):** Scope decoupled — software/pilot
+> track deferred. See [`../STATUS.md`](../STATUS.md).
+>
+> **For Copilot:** consult `STATUS.md` before suggesting changes to
+> any section marked `[DEFERRED 2026-05-18]`. Do not propose new
+> Phase-1 backend implementation while the track is deferred.
+
 This file provides project context for GitHub Copilot working on the aXIOM codebase.
 
 ---
@@ -21,7 +28,9 @@ The Academic Assessor is being piloted at two institutions in Poland.
 
 ---
 
-## Non-negotiable stack
+## Non-negotiable stack — [DEFERRED 2026-05-18]
+
+> Section applies only if software-track is reactivated. See `../STATUS.md`.
 
 Do not suggest alternatives to these. They are decided and committed.
 
@@ -33,7 +42,9 @@ Do not suggest alternatives to these. They are decided and committed.
 
 ---
 
-## Standing requirements
+## Standing requirements — [DEFERRED 2026-05-18]
+
+> Section applies only if software-track is reactivated. See `../STATUS.md`.
 
 These apply to every file, every component, every change.
 
@@ -81,7 +92,9 @@ v1.0. German ships with v1.1.
 
 ---
 
-## AI provider abstraction
+## AI provider abstraction — [DEFERRED 2026-05-18]
+
+> Section applies only if software-track is reactivated. See `../STATUS.md`.
 
 The Academic Assessor (Module 4) supports multiple AI providers.
 Phase 1 supports Anthropic Claude and OpenAI GPT via API key.
@@ -94,7 +107,9 @@ distinction is intentional and must be preserved.
 
 ---
 
-## File formats — student work
+## File formats — student work — [DEFERRED 2026-05-18]
+
+> Section applies only if software-track is reactivated. See `../STATUS.md`.
 
 Supported: DOCX, PDF (text layer only), TXT, RTF, ODT
 Explicitly excluded: Pages (.pages), scanned PDFs, image-only files
@@ -105,7 +120,9 @@ exposed to the teacher.
 
 ---
 
-## Error handling principles
+## Error handling principles — [DEFERRED 2026-05-18]
+
+> Section applies only if software-track is reactivated. See `../STATUS.md`.
 
 - Maximum 3 retries on any AI output failure
 - After 3 retries: graceful failure with plain-language message to teacher
@@ -115,7 +132,11 @@ exposed to the teacher.
 
 ---
 
-## Pilot sensitivity
+## Pilot sensitivity — [DEFERRED 2026-05-18, but blanking rule remains]
+
+> Pilot itself is deferred, but the institution-blanking rule remains
+> in force as long as any pilot-referencing material exists in this
+> repository. See `../STATUS.md`.
 
 The two pilot institutions must not be named in any public-facing file,
 commit message, or documentation. Refer to them as Institution A (art
@@ -131,7 +152,11 @@ academy) and Institution B (applied sciences university).
 
 ---
 
-## What is deferred (do not build these in phase 1)
+## What is deferred (do not build these in phase 1) — [DEFERRED 2026-05-18]
+
+> The entire phase-1 build is deferred as of 2026-05-18 (see
+> `../STATUS.md`). The list below applied to the phase-1 scope when
+> the phase-1 scope itself was active.
 
 - SaaS hosted version
 - Azure OpenAI and self-hosted model authentication
